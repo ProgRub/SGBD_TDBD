@@ -1,15 +1,21 @@
+
 <?php
+//echo "MUDOU1\n";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {
     $mySQL=ligacaoBD();
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         echo "<h1>Erro</h1>";
     } else {
-//        echo "<h1>Good</h1>";
-        if ($_REQUEST["estadoExecucao"] == "inserir") {
+        if ($_REQUEST["estado"] == "inserir") {
             echo "<h3>Gestão de unidades - inserção</h3>";
+            $insertQuery="INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'". testarInput($_REQUEST["nome_unidade"])."');";
+            if (mysqli_query($mySQL, $insertQuery)) {
+                echo "Inseriu os dados de novo tipo de unidade com sucesso.";
+            } else {
+                echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
+            }
         } else {
-//        echo "<h1>Tabela</h1>";
             $query = "SELECT * FROM subitem_unit_type ORDER BY name";
             $result = mysqli_query($mySQL, $query);
             if (mysqli_num_rows($result) > 0) {
@@ -22,18 +28,25 @@ if (verificaCapability("manage_unit_types")) {
             } else {
                 echo "Não há tipos de unidades";
             }
-            echo e"<h3>Gestão de unidades - introdução</h3>
-                    <form action='gestao-de-unidades-submit.php' method='post' >
-                Nome <input typ='text' name='nome_unidade' ><br>
-                        <input type='hidden' value='inserir' name='estado'><br>
-                        <input type='submit' value='Inserir tipo de unidade' name='submit'>
-                    </form>";
+            echo "<h3>Gestão de unidades - introdução</h3><body>
+<form method='post' > Nome <input type='text' name='nome_unidade' ><br>
+    <input type='hidden' value='inserir' name='estado'><br>
+    <input type='submit' value='Inserir tipo de unidade' name='submit'>
+</form>
+</body>";
         }
     }
 } else {
     echo "Não tem autorização para aceder a esta página";
 }
-
-function checkInputs(){
-    echo"Teste";
-}
+?>
+<!--<!DOCTYPE HTML>-->
+<!--<html>-->
+<!--<body>-->
+<!--<form method='post' action=""> Nome <input type='text' name='nome_unidade' ><br>-->
+<!--    action='--><?php //echo htmlspecialchars($_SERVER["PHP_SELF"]);?><!--' -->
+<!--    <input type='hidden' value='inserir' name='estado'><br>-->
+<!--    <input type='submit' value='Inserir tipo de unidade' name='submit'>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
