@@ -1,19 +1,20 @@
 
 <?php
-//echo "MUDOU1\n";
+echo "MUDOU3\n";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {
     $mySQL=ligacaoBD();
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
-        echo "<h1>Erro</h1>";
+        die("Connection failed: " . mysqli_connect_error());
     } else {
         if ($_REQUEST["estado"] == "inserir") {
             echo "<h3>Gestão de unidades - inserção</h3>";
             $insertQuery="INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'". testarInput($_REQUEST["nome_unidade"])."');";
-            if (mysqli_query($mySQL, $insertQuery)) {
-                echo "Inseriu os dados de novo tipo de unidade com sucesso.";
-            } else {
+            if (!mysqli_query($mySQL, $insertQuery)) {
                 echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
+            } else {
+                echo "Inseriu os dados de novo tipo de unidade com sucesso.\nClique em Continuar para avançar.";
+                echo "<br><a href='gestao-de-itens'>Continuar</a>";
             }
         } else {
             $query = "SELECT * FROM subitem_unit_type ORDER BY name";

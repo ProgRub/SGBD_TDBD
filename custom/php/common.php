@@ -6,6 +6,13 @@ function verificaCapability($capability)
     return is_user_logged_in() && current_user_can($capability);
 }
 
+function testarInput($input){
+        $input = trim($input);
+        $input = stripslashes($input);
+        $input = htmlspecialchars($input);
+    return $input;
+}
+
 //Mostra ligação "Voltar atrás"
 function voltarAtras()
 {
