@@ -1,5 +1,5 @@
 <?php
-echo "MUDOU3\n";
+echo "MUDOU1\n";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {
     $mySQL = ligacaoBD();
@@ -18,6 +18,7 @@ if (verificaCapability("manage_unit_types")) {
                     echo "<br><a href='gestao-de-itens'>Continuar</a>";
                 }
             } else {
+                echo "O campo 'Nome' é obrigatório!\n";
                 voltarAtras();
             }
         } else {
