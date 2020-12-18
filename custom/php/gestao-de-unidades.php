@@ -1,20 +1,24 @@
-
 <?php
 echo "MUDOU3\n";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {
-    $mySQL=ligacaoBD();
+    $mySQL = ligacaoBD();
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
         if ($_REQUEST["estado"] == "inserir") {
             echo "<h3>Gestão de unidades - inserção</h3>";
-            $insertQuery="INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'". testarInput($_REQUEST["nome_unidade"])."');";
-            if (!mysqli_query($mySQL, $insertQuery)) {
-                echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
+            $nomeUnidade = testarInput($_REQUEST["nome_unidade"]);
+            if (!empty($nomeUnidade)) {
+                $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'" . $nomeUnidade . "');";
+                if (!mysqli_query($mySQL, $insertQuery)) {
+                    echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
+                } else {
+                    echo "Inseriu os dados de novo tipo de unidade com sucesso.\nClique em Continuar para avançar.";
+                    echo "<br><a href='gestao-de-itens'>Continuar</a>";
+                }
             } else {
-                echo "Inseriu os dados de novo tipo de unidade com sucesso.\nClique em Continuar para avançar.";
-                echo "<br><a href='gestao-de-itens'>Continuar</a>";
+                voltarAtras();
             }
         } else {
             $query = "SELECT * FROM subitem_unit_type ORDER BY name";
@@ -22,7 +26,7 @@ if (verificaCapability("manage_unit_types")) {
             if (mysqli_num_rows($result) > 0) {
                 $table = "<table><tr><th>id</th><th>unidade</th></tr>";
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $table .= "<tr><td>$row[id]</td><td>$row[name]</td></tr>";
+                    $table .= "<tr><td>" . $row["id"] . "</td><td>" . $row["name"] . "</td></tr>";
                 }
                 $table .= "</table>";
                 echo $table;
