@@ -15,17 +15,17 @@ if (verificaCapability("manage_records")) {
         echo "Introduza os dados pessoais básicos da criança:";
         echo "<body>
                 <form method='post'>
-                * Campos obrigatórios<br><br>
-                Nome completo * <input type='text' name='crianca_nome'><br>
-                Data de nascimento * <input type='text' name='data_de_nascimento'><br>
-                Nome completo do encarregado de educação * <input type='text' name='ee_nome'><br>
-                Telefone do encarregado de educação * <input type='text' name='ee_telefone'><br>
-                Endereço de e-mail do tutor <input type='text' name='tutor_email'><br><br>
+                <p style='color:red;'>* Campos obrigatórios</p><br>
+                <strong> Nome completo:</strong> * <input type='text' name='crianca_nome'><br>
+                <strong>Data de nascimento: * <input type='text' name='data_de_nascimento'><br>
+                <strong>Nome completo do encarregado de educação:</strong> * <input type='text' name='ee_nome'><br>
+                <strong>Telefone do encarregado de educação:</strong> * <input type='text' name='ee_telefone'><br>
+                <strong>Endereço de e-mail do tutor:</strong> <input type='text' name='tutor_email'><br><br>
                 <input type='hidden' value='validar' name='estado'>
                 <input type='submit'>
                 </form>
             </body>";}
     }
 } else {
-    echo "Não tem autorização para aceder a esta página";
+    echo "Não tem autorização para aceder a esta página.";
 }

@@ -18,7 +18,7 @@ if (verificaCapability("manage_unit_types")) {
                     echo "<br><a href='gestao-de-itens'>Continuar</a>";
                 }
             } else {
-                echo "O campo 'Nome' é obrigatório!\n";
+                echo "O campo <strong>'Nome'</strong> é obrigatório!\n";
                 voltarAtras();
             }
         } else {
@@ -32,10 +32,10 @@ if (verificaCapability("manage_unit_types")) {
                 $table .= "</table>";
                 echo $table;
             } else {
-                echo "Não há tipos de unidades";
+                echo "Não há tipos de unidades.";
             }
             echo "<h3>Gestão de unidades - introdução</h3><body>
-<form method='post' > Nome <input type='text' name='nome_unidade' ><br>
+<form method='post' > <strong>Nome:</strong> <input type='text' name='nome_unidade' ><br>
     <input type='hidden' value='inserir' name='estado'><br>
     <input type='submit' value='Inserir tipo de unidade' name='submit'>
 </form>

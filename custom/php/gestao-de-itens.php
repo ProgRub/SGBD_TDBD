@@ -24,7 +24,7 @@ if (verificaCapability("manage_items")) {
                     echo "<br><a href='gestao-de-itens'>Continuar</a>";
                 }
             } else {
-                echo "O campo 'Nome' é obrigatório!\n";
+                echo "O campo <strong>'Nome'</strong> é obrigatório!<br>";
                 voltarAtras();
             }
         } else {
@@ -43,37 +43,44 @@ if (verificaCapability("manage_items")) {
                         $tabelaItens = mysqli_query($mySQL, $queryItens);
 
                         if (mysqli_num_rows($tabelaItens) > 0) {
-//                            $newItem = true;
-//                            $numeroItens = mysqli_num_rows($tabelaItens);
+                            $newItem = true;
+                            $numeroItens = mysqli_num_rows($tabelaItens);
                             while ($linhaItem = mysqli_fetch_assoc($tabelaItens)) {
-                                echo "<tr><td>" . $linhaTipoItem["name"] . "</td><td>" . $linhaItem["id"] . "</td><td>" . $linhaItem["name"] . "</td><td>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "</td><td>[editar] [desativar]</td></tr>";
-//                                if ($newItem) {
-//                                    echo "<tr><td rowspan='$numeroItens'>" . $linhaTipoItem["name"] . "</td>"; //NOME DESSE TIPO
-//                                    $newItem = false;
-//                                } else {
-//                                    echo "<tr>";
-//                                }
-//                                echo "<td>" . $linhaItem["id"] . "</td><td>" . $linhaItem["name"] . "</td><td>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "</td><td>[editar] [desativar]</td>"; //DADOS DE CADA ITEM DESSE TIPO
-//                                echo "</tr>";
+                                //echo "<tr><td>" . $linhaTipoItem["name"] . "</td><td>" . $linhaItem["id"] . "</td><td>" . $linhaItem["name"] . "</td><td>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "</td><td>[editar] [desativar]</td></tr>";
+                                if ($newItem) {
+                                    echo "<tr><td rowspan='$numeroItens'>" . $linhaTipoItem["name"] . "</td>"; //NOME DESSE TIPO
+                                    $newItem = false;
+                                } else {
+                                   echo "<tr>";
+                                }
+                                echo "<td>" . $linhaItem["id"] . "</td><td>" . $linhaItem["name"] . "</td><td>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "</td><td>[editar] [desativar]</td>"; //DADOS DE CADA ITEM DESSE TIPO
+                                echo "</tr>";
                             }
                         }
                     }
                     echo "</table>";
                 }
             } else {
-                echo "Não há itens";
+                echo "Não há itens.";
             }
-            echo "<h3>Gestão de itens - introdução</h3><body>
-<form method='post' > Nome <input type='text' name='nome_item' ><br><br>
-    Tipo<br><input type='radio' id='dc' value='1' name='tipo_item' checked='checked'><label for='dc'>dado de criança</label><br>
-    <input type='radio' id='di' value='2' name='tipo_item'><label for='di'>diagnóstico</label><br>
-    <input type='radio' id='in' value='3' name='tipo_item'><label for='in'>intervenção</label><br>
-    <input type='radio' id='av' value='4' name='tipo_item'><label for='av'>avaliação</label><br><br>
-    Estado<br><input type='radio' id='at' value='active' name='estado_item' checked='checked'><label for='at'>ativo</label><br>
-    <input type='radio' id='inat' value='inactive' name='estado_item'><label for='inat'>inativo</label><br><input type='hidden' value='inserir' name='estado'>
-    <input type='submit' value='Inserir item' name='submit'>
-</form>
-</body>";
+            $queryTipos = "SELECT * FROM item_type ORDER BY NAME"; //TODOS OS TIPOS DE ITENS
+            $tabelaTipos = mysqli_query($mySQL, $queryTipos);
+            echo "<h3><strong>Gestão de itens - introdução</strong></h3><body>
+            <form method='post' > <strong>Nome: </strong><input type='text' name='nome_item' ><br><br>";
+            echo "<br><strong>Tipo: </strong></br>";
+            if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) > 0){
+                while($linhaTipo = mysqli_fetch_assoc(($tabelaTipos))){
+                    echo '<input type="radio" name="tipo_item" value='.$linhaTipo["id"].'>'.$linhaTipo["name"].'<br>';
+                }
+            }else if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) == 0){
+                echo "Não há nenhum tipo de item. <br>*FALTA IMPLEMENTAR -> NÃO PERMITIR INSERIR SE NÃO ESCOLHER NADA*<br>";
+            }
+            echo "
+            <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked='checked'><label for='at'>ativo</label><br>
+            <input type='radio' id='inat' value='inactive' name='estado_item'><label for='inat'>inativo</label><br><input type='hidden' value='inserir' name='estado'>
+            <input type='submit' value='Inserir item' name='submit'>
+            </form>
+            </body>";
         }
     }
 } else {
