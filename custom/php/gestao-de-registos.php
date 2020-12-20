@@ -7,8 +7,6 @@ if(verificaCapability("manage_records")){
     } 
 	else {
         if($_POST["estado"] == "validar") {
-			session_start();
-			$_SESSION['validar'] = $child_name;
 			$houveErros = False;
             echo "<h3>Dados de registo - validação</h3>";
             $child_name = testarInput($_POST["child_name"]);
@@ -30,6 +28,10 @@ if(verificaCapability("manage_records")){
 			}
 			if(!empty($tutor_email) && !filter_var($tutor_email, FILTER_VALIDATE_EMAIL)) {
 				echo "Endereço de email inválido!\n";
+				$houveErros = True;
+			}
+			if(1 === preg_match('~[0-9]~', $child_name) || 1 === preg_match('~[0-9]~', $tutor_name)){
+				echo "Nomes não podem conter números!\n";
 				$houveErros = True;
 			}
 			if($houveErros){
