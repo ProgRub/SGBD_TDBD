@@ -30,6 +30,7 @@ if(verificaCapability("manage_records")){
 			}
 			if(!empty($tutor_email) && !filter_var($tutor_email, FILTER_VALIDATE_EMAIL)) {
 				echo "Endereço de email inválido!\n";
+				$houveErros = True;
 			}
 			if($houveErros){
 				voltarAtras();
@@ -83,7 +84,7 @@ if(verificaCapability("manage_records")){
 					<form method='post'>
 					<p style='color:red;'>* Campos obrigatórios</p><br>
 					<strong> Nome completo:</strong> * <input type='text' name='child_name'><br>
-					<strong>Data de nascimento: * <input type='text' name='birth_date'><br>
+					<strong>Data de nascimento (formato AAAA-MM-DD): * <input type='text' name='birth_date'><br>
 					<strong>Nome completo do encarregado de educação:</strong> * <input type='text' name='tutor_name'><br>
 					<strong>Telefone do encarregado de educação:</strong> * <input type='text' name='tutor_phone'><br>
 					<strong>Endereço de e-mail do tutor:</strong> <input type='text' name='tutor_email'><br><br>
