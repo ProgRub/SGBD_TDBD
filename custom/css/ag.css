@@ -4,3 +4,7 @@
     padding: 1px !important;
     font-size: 11px  !important;
 }
+
+input[type=text] {
+  width: 45%;
+}
