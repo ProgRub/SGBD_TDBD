@@ -1,7 +1,6 @@
-<?php
-echo "MUDOU2\n";
-require_once("custom/php/common.php");
 
+<?php
+require_once("custom/php/common.php");
 if (verificaCapability("manage_items")) {
 
     $mySQL = ligacaoBD();
@@ -12,25 +11,34 @@ if (verificaCapability("manage_items")) {
     } else {
         if ($_REQUEST["estado"] == "inserir") {
             echo "<h3>Gestão de itens - inserção</h3>";
-//            $queryTipoItem="SELECT id FROM item_type WHERE name='".$_REQUEST["tipo_item"]."'";
-//            $item = mysqli_query($mySQL,$queryTipoItem);
-//            $tipoItem=mysqli_fetch_assoc($item)["id"];
-            if (!empty($_REQUEST["nome_item"])) {
+            $faltaDado = false;
+            $campos ="";
+            if(empty($_REQUEST["nome_item"])){ //não escreveu nome
+                $campos.="<li><br><strong>Nome</strong></li>";
+                $faltaDado = true;
+            }
+            if(empty($_REQUEST["tipo_item"])){ //não escolheu tipo
+                $campos.="<li><br><strong>Tipo</strong></li>";
+                $faltaDado = true;
+            }
+            if(empty($_REQUEST["estado_item"])){ //não escolheu estado
+                $campos.="<li><strong>Estado</strong></li>";
+                $faltaDado = true;
+            }
+
+            if (!$faltaDado) { //não falta preencher nenhum campo obrigatório
                 $insertQuery = "INSERT INTO item (id, name,item_type_id,state) VALUES (NULL,'" . testarInput($_REQUEST["nome_item"]) . "'," . $_REQUEST["tipo_item"] . ",'" . $_REQUEST["estado_item"] . "');";
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
                 } else {
-                    echo "Inseriu os dados de novo item com sucesso.\nClique em Continuar para avançar.";
+                    echo "Inseriu os dados de novo item com sucesso.<br>Clique em <strong>Continuar para avançar.</strong>";
                     echo "<br><a href='gestao-de-itens'>Continuar</a>";
                 }
             } else {
-                echo "O campo <strong>'Nome'</strong> é obrigatório!<br>";
+                echo "Os seguintes campos são <font style='color:red'><strong>obrigatórios</strong></font>:<ul>".$campos."</ul>";
                 voltarAtras();
             }
         } else {
-//            $queryItens = "SELECT * FROM item"; //TODOS OS ITENS
-//            $tabelaItens = mysqli_query($mySQL, $queryItens);
-
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM item")) > 0) { //ver se há items na tabela item
                 $queryTipos = "SELECT * FROM item_type ORDER BY name"; //TODOS OS TIPOS DE ITENS
                 $tabelaTipos = mysqli_query($mySQL, $queryTipos);
@@ -66,19 +74,19 @@ if (verificaCapability("manage_items")) {
             $queryTipos = "SELECT * FROM item_type ORDER BY NAME"; //TODOS OS TIPOS DE ITENS
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
             echo "<h3><strong>Gestão de itens - introdução</strong></h3><body>
-            <form method='post' > <strong>Nome: </strong><input type='text' name='nome_item' ><br><br>";
+            <form method='post' > <strong>Nome: </strong><br><input style='width: 45%;' type='text' name='nome_item' ><br><br>";
             echo "<br><strong>Tipo: </strong></br>";
             if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) > 0){
                 while($linhaTipo = mysqli_fetch_assoc(($tabelaTipos))){
                     echo '<input type="radio" name="tipo_item" value='.$linhaTipo["id"].'>'.$linhaTipo["name"].'<br>';
                 }
             }else if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) == 0){
-                echo "Não há nenhum tipo de item. <br>*FALTA IMPLEMENTAR -> NÃO PERMITIR INSERIR SE NÃO ESCOLHER NADA*<br>";
+                echo "Não há nenhum tipo de item.<br>";
             }
             echo "
-            <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked='checked'><label for='at'>ativo</label><br>
+            <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' ><label for='at'>ativo</label><br>
             <input type='radio' id='inat' value='inactive' name='estado_item'><label for='inat'>inativo</label><br><input type='hidden' value='inserir' name='estado'>
-            <input type='submit' value='Inserir item' name='submit'>
+            <input style='background-color: #00AF50; border: none; color: white; padding: 8px 20px; text-decoration: none; margin: 4px 2px; cursor: pointer;'type='submit' value='Inserir item' name='submit'>
             </form>
             </body>";
         }
@@ -86,3 +94,4 @@ if (verificaCapability("manage_items")) {
 } else {
     echo "Não tem autorização para aceder a esta página";
 }
+?>

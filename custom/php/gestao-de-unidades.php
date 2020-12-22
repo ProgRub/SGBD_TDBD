@@ -1,5 +1,5 @@
 <?php
-echo "MUDOU1\n";
+//echo "MUDOU1\n";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {
     $mySQL = ligacaoBD();
