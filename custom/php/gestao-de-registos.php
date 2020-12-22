@@ -91,7 +91,7 @@ if(verificaCapability("manage_records")){
 					<strong>Telefone do encarregado de educação:</strong> * <input type='text' name='tutor_phone'><br>
 					<strong>Endereço de e-mail do tutor:</strong> <input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
-					<input type='submit' value='submeter'>
+					<input class='submitButton' type='submit' value='submeter'>
 					</form>
 				</body>";
 		}
