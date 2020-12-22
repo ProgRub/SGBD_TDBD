@@ -73,8 +73,8 @@ if (verificaCapability("manage_items")) {
             }
             $queryTipos = "SELECT * FROM item_type ORDER BY NAME"; //TODOS OS TIPOS DE ITENS
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
-            echo "<h3><strong>Gestão de itens - introdução</strong></h3><body>
-            <form method='post' > <strong>Nome: </strong><br><input style='width: 45%;' type='text' name='nome_item' ><br><br>";
+            echo "<div class='b'><h3 style='color:white;'><strong>Gestão de itens - introdução</strong></h3></div><body>
+            <div class='a'><form method='post' > <strong>Nome: </strong><br><input style='width: 45%;' type='text' name='nome_item' ><br><br>";
             echo "<br><strong>Tipo: </strong></br>";
             if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) > 0){
                 while($linhaTipo = mysqli_fetch_assoc(($tabelaTipos))){
@@ -87,7 +87,7 @@ if (verificaCapability("manage_items")) {
             <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' ><label for='at'>ativo</label><br>
             <input type='radio' id='inat' value='inactive' name='estado_item'><label for='inat'>inativo</label><br><input type='hidden' value='inserir' name='estado'>
             <input class='submitButton' type='submit' value='Inserir item' name='submit'>
-            </form>
+            </form></div>
             </body>";
         }
     }

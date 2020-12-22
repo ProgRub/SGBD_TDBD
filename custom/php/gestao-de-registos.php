@@ -4,10 +4,11 @@ if (verificaCapability("manage_records")) {
     $mySQL = ligacaoBD();
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         die("Connection failed: " . mysqli_connect_error());
-    } else {
-        if ($_POST["estado"] == "validar") {
-            $houveErros = False;
-            echo "<h3>Dados de registo - validação</h3>";
+    }
+	else {
+        if($_POST["estado"] == "validar") {
+			$houveErros = False;
+            echo "<div class='b'><h3>Dados de registo - validação</h3></div>";
             $child_name = testarInput($_POST["child_name"]);
             $birth_date = testarInput($_POST["birth_date"]);
             $tutor_name = testarInput($_POST["tutor_name"]);
@@ -57,28 +58,29 @@ if (verificaCapability("manage_records")) {
 						<input type='hidden' value='$birth_date' name='birth_date'>
 						<input type='hidden' value='$tutor_name' name='tutor_name'>
 						<input type='hidden' value='$tutor_phone' name='tutor_phone'>
-						<input type='hidden' value='$tutor_email' name='tutor_email'>	
+						<input type='hidden' value='$tutor_email' name='tutor_email'>
 						</form>
 					 </body>";
             }
         } elseif ($_POST["estado"] == "inserir") {
             echo "<h3>Dados de registo - inserção</h3>";
             $child_name = testarInput($_POST['child_name']);
-            $birth_date = testarInput($_POST['birth_date']);
-            $tutor_name = testarInput($_POST['tutor_name']);
-            $tutor_phone = testarInput($_POST['tutor_phone']);
-            $tutor_email = testarInput($_POST['tutor_email']);
-            $insertChildQuery = "INSERT INTO child (id,name,birth_date,tutor_name,tutor_phone,tutor_email) VALUES (NULL,'$child_name','$birth_date','$tutor_name','$tutor_phone', '$tutor_email');";
-            if (!mysqli_query($mySQL, $insertChildQuery)) {
-                echo "Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL);
-            } else {
-                echo "Inseriu os dados de registo com sucesso.\nClique em Continuar para avançar.";
-                echo "<br><a href='gestao-de-registos'>Continuar</a>";
-            }
-        } else {
-            echo "<h3>Dados de registo - introdução</h3>";
-            echo "<strong><p style='color:#00B0F0;'>Introduza os dados pessoais básicos da criança:</strong>";
-            echo "<body>
+			$birth_date = testarInput($_POST['birth_date']);
+			$tutor_name = testarInput($_POST['tutor_name']);
+			$tutor_phone = testarInput($_POST['tutor_phone']);
+			$tutor_email = testarInput($_POST['tutor_email']);
+			$insertChildQuery = "INSERT INTO child (id,name,birth_date,tutor_name,tutor_phone,tutor_email) VALUES (NULL,'$child_name','$birth_date','$tutor_name','$tutor_phone', '$tutor_email');";
+                if (!mysqli_query($mySQL, $insertChildQuery)) {
+                    echo "Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL);
+                } else {
+                    echo "Inseriu os dados de registo com sucesso.\nClique em Continuar para avançar.";
+                    echo "<br><a href='gestao-de-registos'>Continuar</a>";
+                }
+		}
+		else{
+		    echo "<div class='b'><h3 style='color:white;'>Dados de registo - introdução</h3></div>";
+			echo "<div class='a'><strong><p style='color:#00B0F0;'>Introduza os dados pessoais básicos da criança:</strong>";
+			echo "<body>
 					<form method='post'>
 					<p class='warning'>* Campos obrigatórios</p><br>
 					<strong> Nome completo:</strong> * <input type='text' name='child_name'><br>
