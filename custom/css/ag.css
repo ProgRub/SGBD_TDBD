@@ -1,10 +1,30 @@
-.mytable td, .mytable th {
-    margin: 0  !important;
-    border: 1px solid !important;
-    padding: 1px !important;
-    font-size: 11px  !important;
+tr,
+td,
+th {
+  margin: 0 !important;
+  border: 1px solid !important;
+  border-color: blue !important;
+  padding: 1px !important;
+  text-align: center;
 }
 
-input[type=text] {
+.textoTabela {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+}
+
+input[type="text"] {
   width: 45%;
+}
+
+.submitButton {
+  background-color: #00af50 !important;
+  border: none !important;
+  color: white !important;
+  padding: 8px 20px !important;
+  text-decoration: none !important;
+  margin: 4px 2px !important;
+  cursor: pointer !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 14px !important;
 }

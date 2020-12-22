@@ -7,7 +7,7 @@ if (verificaCapability("manage_unit_types")) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
         if ($_REQUEST["estado"] == "inserir") {
-            echo "<h3>Gestão de unidades - inserção</h3>";
+            echo "<h3 class='textoTabela'>Gestão de unidades - inserção</h3>";
             $nomeUnidade = testarInput($_REQUEST["nome_unidade"]);
             if (!empty($nomeUnidade)) {
                 $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'" . $nomeUnidade . "');";
@@ -18,26 +18,26 @@ if (verificaCapability("manage_unit_types")) {
                     echo "<br><a href='gestao-de-itens'>Continuar</a>";
                 }
             } else {
-                echo "O campo <strong>'Nome'</strong> é obrigatório!\n";
+                echo "<div class='textoTabela'>O campo <strong>'Nome'</strong> é obrigatório!\n</div>";
                 voltarAtras();
             }
         } else {
             $query = "SELECT * FROM subitem_unit_type ORDER BY name";
             $result = mysqli_query($mySQL, $query);
             if (mysqli_num_rows($result) > 0) {
-                $table = "<table><tr><th>id</th><th>unidade</th></tr>";
+                $table = "<table><tr><th class='textoTabela'>id</th><th class='textoTabela'>unidade</th></tr>";
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $table .= "<tr><td>" . $row["id"] . "</td><td>" . $row["name"] . "</td></tr>";
+                    $table .= "<tr class='textoTabela'><td class='textoTabela'>" . $row["id"] . "</td><td>" . $row["name"] . "</td></tr>";
                 }
                 $table .= "</table>";
                 echo $table;
             } else {
                 echo "Não há tipos de unidades.";
             }
-            echo "<h3>Gestão de unidades - introdução</h3><body>
-<form method='post' > <strong>Nome:</strong> <input type='text' name='nome_unidade' ><br>
+            echo "<h3 class='textoTabela'>Gestão de unidades - introdução</h3><body>
+<form method='post' > <strong class='textoTabela'>Nome:</strong> <input type='text' name='nome_unidade' class='textoTabela'><br>
     <input type='hidden' value='inserir' name='estado'><br>
-    <input type='submit' value='Inserir tipo de unidade' name='submit'>
+    <input class='submitButton' type='submit' value='Inserir tipo de unidade' name='submit'>
 </form>
 </body>";
         }
@@ -46,13 +46,3 @@ if (verificaCapability("manage_unit_types")) {
     echo "Não tem autorização para aceder a esta página";
 }
 ?>
-<!--<!DOCTYPE HTML>-->
-<!--<html>-->
-<!--<body>-->
-<!--<form method='post' action=""> Nome <input type='text' name='nome_unidade' ><br>-->
-<!--    action='--><?php //echo htmlspecialchars($_SERVER["PHP_SELF"]);?><!--' -->
-<!--    <input type='hidden' value='inserir' name='estado'><br>-->
-<!--    <input type='submit' value='Inserir tipo de unidade' name='submit'>-->
-<!--</form>-->
-<!--</body>-->
-<!--</html>-->
