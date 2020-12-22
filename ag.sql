@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 13, 2020 at 09:56 PM
+-- Generation Time: Dec 20, 2020 at 09:16 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.12
 
@@ -49,6 +49,13 @@ CREATE TABLE `item` (
   `state` enum('active','inactive') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `item`
+--
+
+INSERT INTO `item` (`id`, `name`, `item_type_id`, `state`) VALUES
+(3, 'medidas', 1, 'active');
+
 -- --------------------------------------------------------
 
 --
@@ -60,6 +67,16 @@ CREATE TABLE `item_type` (
   `name` varchar(64) NOT NULL,
   `code` varchar(32) NOT NULL COMMENT 'manually fill with values: child_data, diagnosis, intervention, evaluation'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `item_type`
+--
+
+INSERT INTO `item_type` (`id`, `name`, `code`) VALUES
+(1, 'dado de criança', 'child_data'),
+(2, 'diagnóstico', 'diagnosis'),
+(3, 'intervenção', 'intervention'),
+(4, 'avaliação', 'evaluation');
 
 -- --------------------------------------------------------
 
@@ -186,13 +203,13 @@ ALTER TABLE `child`
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `item_type`
 --
 ALTER TABLE `item_type`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `subitem`
@@ -210,7 +227,7 @@ ALTER TABLE `subitem_allowed_value`
 -- AUTO_INCREMENT for table `subitem_unit_type`
 --
 ALTER TABLE `subitem_unit_type`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `value`
