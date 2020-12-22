@@ -8,7 +8,7 @@ if(verificaCapability("manage_records")){
 	else {
         if($_POST["estado"] == "validar") {
 			$houveErros = False;
-            echo "<h3>Dados de registo - validação</h3>";
+            echo "<div class='b'><h3>Dados de registo - validação</h3></div>";
             $child_name = testarInput($_POST["child_name"]);
 			$birth_date = testarInput($_POST["birth_date"]);
 			$tutor_name = testarInput($_POST["tutor_name"]);
@@ -80,8 +80,8 @@ if(verificaCapability("manage_records")){
                 }
 		}
 		else{
-		    echo "<h3>Dados de registo - introdução</h3>";
-			echo "<strong><p style='color:#00B0F0;'>Introduza os dados pessoais básicos da criança:</strong>";
+		    echo "<div class='b'><h3 style='color:white;'>Dados de registo - introdução</h3></div>";
+			echo "<div class='a'><strong><p style='color:#00B0F0;'>Introduza os dados pessoais básicos da criança:</strong>";
 			echo "<body>
 					<form method='post'>
 					<p style='color:red;'>* Campos obrigatórios</p><br>
@@ -92,7 +92,7 @@ if(verificaCapability("manage_records")){
 					<strong>Endereço de e-mail do tutor:</strong> <input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
 					<input class='submitButton' type='submit' value='submeter'>
-					</form>
+					</form></div>
 				</body>";
 		}
     }
