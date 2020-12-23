@@ -8,26 +8,26 @@ if (verificaCapability("manage_records")) {
 	else {
         if($_POST["estado"] == "validar") {
 			$houveErros = False;
-            echo "<div class='b'><h3>Dados de registo - validação</h3></div>";
+            echo "<div class='caixaSubTitulo'><h3>Dados de registo - validação</h3></div>";
             $child_name = testarInput($_POST["child_name"]);
             $birth_date = testarInput($_POST["birth_date"]);
             $tutor_name = testarInput($_POST["tutor_name"]);
             $tutor_phone = testarInput($_POST["tutor_phone"]);
             $tutor_email = testarInput($_POST["tutor_email"]);
             if (empty($child_name) || empty($birth_date) || empty($tutor_name) || empty($tutor_phone)) {
-                echo "<p class='warning'>Não preencheu todos os campos obrigatórios!</p>";
+                echo "<p class='warning textoLabels'>Não preencheu todos os campos obrigatórios!</p>";
                 $houveErros = True;
             }
             if (!preg_match('/^\d{9}$/', $tutor_phone)) {
-                echo "<p class='warning'>Numero de telefone do tutor tem que ter 9 algarismos!</p>";
+                echo "<p class='warning textoLabels'>Numero de telefone do tutor tem que ter 9 algarismos!</p>";
                 $houveErros = True;
             }
             if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $birth_date)) {
-                echo "<p class='warning'>Data tem que estar no formato AAAA-MM-DD!</p>";
+                echo "<p class='warning textoLabels'>Data tem que estar no formato AAAA-MM-DD!</p>";
                 $houveErros = True;
             }
             if (!empty($tutor_email) && !filter_var($tutor_email, FILTER_VALIDATE_EMAIL)) {
-                echo "<p class='warning'>Endereço de email inválido!</p>";
+                echo "<p class='warning textoLabels'>Endereço de email inválido!</p>";
                 $houveErros = True;
             }
             if (1 === preg_match('~[0-9]~', $child_name) || 1 === preg_match('~[0-9]~', $tutor_name)) {
@@ -78,8 +78,8 @@ if (verificaCapability("manage_records")) {
                 }
 		}
 		else{
-		    echo "<div class='b'><h3 >Dados de registo - introdução</h3></div>";
-			echo "<div class='a'><strong><p class='information'>Introduza os dados pessoais básicos da criança:</strong>";
+		    echo "<div class='caixaSubTitulo'><h3 >Dados de registo - introdução</h3></div>";
+			echo "<div class='caixaFormulario'><strong><p class='information'>Introduza os dados pessoais básicos da criança:</strong>";
 			echo "<body>
 					<form method='post'>
 					<p class='warning'>* Campos obrigatórios</p><br>

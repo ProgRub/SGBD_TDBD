@@ -37,7 +37,6 @@ h3{
 
 table{
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);
-
 }
 
 input[type="text"] {
@@ -79,7 +78,7 @@ input[type="text"]:focus {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
-div.a {
+div.caixaFormulario {
   width: auto !important;
   margin: auto !important;
   padding: 35px !important;
@@ -92,7 +91,7 @@ h3{
   color:white !important;
 }
 
-div.b {
+div.caixaSubTitulo {
   width: auto !important;
   margin: auto !important;
   margin-top:100px !important;

@@ -7,7 +7,7 @@ if (verificaCapability("manage_unit_types")) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
         if ($_REQUEST["estado"] == "inserir") {
-            echo "<div class='b'><h3 class='textoTabela'>Gestão de unidades - inserção</h3></div>";
+            echo "<div class='class'><h3>Gestão de unidades - inserção</h3></div>";
             $nomeUnidade = testarInput($_REQUEST["nome_unidade"]);
             if (!empty($nomeUnidade)) {
                 $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'" . $nomeUnidade . "');";
@@ -34,8 +34,8 @@ if (verificaCapability("manage_unit_types")) {
             } else {
                 echo "Não há tipos de unidades.";
             }
-            echo "<div class='b'><h3 class='textoTabela'>Gestão de unidades - introdução</h3></div><body>
-<div class='a'><form method='post' > <strong class='textoTabela'>Nome:</strong> <input type='text' name='nome_unidade' class='textoTabela'><br>
+            echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div><body>
+<div class='caixaFormulario'><form method='post' > <strong class='textoTabela'>Nome:</strong> <input type='text' name='nome_unidade' class='textoTabela'><br>
     <input type='hidden' value='inserir' name='estado'><br>
     <input class='submitButton' type='submit' value='Inserir tipo de unidade' name='submit'>
 </form></div>
