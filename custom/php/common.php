@@ -16,10 +16,7 @@ function testarInput($input){
 //Mostra ligação "Voltar atrás"
 function voltarAtras()
 {
-    echo "<script type='text/javascript'>document.write(\"<a href='javascript:history.back()' class='backLink' title='Voltar atr&aacute;s'>Voltar atr&aacute;s</a>\");</script>
-        <noscript>
-        <a href='" . $_SERVER['HTTP_REFERER'] . "‘ class='backLink' title='Voltar atr&aacute;s'>Voltar atr&aacute;s</a>
-        </noscript>";
+    echo "<input type='button' class='atrasButton textoLabels' value='Voltar atrás' onClick='history.back();'>";
 }
 
 //Recomendação do professor

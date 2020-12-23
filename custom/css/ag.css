@@ -1,81 +1,81 @@
-
-td{
-  margin: 0 !important;
-  border: 1px solid !important;
-  border-color: blue !important;
-  padding: 1px !important;
-  text-align: center;
-  background-color: #FFFFFF !important;
+table.tabela {
+  width: 100%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
-tr:hover {background-color:#f5f5f5;}
-td:hover {background-color:#f5f5f5;}
-
-th{
-  margin: 0 !important;
-  border: 1px solid !important;
-  border-color: blue !important;
-  padding: 1px !important;
+.cell {
+  margin: 0;
+  border: 2px solid;
+  border-color: rgb(50, 50, 75);
+  padding: 1px;
   text-align: center;
-  background-color: #AAAAFF !important;
+  border-collapse: inherit;
+  color:black;
+}
+
+th.cell {
+  background-color: #060627;
+  color: white;
+}
+
+tr.row {
+  border-collapse: inherit;
+  display: table-row;
+  flex-direction: row;
+  flex-wrap: wrap;
+  box-sizing: inherit;
+  width: 100%;
+}
+
+tr.row:nth-child(odd) {
+  background-color: #99d5fd;
+}
+
+tr.row:nth-child(even) {
+  background-color: #8684ff;
 }
 
 .textoTabela {
   font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .textoLabels {
   font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 16px !important;
+  font-size: 18px !important;
 }
 
-h3{
+h3 {
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: 22px !important;
-}
-
-table{
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);
+  color: white !important;
+  text-align: center !important;
 }
 
 input[type="text"] {
   width: 45% !important;
-  padding: 12px 20px !important;
+  padding: 6px 10px !important;
   margin: 8px 0 !important;
   box-sizing: border-box !important;
-  border: 1px solid grey!important;
+  border: 1px solid grey !important;
   border-radius: 5px !important;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19) !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
 }
 
 input[type="text"]:focus {
-  background-color: #EFEFEF!important;
+  background-color: #efefef !important;
 }
 
-.warning{
-  color:red !important;
+.warning {
+  color: red !important;
 }
 
-.information{
-  color:#00B0F0 !important;
+.information {
+  color: #00b0f0 !important;
 }
 
-.textoValidar{
-  color:#00B050 !important;
-}
-
-.submitButton {
-  background-color: #00af50 !important;
-  border: none !important;
-  color: white !important;
-  padding: 8px 20px !important;
-  text-decoration: none !important;
-  margin: 4px 2px !important;
-  cursor: pointer !important;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 14px !important;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+.textoValidar {
+  color: #00b050 !important;
 }
 
 div.caixaFormulario {
@@ -83,20 +83,40 @@ div.caixaFormulario {
   margin: auto !important;
   padding: 35px !important;
   border: 3px solid white !important;
-  background-color: #FFFFFF !important;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19) !important;
-}
-
-h3{
-  color:white !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
 }
 
 div.caixaSubTitulo {
-  width: auto !important;
+  width: 100% !important;
   margin: auto !important;
-  margin-top:100px !important;
-  margin-right:600px !important;
+  margin-top: 100px !important;
+  margin-right: 600px !important;
   padding: 10px !important;
-  background-color: #919191 !important;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19) !important;
+  background-color: #060627;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
+}
+
+.submitButton {
+  background-color: #00af50 !important;
+  border: 1px !important;
+  border-color: darkgreen;
+  color: white !important;
+  padding: 8px 20px !important;
+  text-decoration: none !important;
+  margin: 4px 2px !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.atrasButton {
+  background-color: #af0000 !important;
+  border: 1px !important;
+  border-color: rgb(53, 1, 1) !important;
+  color: white !important;
+  padding: 8px 20px !important;
+  text-decoration: none !important;
+  margin: 4px 2px !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
