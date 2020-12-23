@@ -1,11 +1,11 @@
-tr,
+
 td{
   margin: 0 !important;
   border: 1px solid !important;
   border-color: blue !important;
   padding: 1px !important;
   text-align: center;
-  background-color: #FFFFFF;
+  background-color: #FFFFFF !important;
 }
 
 tr:hover {background-color:#f5f5f5;}
@@ -17,11 +17,11 @@ th{
   border-color: blue !important;
   padding: 1px !important;
   text-align: center;
-  background-color: #AAAAFF;
+  background-color: #AAAAFF !important;
 }
 
 .textoTabela {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif !important;
   font-size: 18px;
 }
 
@@ -29,6 +29,12 @@ th{
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: 16px !important;
 }
+
+h3{
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 22px !important;
+}
+
 table{
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);
 
@@ -80,6 +86,10 @@ div.a {
   border: 3px solid white !important;
   background-color: #FFFFFF !important;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19) !important;
+}
+
+h3{
+  color:white !important;
 }
 
 div.b {

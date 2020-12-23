@@ -1,4 +1,3 @@
-
 <?php
 require_once("custom/php/common.php");
 if (verificaCapability("manage_items")) {
@@ -12,17 +11,17 @@ if (verificaCapability("manage_items")) {
         if ($_REQUEST["estado"] == "inserir") {
             echo "<h3>Gestão de itens - inserção</h3>";
             $faltaDado = false;
-            $campos ="";
-            if(empty($_REQUEST["nome_item"])){ //não escreveu nome
-                $campos.="<li><br><strong>Nome</strong></li>";
+            $campos = "";
+            if (empty($_REQUEST["nome_item"])) { //não escreveu nome
+                $campos .= "<li><br><strong>Nome</strong></li>";
                 $faltaDado = true;
             }
-            if(empty($_REQUEST["tipo_item"])){ //não escolheu tipo
-                $campos.="<li><br><strong>Tipo</strong></li>";
+            if (empty($_REQUEST["tipo_item"])) { //não escolheu tipo
+                $campos .= "<li><br><strong>Tipo</strong></li>";
                 $faltaDado = true;
             }
-            if(empty($_REQUEST["estado_item"])){ //não escolheu estado
-                $campos.="<li><strong>Estado</strong></li>";
+            if (empty($_REQUEST["estado_item"])) { //não escolheu estado
+                $campos .= "<li><strong>Estado</strong></li>";
                 $faltaDado = true;
             }
 
@@ -35,7 +34,7 @@ if (verificaCapability("manage_items")) {
                     echo "<br><a href='gestao-de-itens'>Continuar</a>";
                 }
             } else {
-                echo "Os seguintes campos são <font style='color:#ff0000'><strong>obrigatórios</strong></font>:<ul>" .$campos."</ul>";
+                echo "Os seguintes campos são <font style='color:#ff0000'><strong>obrigatórios</strong></font>:<ul>" . $campos . "</ul>";
                 voltarAtras();
             }
         } else {
@@ -59,7 +58,7 @@ if (verificaCapability("manage_items")) {
                                     echo "<tr><td class='textoTabela' rowspan='$numeroItens'>" . $linhaTipoItem["name"] . "</td>"; //NOME DESSE TIPO
                                     $newItem = false;
                                 } else {
-                                   echo "<tr>";
+                                    echo "<tr>";
                                 }
                                 echo "<td class='textoTabela'>" . $linhaItem["id"] . "</td><td class='textoTabela'>" . $linhaItem["name"] . "</td><td class='textoTabela'>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "</td><td class='textoTabela'>[editar] [desativar]</td>"; //DADOS DE CADA ITEM DESSE TIPO
                                 echo "</tr>";
@@ -71,21 +70,27 @@ if (verificaCapability("manage_items")) {
             } else {
                 echo "Não há itens.";
             }
-            $queryTipos = "SELECT * FROM item_type ORDER BY NAME"; //TODOS OS TIPOS DE ITENS
+            $queryTipos = "SELECT * FROM item_type"; //TODOS OS TIPOS DE ITENS
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
-            echo "<div class='b'><h3 style='color:white;'><strong>Gestão de itens - introdução</strong></h3></div><body>
-            <div class='a'><form method='post' > <strong>Nome: </strong><br><input style='width: 45%;' type='text' name='nome_item' ><br><br>";
+            echo "<div class='b'><h3><strong>Gestão de itens - introdução</strong></h3></div>
+            <div class='a'><body><form method='post' > <strong>Nome: </strong><br><input type='text' name='nome_item' ><br><br>";
             echo "<br><strong>Tipo: </strong></br>";
-            if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) > 0){
-                while($linhaTipo = mysqli_fetch_assoc(($tabelaTipos))){
-                    echo '<input type="radio" name="tipo_item" value='.$linhaTipo["id"].'>'.$linhaTipo["name"].'<br>';
+            $primeiro = true;
+            if (mysqli_num_rows($tabelaTipos) > 0) {
+                while ($linhaTipo = mysqli_fetch_assoc(($tabelaTipos))) {
+                    if ($primeiro) {
+                        echo '<input id="'. $linhaTipo["id"] .'" type="radio" name="tipo_item" checked value=' . $linhaTipo["id"] . '><span class="textoLabels" for="'. $linhaTipo["id"] .'">'. $linhaTipo["name"] .'</span><br>';
+                        $primeiro = false;
+                    } else {
+                        echo '<input id="'. $linhaTipo["id"] .'" type="radio" name="tipo_item" value=' . $linhaTipo["id"] . '><span class="textoLabels" for="'. $linhaTipo["id"] .'">'. $linhaTipo["name"] .'</span><br>';
+                    }
                 }
-            }else if($tabelaTipos == true && mysqli_num_rows($tabelaTipos) == 0){
+            } else if ($tabelaTipos == true && mysqli_num_rows($tabelaTipos) == 0) {
                 echo "Não há nenhum tipo de item.<br>";
             }
             echo "
-            <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' ><label for='at'>ativo</label><br>
-            <input type='radio' id='inat' value='inactive' name='estado_item'><label for='inat'>inativo</label><br><input type='hidden' value='inserir' name='estado'>
+            <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked><span class='textoLabels' for='at'>ativo</span><br>
+            <input type='radio' id='inat' value='inactive' name='estado_item'><span for='inat' class='textoLabels' >inativo</span><br><input type='hidden' value='inserir' name='estado'>
             <input class='submitButton' type='submit' value='Inserir item' name='submit'>
             </form></div>
             </body>";

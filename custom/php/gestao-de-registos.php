@@ -78,16 +78,16 @@ if (verificaCapability("manage_records")) {
                 }
 		}
 		else{
-		    echo "<div class='b'><h3 style='color:white;'>Dados de registo - introdução</h3></div>";
-			echo "<div class='a'><strong><p style='color:#00B0F0;'>Introduza os dados pessoais básicos da criança:</strong>";
+		    echo "<div class='b'><h3 >Dados de registo - introdução</h3></div>";
+			echo "<div class='a'><strong><p class='information'>Introduza os dados pessoais básicos da criança:</strong>";
 			echo "<body>
 					<form method='post'>
 					<p class='warning'>* Campos obrigatórios</p><br>
-					<strong> Nome completo:</strong> * <input type='text' name='child_name'><br>
-					<strong>Data de nascimento: * <input type='text' name='birth_date' placeholder='AAAA-MM-DD'><br>
-					<strong>Nome completo do encarregado de educação:</strong> * <input type='text' name='tutor_name'><br>
-					<strong>Telefone do encarregado de educação:</strong> * <input type='text' name='tutor_phone'><br>
-					<strong>Endereço de e-mail do tutor:</strong> <input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
+					<strong> Nome completo:</strong><span class='warning'> * </span><br><input type='text' name='child_name'><br>
+					<strong>Data de nascimento:<span class='warning'> * </span><br><input type='text' name='birth_date' placeholder='AAAA-MM-DD'><br>
+					<strong>Nome completo do encarregado de educação:</strong><span class='warning'> * </span><br><input type='text' name='tutor_name'><br>
+					<strong>Telefone do encarregado de educação:</strong><span class='warning'> * </span><br><input type='text' name='tutor_phone'><br>
+					<strong>Endereço de e-mail do tutor: </strong><br><input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
 					<input type='submit' value='submeter' class='submitButton textoLabels'>
 					</form>
