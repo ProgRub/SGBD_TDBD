@@ -22,7 +22,7 @@ if (verificaCapability("manage_records")) {
                 $houveErros = True;
             }
             $dateList = explode("-", $birth_date);
-            if (!(count($dateList) == 3&& strlen($dateList[0])==4 && strlen($dateList[1])==2 && strlen($dateList[1])==2 && checkdate($dateList[1], $dateList[2], $dateList[0]))) {
+            if (!(count($dateList) == 3&& strlen($dateList[0])==4 && strlen($dateList[1])==2 && strlen($dateList[2])==2 && checkdate($dateList[1], $dateList[2], $dateList[0]))) {
                 echo "<p class='warning textoLabels'>Data tem que estar no formato AAAA-MM-DD!</p>";
                 $houveErros = True;
             }
