@@ -73,7 +73,7 @@ if (verificaCapability("manage_items")) {
             $queryTipos = "SELECT * FROM item_type"; //TODOS OS TIPOS DE ITENS
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de itens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><body><form method='post' > <strong>Nome: </strong><br><input type='text' name='nome_item' ><br><br>";
+            <div class='caixaFormulario'><form method='post' > <strong>Nome: </strong><br><input type='text' name='nome_item' ><br><br>";
             echo "<br><strong>Tipo: </strong></br>";
             $primeiro = true;
             if (mysqli_num_rows($tabelaTipos) > 0) {
@@ -92,8 +92,7 @@ if (verificaCapability("manage_items")) {
             <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked><span class='textoLabels' for='at'>ativo</span><br>
             <input type='radio' id='inat' value='inactive' name='estado_item'><span for='inat' class='textoLabels' >inativo</span><br><input type='hidden' value='inserir' name='estado'>
             <input class='submitButton textoLabels' type='submit' value='Inserir item' name='submit'>
-            </form></div>
-            </body>";
+            </form></div>";
         }
     }
 } else {

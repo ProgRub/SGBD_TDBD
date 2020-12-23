@@ -22,7 +22,7 @@ if (verificaCapability("manage_unit_types")) {
                 voltarAtras();
             }
         } else {
-            $query = "SELECT * FROM subitem_unit_type ORDER BY name";
+            $query = "SELECT id,name FROM subitem_unit_type ORDER BY name";
             $result = mysqli_query($mySQL, $query);
             if (mysqli_num_rows($result) > 0) {
                 $table = "<table class='tabela'><tr><th class='textoTabela cell'>id</th><th class='textoTabela  cell'>unidade</th></tr>";
