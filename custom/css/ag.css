@@ -37,12 +37,12 @@ tr.row:nth-child(even) {
 
 .textoTabela {
   font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .textoLabels {
   font-family: Arial, Helvetica, sans-serif !important;
-  font-size: 18px !important;
+  font-size: 14px !important;
 }
 
 h3 {
@@ -56,6 +56,7 @@ input[type="text"] {
   width: 45% !important;
   padding: 6px 10px !important;
   margin: 8px 0 !important;
+  font-size: 14px !important;
   box-sizing: border-box !important;
   border: 1px solid grey !important;
   border-radius: 5px !important;
@@ -71,7 +72,7 @@ input[type="text"]:focus {
 }
 
 .information {
-  color: #00b0f0 !important;
+  color: #0589b9 !important;
 }
 
 .textoValidar {

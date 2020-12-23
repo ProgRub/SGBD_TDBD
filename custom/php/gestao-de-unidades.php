@@ -14,8 +14,7 @@ if (verificaCapability("manage_unit_types")) {
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
                 } else {
-                    echo "Inseriu os dados de novo tipo de unidade com sucesso.\nClique em Continuar para avançar.<br>";
-//                    echo "<br><a href='gestao-de-itens'>Continuar</a>";
+                    echo "<span class='information'>Inseriu os dados de novo tipo de unidade com sucesso.<br>Clique em Continuar para avançar.</span><br>";
                     echo "<a href='gestao-de-itens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
                 }
             } else {
@@ -36,7 +35,7 @@ if (verificaCapability("manage_unit_types")) {
                 echo "Não há tipos de unidades.";
             }
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
-<div class='caixaFormulario'><form method='post' > <strong class='textoTabela'>Nome:</strong><span class='warning textoLabels' textoLabels'> * </span> <input type='text'  name='nome_unidade' class='textoTabela'><br>
+<div class='caixaFormulario'><form method='post' > <strong class='textoLabels'>Nome:</strong><span class='warning textoLabels' textoLabels'> * </span><br><input type='text'  name='nome_unidade' class='textoTabela'><br>
     <input type='hidden' value='inserir' name='estado'><br>
     <input class='submitButton textoLabels' type='submit' value='Inserir tipo de unidade' name='submit'>
 </form></div>";
