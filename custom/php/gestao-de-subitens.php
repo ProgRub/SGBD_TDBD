@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-if (verificaCapability("manage_records")) {
+if (verificaCapability("manage_subitems")) {
     $mySQL = ligacaoBD();
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         die("Connection failed: " . mysqli_connect_error());
