@@ -19,20 +19,20 @@ function voltarAtras()
     echo "<input type='button' class='atrasButton textoLabels' value='Voltar atrás' onClick='history.back();'>";
 }
 
-//Recomendação do professor
-function get_enum_values($connection, $table, $field)
+
+function get_enum_values($table, $field)
 {
-    $query = " SHOW COLUMNS FROM `$table` LIKE '$field' ";
-    $result = mysqli_query($connection, $query);
-    $row = mysqli_fetch_array($result, MYSQL_NUM);
-    #extract the values
-    #the values are enclosed in single quotes
-    #and separated by commas
-    $regex = "/'(.*?)'/";
-    preg_match_all($regex, $row[1], $enum_array);
-    $enum_fields = $enum_array[1];
-    return ($enum_fields);
+	$connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    $enum_array = array(); 
+    $query = 'SHOW COLUMNS FROM `'. $table .'` LIKE "' . $field . '"'; 
+    $result = mysqli_query($connection, $query); 
+    $row = mysqli_fetch_row($result); 
+	preg_match_all('/\'(.*?)\'/', $row[1], $enum_array);
+    foreach ($enum_array[1] as $mkey => $mval){
+		$enum_fields[$mkey + 1] = $mval; }
+    return $enum_fields;
 }
+
 
 //Realizar ligação à Base de Dados
 function ligacaoBD()

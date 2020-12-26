@@ -6,7 +6,22 @@ if (verificaCapability("manage_subitems")) {
         die("Connection failed: " . mysqli_connect_error());
     } 
 	else {
-		if ($_POST["estado"] == "validar") {			
+		if ($_POST["estado"] == "inserir") {
+			$houveErros = False;
+			echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - inserção</strong></h3></div>"; 
+			$nome_subitem = testarInput($_POST["nome_subitem"]);
+			$tipo_valor = testarInput($_POST["tipo_valor"]);
+			$it = testarInput($_POST["it"]);
+			$tipo_camp_form = testarInput($_POST["tipo_camp_form"]);
+			$tipo_unidade = testarInput($_POST["tipo_unidade"]);
+			$ordem_campo_form = testarInput($_POST["ordem_campo_form"]);
+			$obrigatorio = testarInput($_POST["obrigatorio"]);
+			
+				
+				
+			//***	
+				
+				
 		}
 		else{
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM subitem")) > 0) { 
@@ -42,13 +57,56 @@ if (verificaCapability("manage_subitems")) {
 			else {
                 echo "Não há subitems especificados.";
             }
+			$tipo_valores = get_enum_values("subitem", "value_type");
+			$tipo_camp_form = get_enum_values("subitem", "form_field_type");
+			$queryItens = "SELECT name FROM item"; 
+            $tabelaItens2 = mysqli_query($mySQL, $queryItens);
+			$queryTiposUnid = "SELECT name FROM subitem_unit_type"; 
+            $tabelaTiposUnid = mysqli_query($mySQL, $queryTiposUnid);
 			
 			echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><body><form method='post' > <strong>Nome do subitem: </strong><br><input type='text' name='nome_subitem' ><br><br>";
-			
-			// ***
-			
-			
+            <div class='caixaFormulario'><body><form method='post' >
+			<p class='warning'>* Campos obrigatórios</p><br>
+			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_subitem' ><br><br>
+			<br><strong>Tipo de valor: </strong><span class='warning textoLabels'> * </span></br>";
+			foreach($tipo_valores as $val_tip)
+			{
+				echo '<input  type="radio" name="tipo_valor" value=' . $val_tip . '><span class="textoLabels" >' . $val_tip . '</span><br>';
+			}
+			echo "<br><strong>Item: </strong><span class='warning textoLabels'> * </span></br>";
+            if (mysqli_num_rows($tabelaItens2) > 0) {
+				echo '<select name="it" required>
+				<option value="selecione_um_item">Selecione um item:</option>';
+                while ($linhaItem = mysqli_fetch_assoc(($tabelaItens2))) {
+					echo '<option value=' . $linhaItem["name"] . '>' . $linhaItem["name"] . '</option>';
+                }
+				echo '</select><br>';
+            } else {
+                echo "Não há nenhum item.<br>";
+            }
+			echo "<br><strong>Tipo do campo do formulário: </strong><span class='warning textoLabels'> * </span></br>";
+			foreach($tipo_camp_form as $camp_form_tip)
+			{
+				echo '<input  type="radio" name="tipo_camp_form" value=' . $camp_form_tip . '><span class="textoLabels" >' . $camp_form_tip . '</span><br>';
+			}
+			echo "<br><strong>Tipo de unidade: </strong></br>";
+            if (mysqli_num_rows($tabelaTiposUnid) > 0) {
+				echo '<select name="tipo_unidade">
+				<option value="selecione_tipo_unid">Selecione um tipo de unidade:</option>';
+                while ($linhaUnid = mysqli_fetch_assoc(($tabelaTiposUnid))) {
+					echo '<option value=' . $linhaUnid["name"] . '>' . $linhaUnid["name"] . '</option>';
+                }
+				echo '</select><br>';
+            } else {
+                echo "Não há nenhum tipo de unidade.<br>";
+            }
+			echo "<br><strong>Ordem do campo no formulário: </strong><span class='warning textoLabels'> * </span><br><input type='text' name='ordem_campo_form' ><br><br>
+			<br><strong>Obrigatório: </strong><span class='warning textoLabels'> * </span><br>
+			<input  type='radio' name='obrigatorio' value=sim><span class='textoLabels' >Sim</span><br>
+			<input  type='radio' name='obrigatorio' value=nao><span class='textoLabels' >Não</span><br>
+			<input type='hidden' value='inserir' name='estado'>
+			<input type='submit' value='submeter' class='submitButton textoLabels'>
+			</form></body>";
 		}   
 	}
 } 
