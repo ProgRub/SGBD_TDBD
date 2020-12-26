@@ -133,7 +133,7 @@ if (verificaCapability("manage_subitems")) {
 			<input  type='radio' name='obrigatorio' value=sim><span class='textoLabels' >Sim</span><br>
 			<input  type='radio' name='obrigatorio' value=nao><span class='textoLabels' >Não</span><br>
 			<input type='hidden' value='inserir' name='estado'>
-			<input type='submit' value='submeter' class='submitButton textoLabels'>
+			<input type='submit' value='Inserir subitem' class='submitButton textoLabels'>
 			</form></body>";
 		}   
 	}
