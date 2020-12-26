@@ -79,8 +79,7 @@ if (verificaCapability("manage_records")) {
         } else {
             echo "<div class='caixaSubTitulo'><h3 >Dados de registo - introdução</h3></div>";
             echo "<div class='caixaFormulario'><strong><p class='information'>Introduza os dados pessoais básicos da criança:</strong>";
-            echo "<body>
-					<form method='post'>
+			echo "	<form method='post'>
 					<p class='warning'>* Campos obrigatórios</p><br>
 					<strong> Nome completo:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='child_name'><br>
 					<strong>Data de nascimento:<span class='warning textoLabels'> * </span><br><input type='text' name='birth_date' placeholder='AAAA-MM-DD'><br>
@@ -89,8 +88,7 @@ if (verificaCapability("manage_records")) {
 					<strong>Endereço de e-mail do tutor: </strong><br><input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
 					<input type='submit' value='submeter' class='submitButton textoLabels'>
-					</form>
-				</body>";
+					</form>";
         }
     }
 } else {
