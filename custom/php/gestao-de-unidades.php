@@ -35,7 +35,7 @@ if (verificaCapability("manage_unit_types")) {
                 echo "Não há tipos de unidades.";
             }
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
-<div class='caixaFormulario'><form method='post' > <strong class='textoLabels'>Nome:</strong><span class='warning textoLabels' textoLabels'> * </span><br><input type='text'  name='nome_unidade' class='textoTabela'><br>
+<div class='caixaFormulario'><form method='post' > <strong class='textoLabels'>Nome:</strong><span class='warning textoLabels' textoLabels'> * </span><br><input type='text'  name='nome_unidade' class='textoLabels'><br>
     <input type='hidden' value='inserir' name='estado'><br>
     <input class='submitButton textoLabels' type='submit' value='Inserir tipo de unidade' name='submit'>
 </form></div>";
