@@ -17,11 +17,25 @@ if (verificaCapability("manage_subitems")) {
 			$ordem_campo_form = testarInput($_POST["ordem_campo_form"]);
 			$obrigatorio = testarInput($_POST["obrigatorio"]);
 			
-				
-				
-			//***	
-				
-				
+			if (empty($nome_subitem) || empty($tipo_valor) || ($it=="selecione_um_item") || empty($tipo_camp_form)|| $ordem_campo_form == "" || empty($obrigatorio)) {
+                echo "<p class='warning textoLabels'>Não preencheu todos os campos obrigatórios!</p>";
+                $houveErros = True;
+            }
+			if (1 === preg_match('~[0-9]~', $nome_subitem)) {
+                echo "<p class='warning textoLabels'>O nome do subitem não pode conter números!</p>";
+                $houveErros = True;
+			}
+			if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) {
+				echo "<p class='warning textoLabels'>A ordem do campo no formulário tem que ser um número superior a 0!</p>";
+				$houveErros = True;
+			}
+			if ($houveErros) {
+                voltarAtras();
+            } else {
+				echo "*** FALTA FAZER INSERÇÃO DOS DADOS NA TABELA SUBITEM ***";
+
+					//***	
+			}	
 		}
 		else{
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM subitem")) > 0) { 
@@ -110,7 +124,6 @@ if (verificaCapability("manage_subitems")) {
 		}   
 	}
 } 
-
 else {
     echo "Não tem autorização para aceder a esta página";
 }
