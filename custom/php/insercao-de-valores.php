@@ -41,73 +41,99 @@ if (verificaCapability("insert_values")) {
             session_start();
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $_SESSION["child_id"]=$_REQUEST["crianca"];
+            $_SESSION["child_id"] = $_REQUEST["crianca"];
             echo "<ul>";
-            $query="SELECT name,id FROM item_type ORDER BY id";
-            $result=mysqli_query($mySQL,$query);
-            while ($tipoItem = mysqli_fetch_assoc($result)){
-                echo "<li>".$tipoItem["name"]."</li><ul>";
-                $query="SELECT name,id FROM item WHERE item_type_id=".$tipoItem["id"];
-                $result=mysqli_query($mySQL,$query);
-                while($item=mysqli_fetch_assoc($result)){
-                    echo "<li><a href='insercao-de-valores?estado=introducao&item=".$item["id"]."'>[".$item["name"]."]</a></li>";
+            $query = "SELECT name,id FROM item_type ORDER BY id";
+            $result = mysqli_query($mySQL, $query);
+            while ($tipoItem = mysqli_fetch_assoc($result)) {
+                echo "<li>" . $tipoItem["name"] . "</li><ul>";
+                $query = "SELECT name,id FROM item WHERE item_type_id=" . $tipoItem["id"];
+                $result = mysqli_query($mySQL, $query);
+                while ($item = mysqli_fetch_assoc($result)) {
+                    echo "<li><a href='insercao-de-valores?estado=introducao&item=" . $item["id"] . "'>[" . $item["name"] . "]</a></li>";
                 }
                 echo "</ul>";
             }
             echo "</ul>";
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "introducao") {
-            $_SESSION["item_id"]=$_REQUEST["item"];
-            $query="SELECT name from item WHERE id=".$_SESSION["item_id"];
-            $result=mysqli_query($mySQL,$query);
-            $nome=mysqli_fetch_assoc($result);
-            $_SESSION["item_name"]=$nome["name"];
-            $query="SELECT item_type_id from item WHERE id=".$_SESSION["item_id"];
-            $result=mysqli_query($mySQL,$query);
-            $tipoItemID=mysqli_fetch_assoc($result);
-            $_SESSION["item_type_id"]=$tipoItemID["item_type_id"];
-            echo "<div class='caixaSubTitulo'><h3>Inserção de valores - ".$_SESSION["item_name"]."</h3></div>";
+            $_SESSION["item_id"] = $_REQUEST["item"];
+            $query = "SELECT name from item WHERE id=" . $_SESSION["item_id"];
+            $result = mysqli_query($mySQL, $query);
+            $nome = mysqli_fetch_assoc($result);
+            $_SESSION["item_name"] = $nome["name"];
+            $query = "SELECT item_type_id from item WHERE id=" . $_SESSION["item_id"];
+            $result = mysqli_query($mySQL, $query);
+            $tipoItemID = mysqli_fetch_assoc($result);
+            $_SESSION["item_type_id"] = $tipoItemID["item_type_id"];
+            echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . "</h3></div>";
             echo "<div class='caixaFormulario'>";
-            echo "<form method='post' name='item_type_".$_SESSION["item_type_id"]."item_".$_SESSION["item_id"]."' action='insercao_de_valores?estado=validar&item=".$_SESSION["item_id"]."'>";
-            $query="SELECT * from subitem WHERE item_id=".$_SESSION["item_id"]."AND state='active'";
-            $result=mysqli_query($mySQL,$query);
-            while($subItem=mysqli_fetch_assoc($result)){
-                $inputFields="<span class='=textoLabels'>".$subItem["form_field_name"]."</span><br><input name='".$subItem["form_field_name"];
-                switch ($subItem["value_type"]){
+            echo "<form method='post' name='item_type_" . $_SESSION["item_type_id"] . "item_" . $_SESSION["item_id"] . "' action='insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] . "'>";
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
+            $result = mysqli_query($mySQL, $query);
+            while ($subItem = mysqli_fetch_assoc($result)) {
+                $inputFields = "<span class='=textoLabels'>" . $subItem["form_field_name"] . "</span><br><input name='" . $subItem["form_field_name"];
+                switch ($subItem["value_type"]) {
                     case "text":
-                        $inputFields.= " type='".$subItem["form_field_type"]."'>";
+                        $inputFields .= " type='" . $subItem["form_field_type"] . "'>";
                         break;
                     case "bool":
-                        $inputFields.= " type='radio'>";
+                        $inputFields .= " type='radio'>";
                         break;
                     case "double":
                     case "int":
-                        $inputFields.= " type='text'>";
+                        $inputFields .= " type='text'>";
                         break;
                     case "enum":
-                        $query="SELECT value from subitem_allowed_value WHERE subitem_id=".$subItem["id"];
-                        $result=mysqli_query($mySQL,$query);
-                        $id=0;
-                        $inputFields.=" checked ";
-                        while($valor=mysqli_fetch_assoc($result)){
-                            $inputFields.= "id='".$id."' type='".$subItem["form_field_type"]."'><span for='".$id."' class='textoLabels'>".$valor["value"]."</span>";
+                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
+                        $result = mysqli_query($mySQL, $query);
+                        $id = 0;
+                        if ($subItem["form_field_type"] == "radio") {
+                            $inputFields .= " checked ";
+                        }
+                        while ($valor = mysqli_fetch_assoc($result)) {
+                            $inputFields .= "id='" . $id . "' type='" . $subItem["form_field_type"] . "'><span for='" . $id . "' class='textoLabels'>" . $valor["value"] . "</span>";
                         }
                         break;
                 }
-                if($subItem["unit_type_id"]!=null){
-                    $query="SELECT name from subitem_unit_type WHERE id=".$subItem["unit_type_id"];
-                    $result=mysqli_query($mySQL,$query);
-                    $unidade=mysqli_fetch_assoc($result);
-                    $inputFields.="<span class='=textoLabels'>".$unidade["name"]."</span>";
+                if ($subItem["unit_type_id"] != null) {
+                    $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                    $result = mysqli_query($mySQL, $query);
+                    $unidade = mysqli_fetch_assoc($result);
+                    $inputFields .= "<span class='=textoLabels'>" . $unidade["name"] . "</span>";
                 }
-                echo $inputFields."<br>";
+                echo $inputFields . "<br>";
             }
             echo "<input type='hidden' value='validar' name='estado'><input type='submit' class='submitButton' name='submit' value='Submeter'>";
             echo "</form>";
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "validar") {
-            echo "<div class='caixaSubTitulo'><h3>Inserção de valores - ".$_SESSION["item_name"]." - validar</h3></div>";
+            echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - validar</h3></div>";
             echo "<div class='caixaFormulario'>";
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
+            $result = mysqli_query($mySQL, $query);
+            $error=false;
+            while ($subItem = mysqli_fetch_assoc($result)) {
+                $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
+                if (empty($input)){
+                    echo "<span class='warning'>O campo do subitem ".$subItem["name"]." é obrigatório!</span><br>";
+                    $error=true;
+                }
+            }
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
+            $result = mysqli_query($mySQL, $query);
+            if (!$error){
+                echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br>";
+                while ($subItem = mysqli_fetch_assoc($result)) {
+                    $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
+                }
+                echo "<form method='post' action='insercao-de-valores?estado=inserir&item=".$_SESSION["item_id"]."'>";
+                while ($subItem = mysqli_fetch_assoc($result)) {
+                    $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
+                }
+                echo "<input type='submit' class='submitButton' value='Submeter'>";
+                echo "</form>";
+            }
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "inserir") {
         } else {
