@@ -32,9 +32,23 @@ if (verificaCapability("manage_subitems")) {
 			if ($houveErros) {
                 voltarAtras();
             } else {
-				echo "*** FALTA FAZER INSERÇÃO DOS DADOS NA TABELA SUBITEM ***";
+				// ******* Nome do campo no formulário ********
+				// (Alterar depois maneira de conseguir o id do subitem)
+				$querySubitemMaxId = "SELECT name FROM subitem";				
+                $tabelaSubitemMaxId = mysqli_query($mySQL, $querySubitemMaxId);	
+				$maxId = mysqli_num_rows($tabelaSubitemMaxId);	
+				$newId = $maxId + 1;
+				$tirarAcento = Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
+				$itemSemAcento = $tirarAcento->transliterate($it);
+				$tresPrimeirasLetrasItem = substr($itemSemAcento, 0, 3);
+				$subitem_ascii = preg_replace('/[^a-z0-9_ ]/i', '', $nome_subitem);
+				$subitemSemCaracteresVazios = str_replace(" ", "_", $subitem_ascii);
+				$nome_campo_form = $tresPrimeirasLetrasItem . "-" . $newId . "-" . $subitemSemCaracteresVazios;
+				echo "<strong>O nome do campo no formulário será: </strong>" . $nome_campo_form;
 
-					//***	
+				//-----------------------------------
+ 				echo "\n\n*** FALTA FAZER INSERÇÃO DOS DADOS NA TABELA SUBITEM ***";
+				// ***
 			}	
 		}
 		else{
