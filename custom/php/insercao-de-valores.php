@@ -1,43 +1,43 @@
 <?php
 require_once("custom/php/common.php");
-if (verificaCapability("insert_values")) {
+if (verificaCapability("insert_values")) {//verificar se utilizador fez login e tem esta capacidade
     $mySQL = ligacaoBD();
-    if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
+    if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {//se selecionar a base de dados der erro
         die("Connection failed: " . mysqli_connect_error());
     } else {
-        if ($_REQUEST["estado"] == "escolher_crianca") {
+        if ($_REQUEST["estado"] == "escolher_crianca") {//escolher criança com nome e data de nascimento especificadas
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - escolher</h3></div>";
             echo "<div class='caixaFormulario'>";
-            if (empty($_REQUEST["nome_crianca"]) && empty($_REQUEST["data_nascimento"])) {
+            $nomeCrianca = testarInput($_REQUEST["nome_crianca"]);
+            $dataNascimento = testarInput($_REQUEST["data_nascimento"]);
+            if (empty($nomeCrianca) && empty($dataNascimento)) {//se nenhum dos campos estiver preenchido
                 echo "<span class='warning'>Pelo menos um dos campos tem de estar preenchido!</span>";
                 voltarAtras();
             } else {
-                $nomeCrianca = testarInput($_REQUEST["nome_crianca"]);
-                $dataNascimento = testarInput($_REQUEST["data_nascimento"]);
-                $query = "SELECT name,birth_date,id FROM child WHERE ";
-                if (!empty($_REQUEST["nome_crianca"])) {
-                    $query .= "name LIKE '%" . $nomeCrianca . "%' ";
+                $query = "SELECT name,birth_date,id FROM child WHERE ";//início da query
+                if (!empty($nomeCrianca)) {//se foi especificado nome de criança adiciona-se este à query
+                    $query .= "name LIKE '%$nomeCrianca%'";
                 }
-                if (!empty($_REQUEST["data_nascimento"])) {
-                    if (!empty($_REQUEST["nome_crianca"])) {
+                if (!empty($dataNascimento)) {//se foi especificada data adiciona-se esta à query
+                    if (!empty($nomeCrianca)) {//se foi especificado o nome é preciso acresentar um AND
                         $query .= "AND ";
                     }
-                    $query .= "birth_date='" . $dataNascimento . "'";
+                    $query .= "birth_date='$dataNascimento'";
                 }
                 $result = mysqli_query($mySQL, $query);
-                if (mysqli_num_rows($result) > 0) {
+                if (mysqli_num_rows($result) > 0) {//se houver pelo menos uma criança, listar todas como links numa lista ordenada
                     echo "<ol>";
                     while ($child = mysqli_fetch_assoc($result)) {
-                        echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child["id"] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a></li> ";
+                        echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a></li> ";
                     }
                     echo "</ol>";
                 } else {
                     echo "<span class='information'>Não há crianças com os dados especificados.</span>";
                 }
-                voltarAtras();
+                voltarAtras();//mostrar botão para voltar atrás
             }
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "escolher_item") {
+        } elseif ($_REQUEST["estado"] == "escolher_item") {//escolher item dos que estão na base de dados, apresentados numa lista desordenada em que cada item é um link
             session_start();
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
@@ -56,24 +56,24 @@ if (verificaCapability("insert_values")) {
             }
             echo "</ul>";
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "introducao") {
+        } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos subitems
             $_SESSION["item_id"] = $_REQUEST["item"];
             $query = "SELECT name from item WHERE id=" . $_SESSION["item_id"];
             $result = mysqli_query($mySQL, $query);
-            $nome = mysqli_fetch_assoc($result);
-            $_SESSION["item_name"] = $nome["name"];
+            $item = mysqli_fetch_assoc($result);
+            $_SESSION["item_name"] = $item["name"];
             $query = "SELECT item_type_id from item WHERE id=" . $_SESSION["item_id"];
             $result = mysqli_query($mySQL, $query);
-            $tipoItemID = mysqli_fetch_assoc($result);
-            $_SESSION["item_type_id"] = $tipoItemID["item_type_id"];
+            $item = mysqli_fetch_assoc($result);
+            $_SESSION["item_type_id"] = $item["item_type_id"];
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . "</h3></div>";
             echo "<div class='caixaFormulario'>";
             echo "<form method='post' name='item_type_" . $_SESSION["item_type_id"] . "item_" . $_SESSION["item_id"] . "' action='insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] . "'>";
             $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
             $result = mysqli_query($mySQL, $query);
             while ($subItem = mysqli_fetch_assoc($result)) {
-                $inputFields = "<span class='=textoLabels'>" . $subItem["form_field_name"] . "</span><br><input name='" . $subItem["form_field_name"];
-                switch ($subItem["value_type"]) {
+                $inputFields = "<span class='=textoLabels'>" . $subItem["form_field_name"] . "</span><br><input name='" . $subItem["form_field_name"];//criar a label e input com nome determinado pelos dados na base de dados
+                switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
                         $inputFields .= " type='" . $subItem["form_field_type"] . "'>";
                         break;
@@ -96,7 +96,7 @@ if (verificaCapability("insert_values")) {
                         }
                         break;
                 }
-                if ($subItem["unit_type_id"] != null) {
+                if ($subItem["unit_type_id"] != null) {//se o subitem tem uma unidade associada acrescentá-la ao lado do input
                     $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
                     $result = mysqli_query($mySQL, $query);
                     $unidade = mysqli_fetch_assoc($result);
