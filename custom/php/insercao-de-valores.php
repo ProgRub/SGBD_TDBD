@@ -113,22 +113,24 @@ if (verificaCapability("insert_values")) {
             $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
             $result = mysqli_query($mySQL, $query);
             $error=false;
+            $listaSubItems=array();
             while ($subItem = mysqli_fetch_assoc($result)) {
+                array_push($listaSubItems,$subItem);
+            }
+            foreach ($listaSubItems as $subItem){
                 $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
                 if (empty($input)){
                     echo "<span class='warning'>O campo do subitem ".$subItem["name"]." é obrigatório!</span><br>";
                     $error=true;
                 }
             }
-            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
-            $result = mysqli_query($mySQL, $query);
             if (!$error){
                 echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br>";
-                while ($subItem = mysqli_fetch_assoc($result)) {
+                foreach ($listaSubItems as $subItem){
                     $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
                 }
                 echo "<form method='post' action='insercao-de-valores?estado=inserir&item=".$_SESSION["item_id"]."'>";
-                while ($subItem = mysqli_fetch_assoc($result)) {
+                foreach ($listaSubItems as $subItem){
                     $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
                 }
                 echo "<input type='submit' class='submitButton' value='Submeter'>";
