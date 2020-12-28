@@ -126,19 +126,29 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 }
             }
             if (!$error){//se não houver inputs vazios apresentar os dados ao utilizador e botão para submeter
-                echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br>";
+                echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br><ul>";
                 foreach ($listaSubItems as $subItem){//FAZER LISTA
                     $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
+                    echo "<li>".$subItem["name"]." ".$input."</li>";
                 }
-                echo "<form method='post' action='insercao-de-valores?estado=inserir&item=".$_SESSION["item_id"]."'>";
+                echo "</ul><form method='post' action='insercao-de-valores?estado=inserir&item=".$_SESSION["item_id"]."'>";
                 foreach ($listaSubItems as $subItem){//FAZER FORMULÁRIO ESCONDIDO
                     $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
+                    echo "<input type='hidden' name='".$subItem["id"]."' value='".$input."'>";
                 }
                 echo "<input type='submit' class='submitButton' value='Submeter'>";
                 echo "</form>";
             }
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "inserir") {
+            echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - inserções</h3></div>";
+            echo "<div class='caixaFormulario'>";
+            $insertQueries=array();
+            foreach ($_REQUEST as $key=>$value) {//key é o id do subitem e value é o valor do input do formulário
+                $query="";
+                array_push($insertQueries,$query);
+            }
+            echo "</div>";
         } else {
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";
             echo "<div class='caixaFormulario'><span class='information'>Introduza um dos nomes da criança a encontrar e/ou a data de nascimento dela</span>
