@@ -145,9 +145,14 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "<div class='caixaFormulario'>";
             $insertQueries=array();
             foreach ($_REQUEST as $key=>$value) {//key é o id do subitem e value é o valor do input do formulário
-                $query="";
+                $query="INSERT INTO value (id,child_id,subitem_id,value,date,time,producer) VALUES (NULL, ".$_SESSION["child_id"].", $key,$value,".date("Y-m-d").",".date("H:i:s").")";
                 array_push($insertQueries,$query);
             }
+            $query="START TRANSACTION";
+            foreach ($insertQueries as $insertQuery) {
+                $query.=$insertQuery."\n\n";
+            }
+            $query.="COMMIT";
             echo "</div>";
         } else {
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";
