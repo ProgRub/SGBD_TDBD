@@ -8,6 +8,7 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
     } else {
         if ($_REQUEST["estado"] == "inserir") {//Vai-se inserir os dados na base de dados
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - inserção</h3></div>";
+            echo "<div class='caixaFormulario'>";
             $nomeUnidade = testarInput($_REQUEST["nome_unidade"]);
             if (!empty($nomeUnidade)) {//se após testar o input este não for vazio, pode-se inserir os dados
                 $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'" . $nomeUnidade . "');";
@@ -21,6 +22,7 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
                 echo "<div class='textoTabela'>O campo <strong>'Nome'</strong> é obrigatório!\n</div>";
                 voltarAtras();
             }
+            echo "</div>";
         } else {//apresentar tabela com todos as unidades e formulário para inserir
             $query = "SELECT id,name FROM subitem_unit_type ORDER BY name";//as unidades devem ser ordenadas alfabeticamente
             $result = mysqli_query($mySQL, $query);

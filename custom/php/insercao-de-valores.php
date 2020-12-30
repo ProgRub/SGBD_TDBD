@@ -72,8 +72,8 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
             $result = mysqli_query($mySQL, $query);
             while ($subItem = mysqli_fetch_assoc($result)) {
-                $inputFields = "<span class='=textoLabels'>" . $subItem["form_field_name"] . "</span><br><input name='" . $subItem["form_field_name"];//criar a label e input com nome determinado pelo form_field_name
-                switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o tipo de valor
+                $inputFields = "<span class='=textoLabels'>" . $subItem["form_field_name"] . "</span><br><input name='" . $subItem["form_field_name"];//criar a label e input com nome determinado pelos dados na base de dados
+                switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
                         $inputFields .= " type='" . $subItem["form_field_type"] . "'>";
                         break;
@@ -107,59 +107,43 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "<input type='hidden' value='validar' name='estado'><input type='submit' class='submitButton' name='submit' value='Submeter'>";
             echo "</form>";
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "validar") {//validar que todos os inputs no estado introducao foram preenchidos
+        } elseif ($_REQUEST["estado"] == "validar") {
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - validar</h3></div>";
             echo "<div class='caixaFormulario'>";
             $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
             $result = mysqli_query($mySQL, $query);
             $error=false;
             $listaSubItems=array();
-            while ($subItem = mysqli_fetch_assoc($result)) {//guardar subitems do estado anterior num array
+            while ($subItem = mysqli_fetch_assoc($result)) {
                 array_push($listaSubItems,$subItem);
             }
-            foreach ($listaSubItems as $subItem){//verificar se há algum input vazio
+            foreach ($listaSubItems as $subItem){
                 $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
                 if (empty($input)){
                     echo "<span class='warning'>O campo do subitem ".$subItem["name"]." é obrigatório!</span><br>";
                     $error=true;
-                    break;
                 }
             }
-            if (!$error){//se não houver inputs vazios apresentar os dados ao utilizador e botão para submeter
-                echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br><ul>";
-                foreach ($listaSubItems as $subItem){//FAZER LISTA
+            if (!$error){
+                echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br>";
+                foreach ($listaSubItems as $subItem){
                     $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
-                    echo "<li>".$subItem["name"]." ".$input."</li>";
                 }
-                echo "</ul><form method='post' action='insercao-de-valores?estado=inserir&item=".$_SESSION["item_id"]."'>";
-                foreach ($listaSubItems as $subItem){//FAZER FORMULÁRIO ESCONDIDO
+                echo "<form method='post' action='insercao-de-valores?estado=inserir&item=".$_SESSION["item_id"]."'>";
+                foreach ($listaSubItems as $subItem){
                     $input=testarInput($_REQUEST[$subItem["form_field_name"]]);
-                    echo "<input type='hidden' name='".$subItem["id"]."' value='".$input."'>";
                 }
                 echo "<input type='submit' class='submitButton' value='Submeter'>";
                 echo "</form>";
             }
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "inserir") {
-            echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - inserções</h3></div>";
-            echo "<div class='caixaFormulario'>";
-            $insertQueries=array();
-            foreach ($_REQUEST as $key=>$value) {//key é o id do subitem e value é o valor do input do formulário
-                $query="INSERT INTO value (id,child_id,subitem_id,value,date,time,producer) VALUES (NULL, ".$_SESSION["child_id"].", $key,$value,".date("Y-m-d").",".date("H:i:s").")";
-                array_push($insertQueries,$query);
-            }
-            $query="START TRANSACTION";
-            foreach ($insertQueries as $insertQuery) {
-                $query.=$insertQuery."\n\n";
-            }
-            $query.="COMMIT";
-            echo "</div>";
         } else {
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";
             echo "<div class='caixaFormulario'><span class='information'>Introduza um dos nomes da criança a encontrar e/ou a data de nascimento dela</span>
                 <form method='post'>
                 <strong class='textoLabels'>Nome: </strong><br><input type='text' name='nome_crianca' class='textoLabels'><br>
-                <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br>
+                <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br>                
                 <input type='hidden' name='estado' value='escolher_crianca'>
                 <input type='submit' class='submitButton' value='Submeter'>
                 </form></div>";

@@ -8,6 +8,7 @@ if (verificaCapability("manage_records")) {
         if ($_POST["estado"] == "validar") {
             $houveErros = False;
             echo "<div class='caixaSubTitulo'><h3>Dados de registo - validação</h3></div>";
+            echo "<div class='caixaFormulario'>";
             $child_name = testarInput($_POST["child_name"]);
             $birth_date = testarInput($_POST["birth_date"]);
             $tutor_name = testarInput($_POST["tutor_name"]);
@@ -22,8 +23,8 @@ if (verificaCapability("manage_records")) {
                 $houveErros = True;
             }
             $dateList = explode("-", $birth_date);
-            if (!(count($dateList) == 3&& strlen($dateList[0])==4 && strlen($dateList[1])==2 && strlen($dateList[2])==2 && checkdate($dateList[1], $dateList[2], $dateList[0]))) {
-                echo "<p class='warning textoLabels'>Data tem que estar no formato AAAA-MM-DD!</p>";
+            if (!(count($dateList) == 3 && strlen($dateList[0]) == 4 && strlen($dateList[1]) == 2 && strlen($dateList[2]) == 2 && checkdate($dateList[1], $dateList[2], $dateList[0]))) {
+                echo "<p class='warning textoLabels'>Data tem que estar no formato AAAA-MM-DD e ser válida!</p>";
                 $houveErros = True;
             }
             if (!empty($tutor_email) && !filter_var($tutor_email, FILTER_VALIDATE_EMAIL)) {
@@ -37,33 +38,27 @@ if (verificaCapability("manage_records")) {
             if ($houveErros) {
                 voltarAtras();
             } else {
-                echo "<strong><p class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?\n\n";
-                echo "<body>
-						<ol>
-						  <li><p class='textoValidar textoLabels'>Nome completo da criança:</p></li>
+                echo "<strong><span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br><br>";
+                echo "<ol>
+						  <li><p class='textoValidar'>Nome completo da criança:</p></li>
 						  <ul><li>$child_name</li></ul>
-						  <li><p class='textoValidar textoLabels'>Data de nascimento:</p></li>
+						  <li><p class='textoValidar'>Data de nascimento:</p></li>
 						  <ul><li>$birth_date</li></ul>
-						  <li><p class='textoValidar textoLabels'>Nome do encarregado de educação:</p></li>
+						  <li><p class='textoValidar'>Nome do encarregado de educação:</p></li>
 						  <ul><li>$tutor_name</li></ul>
-						  <li><p class='textoValidar textoLabels'>Telefone do encarregado de educação:</p></li>
+						  <li><p class='textoValidar'>Telefone do encarregado de educação:</p></li>
 						  <ul><li>$tutor_phone</li></ul>
-						  <li><p class='textoValidar textoLabels'>Endereço de e-mail do tutor:</p></li>
+						  <li><p class='textoValidar'>Endereço de e-mail do tutor:</p></li>
 						  <ul><li>$tutor_email</strong></li></ul>
 						</ol>
 						<form method='post'>
-						<input type='hidden' value='inserir' name='estado'>
-						" . voltarAtras() . " <input type='submit' value='submeter'>
-						<input type='hidden' value='$child_name' name='child_name'>
-						<input type='hidden' value='$birth_date' name='birth_date'>
-						<input type='hidden' value='$tutor_name' name='tutor_name'>
-						<input type='hidden' value='$tutor_phone' name='tutor_phone'>
-						<input type='hidden' value='$tutor_email' name='tutor_email'>
-						</form>
-					 </body>";
+						<input type='hidden' value='inserir' name='estado'>" . voltarAtras() . " <input type='submit' value='submeter' class='submitButton'><input type='hidden' value='$child_name' name='child_name'><input type='hidden' value='$birth_date' name='birth_date'><input type='hidden' value='$tutor_name' name='tutor_name'><input type='hidden' value='$tutor_phone' name='tutor_phone'><input type='hidden' value='$tutor_email' name='tutor_email'>
+						</form>";
             }
+            echo "</div>";
         } elseif ($_POST["estado"] == "inserir") {
-			echo "<div class='caixaSubTitulo'><h3>Dados de registo - inserção</h3></div>";
+            echo "<div class='caixaSubTitulo'><h3>Dados de registo - inserção</h3></div>";
+            echo "<div class='caixaFormulario'>";
             $child_name = testarInput($_POST['child_name']);
             $birth_date = testarInput($_POST['birth_date']);
             $tutor_name = testarInput($_POST['tutor_name']);
@@ -71,16 +66,17 @@ if (verificaCapability("manage_records")) {
             $tutor_email = testarInput($_POST['tutor_email']);
             $insertChildQuery = "INSERT INTO child (id,name,birth_date,tutor_name,tutor_phone,tutor_email) VALUES (NULL,'$child_name','$birth_date','$tutor_name','$tutor_phone', '$tutor_email');";
             if (!mysqli_query($mySQL, $insertChildQuery)) {
-                echo "Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL);
+                echo "<span class='warning'>Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL)."</span>";
             } else {
-				echo "Inseriu os dados de registo com sucesso.\nClique em Continuar para avançar.<br>";
-                echo "<a href='gestao-de-registos'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
+                echo "<span class='information'>Inseriu os dados de registo com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br><br>";
+                echo "<a href='gestao-de-registos'><input type='submit' class='submitButton' value='Continuar'>";
             }
+            echo "</div>";
         } else {
             echo "<div class='caixaSubTitulo'><h3 >Dados de registo - introdução</h3></div>";
-            echo "<div class='caixaFormulario'><strong><p class='information'>Introduza os dados pessoais básicos da criança:</strong>";
-			echo "	<form method='post'>
-					<p class='warning'>* Campos obrigatórios</p><br>
+            echo "<div class='caixaFormulario'>";
+            echo "<span class='information'><strong>Introduza os dados pessoais básicos da criança:</strong></span><br><span class='warning'>* Campos obrigatórios</span><br>";
+            echo "<form method='post'>
 					<strong> Nome completo:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='child_name'><br>
 					<strong>Data de nascimento:<span class='warning textoLabels'> * </span><br><input type='text' name='birth_date' placeholder='AAAA-MM-DD'><br>
 					<strong>Nome completo do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='tutor_name'><br>
@@ -88,11 +84,10 @@ if (verificaCapability("manage_records")) {
 					<strong>Endereço de e-mail do tutor: </strong><br><input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
 					<input type='submit' value='submeter' class='submitButton textoLabels'>
-					</form>";
+					</form></div>";
         }
     }
 } else {
     echo "Não tem autorização para aceder a esta página";
 }
-?>
 

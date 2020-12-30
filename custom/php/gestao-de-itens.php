@@ -9,7 +9,8 @@ if (verificaCapability("manage_items")) {
 
     } else {
         if ($_REQUEST["estado"] == "inserir") {
-            echo "<h3>Gestão de itens - inserção</h3>";
+            echo "<div class='caixaSubTitulo'><h3>Gestão de itens - inserção</h3></div>";
+            echo "<div class='caixaFormulario'>";
             $faltaDado = false;
             $campos = "";
             if (empty($_REQUEST["nome_item"])) { //não escreveu nome
@@ -29,14 +30,15 @@ if (verificaCapability("manage_items")) {
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
                 } else {
-                    echo "Inseriu os dados de novo item com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br>";
+                    echo "<span class='information'>Inseriu os dados de novo item com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 //                    echo "<a href='gestao-de-itens'>Continuar</a>";
                     echo "<a href='gestao-de-itens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
                 }
             } else {
-                echo "Os seguintes campos são <span class='warning textoLabels'><strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
+                echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
                 voltarAtras();
             }
+            echo "</div>";
         } else {
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM item")) > 0) { //ver se há items na tabela item
                 $queryTipos = "SELECT * FROM item_type ORDER BY name"; //TODOS OS TIPOS DE ITENS
