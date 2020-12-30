@@ -1,4 +1,5 @@
 <?php
+echo "MUDO5";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_allowed_values")) {
     $mySQL = ligacaoBD();
@@ -6,7 +7,7 @@ if (verificaCapability("manage_allowed_values")) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
         if ($_REQUEST["estado"] == "introducao") {
-            $_SESSION["subitem_id"] = $_REQUEST["subitem"];
+            $_SESSION["IDofSubitem"] = $_REQUEST["subitem"];
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
                 <div class='caixaFormulario'><form method='post' > <strong>Valor: </strong><br><input type='text' name='valor_permitido' ><br><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'><input class='submitButton textoLabels' type='submit' value='Inserir valor permitido' name='submit'></form></div>";
@@ -15,12 +16,12 @@ if (verificaCapability("manage_allowed_values")) {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - inserção</strong></h3></div>";
             $faltaDado = false;
             $campos = "";
-            if (empty($_REQUEST["nome_item"])) { //não escreveu valor
+            if (empty($_REQUEST["valor_permitido"])) { //não escreveu valor
                 $campos .= "<li><br><strong>Nome</strong></li>";
                 $faltaDado = true;
             }
             if (!$faltaDado) { //não falta preencher nenhum campo obrigatório
-                $insertQuery = "INSERT INTO subitem_allowed_value  (id, subitem_id, value, state) VALUES (NULL,'" . $_SESSION["subitem_id"] . "'," . $_REQUEST["valor_permitido"] . ",'active');";
+                $insertQuery = "INSERT INTO subitem_allowed_value  (id, subitem_id, value, state) VALUES (NULL,'" . testarInput($_SESSION["IDofSubitem"]) . "','" . testarInput($_REQUEST["valor_permitido"]) . "','active');";
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
                 } else {
