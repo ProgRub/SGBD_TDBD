@@ -11,12 +11,12 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
             echo "<div class='caixaFormulario'>";
             $nomeUnidade = testarInput($_REQUEST["nome_unidade"]);
             if (!empty($nomeUnidade)) {//se após testar o input este não for vazio, pode-se inserir os dados
-                $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'" . $nomeUnidade . "');";
+                $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'$nomeUnidade');";
                 if (!mysqli_query($mySQL, $insertQuery)) {//se há erro ao inserir os dados
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
                 } else {//informar o utilizador da inserção com sucesso e apresentar botão para continuar
-                    echo "<span class='information'>Inseriu os dados de novo tipo de unidade com sucesso.<br>Clique em Continuar para avançar.</span><br>";
-                    echo "<a href='gestao-de-itens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
+                    echo "<span class='information'>Inseriu os dados de novo tipo de unidade com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
+                    echo "<a href='gestao-de-itens'><input type='submit' class='submitButton textoLabels' value='Continuar'>";
                 }
             } else {//se o input está vazio, informar utilizador e botão para voltar atrás
                 echo "<div class='textoTabela'>O campo <strong>'Nome'</strong> é obrigatório!\n</div>";
