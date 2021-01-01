@@ -69,7 +69,7 @@ if (verificaCapability("manage_records")) {
                 echo "<span class='warning'>Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL)."</span>";
             } else {
                 echo "<span class='information'>Inseriu os dados de registo com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br><br>";
-                echo "<a href='gestao-de-registos'><input type='submit' class='submitButton' value='Continuar'>";
+                echo "<a href='gestao-de-registos'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
             }
             echo "</div>";
         } else {

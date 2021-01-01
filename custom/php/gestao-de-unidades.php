@@ -16,7 +16,7 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
                 } else {//informar o utilizador da inserção com sucesso e apresentar botão para continuar
                     echo "<span class='information'>Inseriu os dados de novo tipo de unidade com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
-                    echo "<a href='gestao-de-itens'><input type='submit' class='submitButton textoLabels' value='Continuar'>";
+                    echo "<a href='gestao-de-itens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
                 }
             } else {//se o input está vazio, informar utilizador e botão para voltar atrás
                 echo "<div class='textoTabela'>O campo <strong>'Nome'</strong> é obrigatório!\n</div>";

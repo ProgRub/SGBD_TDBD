@@ -56,7 +56,7 @@ if (verificaCapability("manage_subitems")) {
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
                 } else {//informar o utilizador da inserção com sucesso e apresentar botão para continuar
                     echo "<span class='information'>Inseriu os dados de novo subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
-                    echo "<a href='gestao-de-subitens'><input type='submit' class='submitButton textoLabels' value='Continuar'>";
+                    echo "<a href='gestao-de-subitens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
                 }
                 echo "</div>";
             }

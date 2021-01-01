@@ -11,7 +11,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $nomeCrianca = testarInput($_REQUEST["nome_crianca"]);
             $dataNascimento = testarInput($_REQUEST["data_nascimento"]);
             if (empty($nomeCrianca) && empty($dataNascimento)) {//se nenhum dos campos estiver preenchido
-                echo "<span class='warning'>Pelo menos um dos campos tem de estar preenchido!</span>";
+                echo "<span class='warning'>Pelo menos um dos campos tem de estar preenchido!</span><br>";
                 voltarAtras();
             } else {
                 $query = "SELECT name,birth_date,id FROM child WHERE ";//início da query
@@ -32,7 +32,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                     }
                     echo "</ol>";
                 } else {
-                    echo "<span class='information'>Não há crianças com os dados especificados.</span>";
+                    echo "<span class='information'>Não há crianças com os dados especificados.</span><br>";
                 }
                 voltarAtras();//mostrar botão para voltar atrás
             }

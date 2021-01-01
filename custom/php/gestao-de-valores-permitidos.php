@@ -8,30 +8,29 @@ if (verificaCapability("manage_allowed_values")) {
         if ($_REQUEST["estado"] == "introducao") {
             $_SESSION["subitem_id"] = $_REQUEST["subitem"];
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
-                <div class='caixaFormulario'><form method='post' > <strong>Valor: </strong><br><input type='text' name='valor_permitido' ><br><br>";
+                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' > <strong>Valor<span class='warning'>*</span>: </strong><br><input type='text' name='valor_permitido' ><br><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'><input class='submitButton textoLabels' type='submit' value='Inserir valor permitido' name='submit'></form></div>";
-
         } else if ($_REQUEST["estado"] == "inserir") {
-            echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - inserção</strong></h3></div>";
+            echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - inserção</strong></h3></div><div class='caixaFormulario'>";
             $faltaDado = false;
             $campos = "";
             if (empty($_REQUEST["valor_permitido"])) { //não escreveu valor
-                $campos .= "<li><br><strong>Valor</strong></li>";
+                $campos .= "<li><br><strong>Nome</strong></li>";
                 $faltaDado = true;
             }
             if (!$faltaDado) { //não falta preencher nenhum campo obrigatório
-                $insertQuery = "INSERT INTO subitem_allowed_value  (id, subitem_id, value, state) VALUES (NULL,'" . $_SESSION["subitem_id"] . "'," . $_REQUEST["valor_permitido"] . ",'active');";
+                $insertQuery = "INSERT INTO subitem_allowed_value  (id, subitem_id, value, state) VALUES (NULL," . $_SESSION["subitem_id"] . ",'" . $_REQUEST["valor_permitido"] . "','active');";
                 if (!mysqli_query($mySQL, $insertQuery)) {
-                    echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
+                    echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL)."</span>";
                 } else {
-                    echo "Inseriu os dados de novo valor permitido com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br>";
+                    echo "<span class='information'>Inseriu os dados de novo valor permitido com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
                     echo "<a href='gestao-de-valores-permitidos'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
                 }
             } else {
-                echo "Os seguintes campos são <span class='warning textoLabels'><strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
+                echo "<span>Os seguintes campos são <span class='warning'><strong>obrigatórios</strong></span>:</span><ul>" . $campos . "</ul>";
                 voltarAtras();
             }
-
+            echo "</div>";
         } else {
             $queryTodosSubitensEnum = "SELECT * FROM subitem WHERE value_type='enum'"; //TODOS SUBITENS TIPO VALOR ENUM
             $tabelaTodosSubitensEnum = mysqli_query($mySQL, $queryTodosSubitensEnum);
@@ -86,7 +85,7 @@ if (verificaCapability("manage_allowed_values")) {
                                 echo "<td class='textoTabela cell'><a href='gestao-de-valores-permitidos?estado=introducao&subitem=".$linhaSubitemEnum["id"]."'>[" . $linhaSubitemEnum["name"] . "]</a></td>";
                                 $newValorPermitido = false;
                             }
-                            echo "<td class='textoTabela cell' colspan='3'>Não há valores permitidos defenidos</td>";
+                            echo "<td class='textoTabela cell' colspan='3'>Não há valores permitidos definidos</td>";
                             echo "<td class='textoTabela cell'>[editar] [desativar]</td></tr>";
 
                         } else {
@@ -112,7 +111,7 @@ if (verificaCapability("manage_allowed_values")) {
                 }
                 echo "</table>";
             } else {
-                echo "Não há subitems especificados cujo tipo de valor seja enum. Especificar primeiro novo(s) iten(s) e depois voltar a esta opção.<br>";
+                echo "<span class='information'>Não há subitems especificados cujo tipo de valor seja enum. Especificar primeiro novo(s) iten(s) e depois voltar a esta opção.</span><br>";
             }
 
         }
