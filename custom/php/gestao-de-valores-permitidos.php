@@ -15,8 +15,8 @@ if (verificaCapability("manage_allowed_values")) {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - inserção</strong></h3></div>";
             $faltaDado = false;
             $campos = "";
-            if (empty($_REQUEST["nome_item"])) { //não escreveu valor
-                $campos .= "<li><br><strong>Nome</strong></li>";
+            if (empty($_REQUEST["valor_permitido"])) { //não escreveu valor
+                $campos .= "<li><br><strong>Valor</strong></li>";
                 $faltaDado = true;
             }
             if (!$faltaDado) { //não falta preencher nenhum campo obrigatório
