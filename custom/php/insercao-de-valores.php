@@ -38,7 +38,6 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             }
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "escolher_item") {//escolher item dos que estão na base de dados, apresentados numa lista desordenada em que cada item é um link
-            session_start();
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
             $_SESSION["child_id"] = $_REQUEST["crianca"];
@@ -46,10 +45,11 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $query = "SELECT name,id FROM item_type ORDER BY id";
             $result = mysqli_query($mySQL, $query);
             while ($tipoItem = mysqli_fetch_assoc($result)) {
+//                echo mysqli_num_rows(($result));
                 echo "<li>" . $tipoItem["name"] . "</li><ul>";
                 $query = "SELECT name,id FROM item WHERE item_type_id=" . $tipoItem["id"];
-                $result = mysqli_query($mySQL, $query);
-                while ($item = mysqli_fetch_assoc($result)) {
+                $result2 = mysqli_query($mySQL, $query);
+                while ($item = mysqli_fetch_assoc($result2)) {
                     echo "<li><a href='insercao-de-valores?estado=introducao&item=" . $item["id"] . "'>[" . $item["name"] . "]</a></li>";
                 }
                 echo "</ul>";
@@ -57,6 +57,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "</ul>";
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos subitems
+//            echo $_REQUEST["item"]."\n";
             $_SESSION["item_id"] = $_REQUEST["item"];
             $query = "SELECT name from item WHERE id=" . $_SESSION["item_id"];
             $result = mysqli_query($mySQL, $query);
@@ -66,13 +67,21 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $result = mysqli_query($mySQL, $query);
             $item = mysqli_fetch_assoc($result);
             $_SESSION["item_type_id"] = $item["item_type_id"];
+//            echo $_SESSION["item_id"]."\n";
+//            echo $_SESSION["item_name"]."\n";
+//            echo $_SESSION["item_type_id"]."\n";
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . "</h3></div>";
             echo "<div class='caixaFormulario'>";
-            echo "<form method='post' name='item_type_" . $_SESSION["item_type_id"] . "item_" . $_SESSION["item_id"] . "' action='insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] . "'>";
-            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
+            $nomeFormulario=sprintf("item_type_%d_item_%d",$_SESSION["item_type_id"],$_SESSION["item_id"]);// "item_type_". $_SESSION["item_type_id"] . "item_" . $_SESSION["item_id"];
+            $action=sprintf("?estado=validar&item=%d",$_SESSION["item_id"]);//"insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] ;
+//            echo $action."\n";
+            echo "<span class='warning'>Campos obrigatórios *</span>";
+            echo "<form method='post' name='$nomeFormulario' action='$action'>";
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
             $result = mysqli_query($mySQL, $query);
+//            echo mysqli_num_rows($result);
             while ($subItem = mysqli_fetch_assoc($result)) {
-                $inputFields = "<span class='=textoLabels'>" . $subItem["form_field_name"] . "</span><br><input name='" . $subItem["form_field_name"];//criar a label e input com nome determinado pelos dados na base de dados
+                $inputFields = "<span class='textoLabels'><strong>" . $subItem["form_field_name"] . "</strong></span><span class='warning'>*</span><br><input name='" . $subItem["form_field_name"]."'";//criar a label e input com nome determinado pelos dados na base de dados
                 switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
                         $inputFields .= " type='" . $subItem["form_field_type"] . "'>";
@@ -86,21 +95,26 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                         break;
                     case "enum":
                         $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
-                        $result = mysqli_query($mySQL, $query);
-                        $id = 0;
+                        $result2 = mysqli_query($mySQL, $query);
                         if ($subItem["form_field_type"] == "radio") {
                             $inputFields .= " checked ";
                         }
-                        while ($valor = mysqli_fetch_assoc($result)) {
-                            $inputFields .= "id='" . $id . "' type='" . $subItem["form_field_type"] . "'><span for='" . $id . "' class='textoLabels'>" . $valor["value"] . "</span>";
+                        $id = 0;
+                        while ($valor = mysqli_fetch_assoc($result2)) {
+                            $inputFields .= "id='$id' type='" . $subItem["form_field_type"] . "'><span for='" . $id . "' class='textoLabels'>" . $valor["value"] . "</span>";
+                            $id++;
+                            if ($id<mysqli_num_rows($result2)){
+//                                echo $id."\n";
+                                $inputFields.="<input name='". $subItem["form_field_name"]."'";
+                            }
                         }
                         break;
                 }
                 if ($subItem["unit_type_id"] != null) {//se o subitem tem uma unidade associada acrescentá-la ao lado do input
                     $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
-                    $result = mysqli_query($mySQL, $query);
-                    $unidade = mysqli_fetch_assoc($result);
-                    $inputFields .= "<span class='=textoLabels'>" . $unidade["name"] . "</span>";
+                    $result3 = mysqli_query($mySQL, $query);
+                    $unidade = mysqli_fetch_assoc($result3);
+                    $inputFields .= "<span class='textoLabels'>" . $unidade["name"] . "</span>";
                 }
                 echo $inputFields . "<br>";
             }
@@ -110,7 +124,8 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
         } elseif ($_REQUEST["estado"] == "validar") {
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - validar</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . "AND state='active'";
+//            echo "MUDOU4\n";
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
             $result = mysqli_query($mySQL, $query);
             $error=false;
             $listaSubItems=array();
@@ -135,6 +150,8 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 }
                 echo "<input type='submit' class='submitButton' value='Submeter'>";
                 echo "</form>";
+            }else{
+                voltarAtras();
             }
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "inserir") {
