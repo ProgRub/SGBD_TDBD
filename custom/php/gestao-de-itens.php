@@ -28,7 +28,7 @@ if (verificaCapability("manage_items")) {
             if (!$faltaDado) { //não falta preencher nenhum campo obrigatório
                 $insertQuery = "INSERT INTO item (id, name,item_type_id,state) VALUES (NULL,'" . testarInput($_REQUEST["nome_item"]) . "'," . $_REQUEST["tipo_item"] . ",'" . $_REQUEST["estado_item"] . "');";
                 if (!mysqli_query($mySQL, $insertQuery)) {
-                    echo "Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL);
+                    echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL)."</span>";
                 } else {
                     echo "<span class='information'>Inseriu os dados de novo item com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 //                    echo "<a href='gestao-de-itens'>Continuar</a>";
