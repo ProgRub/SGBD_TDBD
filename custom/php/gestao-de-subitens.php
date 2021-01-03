@@ -102,7 +102,7 @@ if (verificaCapability("manage_subitems")) {
 
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - introdução</strong></h3></div>
             <div class='caixaFormulario'><form method='post'>
-			<span class='warning'>* Campos obrigatórios</span><br>
+			<span class='warning'>* Campos obrigatórios</span><br><br>
 			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_subitem' ><br><br>
 			<br><strong>Tipo de valor: </strong><span class='warning textoLabels'> * </span></br>";
             $primeiro = true;
