@@ -1,5 +1,4 @@
 <?php
-//echo "MUDOU1\n";
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez login e tem esta capacidade
     $mySQL = ligacaoBD();
