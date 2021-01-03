@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 20, 2020 at 09:16 PM
+-- Generation Time: Jan 03, 2021 at 09:41 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.12
 
@@ -27,6 +27,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `child`
 --
 
+DROP TABLE IF EXISTS `child`;
 CREATE TABLE `child` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
@@ -36,12 +37,24 @@ CREATE TABLE `child` (
   `tutor_email` varchar(64) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `child`
+--
+
+INSERT INTO `child` (`id`, `name`, `birth_date`, `tutor_name`, `tutor_phone`, `tutor_email`) VALUES
+(3, 'Ariana Fonseca Macedo', '2010-06-02', 'Luísa Nádia Moura de Figueiredo', '282080576', ''),
+(4, 'Davi José Torres Pinho', '2019-02-05', 'Érika Silva', '285169492', 'erikalva@gmail.com'),
+(5, 'Sandro Eduardo de Faria', '2012-03-21', 'Iara Benedita Pinto', '936765395', 'iarabnto@gmail.com'),
+(6, 'César Rodrigo Brito Pires', '2014-09-14', 'Renata Freitas de Mota', '264898184', ''),
+(7, 'Nádia Cátia de Pinho', '2017-05-08', 'Lucas Eduardo Maia de Melo', '238017974', 'lucalo@gmail.com');
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `item`
 --
 
+DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
@@ -54,7 +67,11 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`id`, `name`, `item_type_id`, `state`) VALUES
-(3, 'medidas', 1, 'active');
+(3, 'medidas', 1, 'active'),
+(4, 'cabelo', 1, 'active'),
+(5, 'autismo', 2, 'active'),
+(6, 'síndrome de asperger', 2, 'active'),
+(7, 'poliomelite', 2, 'inactive');
 
 -- --------------------------------------------------------
 
@@ -62,6 +79,7 @@ INSERT INTO `item` (`id`, `name`, `item_type_id`, `state`) VALUES
 -- Table structure for table `item_type`
 --
 
+DROP TABLE IF EXISTS `item_type`;
 CREATE TABLE `item_type` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(64) NOT NULL,
@@ -84,6 +102,7 @@ INSERT INTO `item_type` (`id`, `name`, `code`) VALUES
 -- Table structure for table `subitem`
 --
 
+DROP TABLE IF EXISTS `subitem`;
 CREATE TABLE `subitem` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL DEFAULT '',
@@ -97,12 +116,27 @@ CREATE TABLE `subitem` (
   `state` enum('active','inactive') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `subitem`
+--
+
+INSERT INTO `subitem` (`id`, `name`, `item_id`, `value_type`, `form_field_name`, `form_field_type`, `unit_type_id`, `form_field_order`, `mandatory`, `state`) VALUES
+(1, 'altura', 3, 'int', 'med-1-altura', 'text', 5, 1, 1, 'active'),
+(2, 'peso', 3, 'int', 'med-2-peso', 'text', 6, 2, 1, 'active'),
+(3, 'cintura', 3, 'int', 'med-3-cintura', 'text', 5, 3, 0, 'active'),
+(4, 'côr', 4, 'text', 'cab-4-cr', 'text', NULL, 1, 1, 'active'),
+(5, 'tipo de fio', 4, 'enum', 'cab-5-tipo_de_fio', 'checkbox', NULL, 2, 1, 'active'),
+(6, 'densidade', 4, 'int', 'cab-6-densidade', 'text', 8, 3, 0, 'active'),
+(7, 'grau', 5, 'enum', 'aut-7-grau', 'radio', NULL, 1, 1, 'active'),
+(8, 'estereotipia', 5, 'enum', 'aut-8-estereotipia', 'radio', NULL, 2, 0, 'active');
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `subitem_allowed_value`
 --
 
+DROP TABLE IF EXISTS `subitem_allowed_value`;
 CREATE TABLE `subitem_allowed_value` (
   `id` int UNSIGNED NOT NULL,
   `subitem_id` int UNSIGNED NOT NULL,
@@ -110,16 +144,45 @@ CREATE TABLE `subitem_allowed_value` (
   `state` enum('active','inactive') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `subitem_allowed_value`
+--
+
+INSERT INTO `subitem_allowed_value` (`id`, `subitem_id`, `value`, `state`) VALUES
+(1, 5, 'liso', 'active'),
+(2, 5, 'ondulado', 'active'),
+(3, 5, 'encaracolado', 'active'),
+(4, 7, 'ligeiro', 'active'),
+(5, 7, 'moderado', 'active'),
+(6, 7, 'grave', 'active'),
+(7, 8, 'marcha', 'active'),
+(8, 8, 'movimento do tronco', 'active'),
+(9, 8, 'cruzamento das pernas', 'active');
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `subitem_unit_type`
 --
 
+DROP TABLE IF EXISTS `subitem_unit_type`;
 CREATE TABLE `subitem_unit_type` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(45) NOT NULL COMMENT 'kg, cm, mmHg'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `subitem_unit_type`
+--
+
+INSERT INTO `subitem_unit_type` (`id`, `name`) VALUES
+(4, 'metros'),
+(5, 'centimetros'),
+(6, 'kilogramas'),
+(7, 'miligramas'),
+(8, 'caracóis/centimetro'),
+(9, 'ºC'),
+(10, 'ºF');
 
 -- --------------------------------------------------------
 
@@ -127,6 +190,7 @@ CREATE TABLE `subitem_unit_type` (
 -- Table structure for table `value`
 --
 
+DROP TABLE IF EXISTS `value`;
 CREATE TABLE `value` (
   `id` int UNSIGNED NOT NULL,
   `child_id` int UNSIGNED NOT NULL,
@@ -136,6 +200,14 @@ CREATE TABLE `value` (
   `time` time NOT NULL,
   `producer` varchar(64) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `value`
+--
+
+INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES
+(1, 6, 7, 'ligeiro', '2021-01-03', '21:04:13', 'user'),
+(2, 6, 8, 'marcha', '2021-01-03', '21:04:13', 'user');
 
 --
 -- Indexes for dumped tables
@@ -197,13 +269,13 @@ ALTER TABLE `value`
 -- AUTO_INCREMENT for table `child`
 --
 ALTER TABLE `child`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `item_type`
@@ -215,25 +287,25 @@ ALTER TABLE `item_type`
 -- AUTO_INCREMENT for table `subitem`
 --
 ALTER TABLE `subitem`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `subitem_allowed_value`
 --
 ALTER TABLE `subitem_allowed_value`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `subitem_unit_type`
 --
 ALTER TABLE `subitem_unit_type`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `value`
 --
 ALTER TABLE `value`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables

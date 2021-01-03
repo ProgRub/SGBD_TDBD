@@ -10,32 +10,26 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "<div class='caixaFormulario'>";
             $nomeCrianca = testarInput($_REQUEST["nome_crianca"]);
             $dataNascimento = testarInput($_REQUEST["data_nascimento"]);
-            if (empty($nomeCrianca) && empty($dataNascimento)) {//se nenhum dos campos estiver preenchido
-                echo "<span class='warning'>Pelo menos um dos campos tem de estar preenchido!</span><br>";
-                voltarAtras();
-            } else {
-                $query = "SELECT name,birth_date,id FROM child WHERE ";//início da query
-                if (!empty($nomeCrianca)) {//se foi especificado nome de criança adiciona-se este à query
-                    $query .= "name LIKE '%$nomeCrianca%'";
+            $query = "SELECT name,birth_date,id FROM child WHERE ";//início da query
+            $query .= "name LIKE '%$nomeCrianca%'";
+            if (!empty($dataNascimento)) {//se foi especificada data adiciona-se esta à query
+                if (!empty($nomeCrianca)) {//se foi especificado o nome é preciso acresentar um AND
+                    $query .= "AND ";
                 }
-                if (!empty($dataNascimento)) {//se foi especificada data adiciona-se esta à query
-                    if (!empty($nomeCrianca)) {//se foi especificado o nome é preciso acresentar um AND
-                        $query .= "AND ";
-                    }
-                    $query .= "birth_date='$dataNascimento'";
-                }
-                $result = mysqli_query($mySQL, $query);
-                if (mysqli_num_rows($result) > 0) {//se houver pelo menos uma criança, listar todas como links numa lista ordenada
-                    echo "<ol>";
-                    while ($child = mysqli_fetch_assoc($result)) {
-                        echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a></li> ";
-                    }
-                    echo "</ol>";
-                } else {
-                    echo "<span class='information'>Não há crianças com os dados especificados.</span><br>";
-                }
-                voltarAtras();//mostrar botão para voltar atrás
+                $query .= "birth_date='$dataNascimento'";
             }
+            $result = mysqli_query($mySQL, $query);
+            if (mysqli_num_rows($result) > 0) {//se houver pelo menos uma criança, listar todas como links numa lista ordenada
+                echo "<ol>";
+                while ($child = mysqli_fetch_assoc($result)) {
+                    echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a></li> ";
+                }
+                echo "</ol>";
+            } else {
+                echo "<span class='information'>Não há crianças com os dados especificados.</span><br>";
+            }
+            voltarAtras();//mostrar botão para voltar atrás
+//            }
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "escolher_item") {//escolher item dos que estão na base de dados, apresentados numa lista desordenada em que cada item é um link
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - escolher item</h3></div>";
@@ -174,23 +168,38 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 $query = "SELECT id from subitem WHERE form_field_name='$key' AND state='active'";
                 $result = mysqli_query($mySQL, $query);
                 if (mysqli_num_rows($result) > 0) {
-                    $query = "INSERT INTO value (id,child_id,subitem_id,value,date,time,producer) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','".wp_get_current_user()->user_login."')";
+                    $query = "INSERT INTO value (id,child_id,subitem_id,value,date,time,producer) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
                     array_push($insertQueries, $query);
                 }
             }
-            $query = "START TRANSACTION\n\n";
+            $query = "START TRANSACTION;\n";
+//            $index=0;
+            $ocorreuErro = false;
             foreach ($insertQueries as $insertQuery) {
-                $query .= $insertQuery . "\n\n";
+//                mysqli_query($mySQL, $insertQuery);
+                if (!mysqli_query($mySQL, $insertQuery)) {
+                    echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                    $ocorreuErro = true;
+                    break;
+//                $query .= $insertQuery . ($index!=count($insertQueries)-1?",":";")."\n";
+//                $index++;
+                }
             }
-            $query .= "COMMIT";
-            if (!mysqli_query($mySQL, $query)) {
-                echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL)."</span>";
-            } else {
+            if (!$ocorreuErro) {
                 echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
 //                    echo "<a href='gestao-de-itens'>Continuar</a>";
                 echo "<a href='insercao-de-valores'><input type='submit' class='atrasButton textoLabels' value='Voltar'>";
-                echo "<a href='?estado=escolher_item&crianca=".$_SESSION["child_id"]."'><input type='submit' class='continuarButton textoLabels' value='Escolher item'>";
+                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><input type='submit' class='continuarButton textoLabels' value='Escolher item'>";
             }
+////            $query .= "COMMIT;";
+//            if (!mysqli_query($mySQL, $query)) {
+//                echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+//            } else {
+//                echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
+////                    echo "<a href='gestao-de-itens'>Continuar</a>";
+//                echo "<a href='insercao-de-valores'><input type='submit' class='atrasButton textoLabels' value='Voltar'>";
+//                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><input type='submit' class='continuarButton textoLabels' value='Escolher item'>";
+//            }
 //            echo $query . "\n";
             echo "</div>";
         } else {
