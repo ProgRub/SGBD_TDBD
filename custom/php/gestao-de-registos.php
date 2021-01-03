@@ -91,3 +91,4 @@ if (verificaCapability("manage_records")) {
     echo "Não tem autorização para aceder a esta página";
 }
 
+?>

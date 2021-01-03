@@ -52,9 +52,9 @@ if (verificaCapability("manage_subitems")) {
                 $result = mysqli_query($mySQL, $queryItem);
                 $unidade = mysqli_fetch_assoc($result);
                 $insertQuery = "INSERT INTO subitem (id, name, item_id, value_type, form_field_name, form_field_type, unit_type_id, form_field_order, mandatory, state) VALUES (NULL,'$nome_subitem'," . ($item==null?'NULL':$item["id"]) . ",'$tipo_valor','$nome_campo_form','$tipo_camp_form'," . ($unidade==null?'NULL':$unidade["id"]) . ",$ordem_campo_form," . ($obrigatorio == 'sim' ? 1 : 0) . ",'active');";
-                if (!mysqli_query($mySQL, $insertQuery)) {//se há erro ao inserir os dados
+                if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
-                } else {//informar o utilizador da inserção com sucesso e apresentar botão para continuar
+                } else {
                     echo "<span class='information'>Inseriu os dados de novo subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
                     echo "<a href='gestao-de-subitens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
                 }
