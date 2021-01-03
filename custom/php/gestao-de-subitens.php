@@ -18,40 +18,49 @@ if (verificaCapability("manage_subitems")) {
             $obrigatorio = testarInput($_REQUEST["obrigatorio"]);
 
             if (empty($nome_subitem) || empty($tipo_valor) || ($nome_item == "selecione_um_item") || empty($tipo_camp_form) || $ordem_campo_form == "" || empty($obrigatorio)) {
-                echo "<span class='warning textoLabels'>Não preencheu todos os campos obrigatórios!</span>";
+                echo "<span class='warning textoLabels'>Não preencheu todos os campos obrigatórios!<br></span>";
                 $houveErros = True;
             }
             if (1 === preg_match('~[0-9]~', $nome_subitem)) {
-                echo "<span class='warning textoLabels'>O nome do subitem não pode conter números!</span>";
+                echo "<span class='warning textoLabels'>O nome do subitem não pode conter números!<br></span>";
                 $houveErros = True;
             }
             if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) {
-                echo "<span class='warning textoLabels'>A ordem do campo no formulário tem que ser um número superior a 0!</span>";
+                echo "<span class='warning textoLabels'>A ordem do campo no formulário tem que ser um número superior a 0!<br></span>";
                 $houveErros = True;
             }
             if ($houveErros) {
                 voltarAtras();
             } else {
-                // ******* Nome do campo no formulário ********
-                // (Alterar depois maneira de conseguir o id do subitem)
+				
+				$nome_item = str_replace("_", " ", $nome_item);
+				$tipo_unidade = str_replace("_", " ", $tipo_unidade);
+				
+				// ******* Nome do campo no formulário ********   
+                //id do subitem 
                 $querySubitemMaxId = "SELECT name FROM subitem";
                 $tabelaSubitemMaxId = mysqli_query($mySQL, $querySubitemMaxId);
                 $maxId = mysqli_num_rows($tabelaSubitemMaxId);
                 $newId = $maxId + 1;
+				//------
                 $tirarAcento = Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
                 $itemSemAcento = $tirarAcento->transliterate($nome_item);
                 $tresPrimeirasLetrasItem = substr($itemSemAcento, 0, 3);
                 $subitem_ascii = preg_replace('/[^a-z0-9_ ]/i', '', $nome_subitem);
                 $subitemSemCaracteresVazios = str_replace(" ", "_", $subitem_ascii);
                 $nome_campo_form = $tresPrimeirasLetrasItem . "-" . $newId . "-" . $subitemSemCaracteresVazios;
-                echo "<span class='information'>O nome do campo no formulário será: </span>$nome_campo_form<br>";
+                //echo "<span class='information'>O nome do campo no formulário será: </span>$nome_campo_form<br>";
+				
+				//************************************************
+								
                 $queryItem = "SELECT id FROM item WHERE name='$nome_item'";
                 $result = mysqli_query($mySQL, $queryItem);
                 $item = mysqli_fetch_assoc($result);
                 $queryItem = "SELECT id FROM subitem_unit_type WHERE name='$tipo_unidade'";
                 $result = mysqli_query($mySQL, $queryItem);
                 $unidade = mysqli_fetch_assoc($result);
-                $insertQuery = "INSERT INTO subitem (id, name, item_id, value_type, form_field_name, form_field_type, unit_type_id, form_field_order, mandatory, state) VALUES (NULL,'$nome_subitem'," . ($item==null?'NULL':$item["id"]) . ",'$tipo_valor','$nome_campo_form','$tipo_camp_form'," . ($unidade==null?'NULL':$unidade["id"]) . ",$ordem_campo_form," . ($obrigatorio == 'sim' ? 1 : 0) . ",'active');";
+				
+                $insertQuery = "INSERT INTO subitem (id, name, item_id, value_type, form_field_name, form_field_type, unit_type_id, form_field_order, mandatory, state) VALUES (NULL,'$nome_subitem'," . $item["id"] . ",'$tipo_valor','$nome_campo_form','$tipo_camp_form'," . ($unidade==null?'NULL':$unidade["id"]) . ",$ordem_campo_form," . ($obrigatorio == 'sim' ? 1 : 0) . ",'active');";
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
                 } else {
@@ -117,10 +126,12 @@ if (verificaCapability("manage_subitems")) {
             }
             echo "<br><strong>Item: </strong><span class='warning textoLabels'> * </span></br>";
             if (mysqli_num_rows($tabelaItens2) > 0) {
-                echo '<select name="it" required>
+                echo '<select name="it">
 				<option value="selecione_um_item">Selecione um item:</option>';
                 while ($linhaItem = mysqli_fetch_assoc(($tabelaItens2))) {
-                    echo '<option value=' . $linhaItem["name"] . '>' . $linhaItem["name"] . '</option>';
+					$linha = $linhaItem["name"];
+					$option = str_replace(" ", "_", $linha);
+                    echo '<option value= ' . $option . ' >' . $linhaItem["name"] . '</option>';
                 }
                 echo '</select><br>';
             } else {
@@ -143,7 +154,9 @@ if (verificaCapability("manage_subitems")) {
                 echo '<select name="tipo_unidade">
 				<option value="selecione_tipo_unid">Selecione um tipo de unidade:</option>';
                 while ($linhaUnid = mysqli_fetch_assoc(($tabelaTiposUnid))) {
-                    echo '<option value=' . $linhaUnid["name"] . '>' . $linhaUnid["name"] . '</option>';
+					$linha = $linhaUnid["name"];
+					$option = str_replace(" ", "_", $linha);
+                    echo '<option value=' . $option . '>' . $linhaUnid["name"] . '</option>';
                 }
                 echo '</select><br>';
             } else {

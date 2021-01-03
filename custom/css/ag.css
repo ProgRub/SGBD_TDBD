@@ -67,8 +67,6 @@ input[type="text"]:focus {
   background-color: #efefef !important;
 }
 
-
-
 select {
   width: 45% !important;
   padding: 6px 10px !important;
@@ -80,7 +78,6 @@ select {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
 
 }
-
 
 .warning {
   color: red !important;
