@@ -32,7 +32,7 @@ if (verificaCapability("manage_items")) {
                 } else {
                     echo "<span class='information'>Inseriu os dados de novo item com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 //                    echo "<a href='gestao-de-itens'>Continuar</a>";
-                    echo "<a href='gestao-de-itens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
+                    echo "<a href='gestao-de-itens'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
             } else {
                 echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
@@ -75,7 +75,7 @@ if (verificaCapability("manage_items")) {
             $queryTipos = "SELECT * FROM item_type"; //TODOS OS TIPOS DE ITENS
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de itens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><form method='post' > <strong>Nome: </strong><br><input type='text' name='nome_item' ><br><br>";
+            <div class='caixaFormulario'><form method='post' > <strong>Nome: </strong><br><input type='text' class='textInput' name='nome_item' ><br><br>";
             echo "<br><strong>Tipo: </strong></br>";
             $primeiro = true;
             if (mysqli_num_rows($tabelaTipos) > 0) {

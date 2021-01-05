@@ -75,7 +75,7 @@ if (verificaCapability("manage_records")) {
                 echo "<span class='warning'>Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL)."</span>";
             } else {
                 echo "<span class='information'>Inseriu os dados de registo com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br><br>";
-                echo "<a href='gestao-de-registos'><input type='button' class='continuarButton textoLabels' value='Continuar'></a>";
+                echo "<a href='gestao-de-registos'><button class='continuarButton textoLabels'>Continuar</button></a>";
             }
             echo "</div>";
         } else {
@@ -84,16 +84,16 @@ if (verificaCapability("manage_records")) {
             echo "<span class='information'><strong>Introduza os dados pessoais básicos da criança:</strong></span><br>
 			<span class='warning'>* Campos obrigatórios</span><br>";
             echo "<form method='post'>
-					<strong> Nome completo:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' name='child_name'><br>
-					<strong>Data de nascimento:<span class='warning textoLabels'> * </span><br>
-					<input type='text' name='birth_date' placeholder='AAAA-MM-DD'><br>
-					<strong>Nome completo do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' name='tutor_name'><br>
-					<strong>Telefone do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' name='tutor_phone'><br>
-					<strong>Endereço de e-mail do tutor: </strong><br>
-					<input type='text' name='tutor_email' placeholder='email@example.com'><br><br>
+					<strong class='textoLabels'> Nome completo:</strong><span class='warning textoLabels'> * </span><br>
+					<input type='text' class='textInput' name='child_name'><br>
+					<strong class='textoLabels'>Data de nascimento:<span class='warning textoLabels'> * </span><br>
+					<input type='text' class='textInput' name='birth_date' placeholder='AAAA-MM-DD'><br>
+					<strong class='textoLabels'>Nome completo do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
+					<input type='text' class='textInput' name='tutor_name'><br>
+					<strong class='textoLabels'>Telefone do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
+					<input type='text' class='textInput' name='tutor_phone'><br>
+					<strong class='textoLabels'>Endereço de e-mail do tutor: </strong><br>
+					<input type='text' class='textInput' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
 					<input type='submit' value='submeter' class='submitButton textoLabels'>
 					</form></div>";

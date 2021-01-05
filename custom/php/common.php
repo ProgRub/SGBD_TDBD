@@ -1,15 +1,17 @@
 <?php
-
+global $wp;
+$current_page = add_query_arg(array(), $wp->request);
 //Verifica se o utilizador está autenticado e tem uma certa capability
 function verificaCapability($capability)
 {
     return is_user_logged_in() && current_user_can($capability);
 }
 
-function testarInput($input){
-        $input = trim($input);
-        $input = stripslashes($input);
-        $input = htmlspecialchars($input);
+function testarInput($input)
+{
+    $input = trim($input);
+    $input = stripslashes($input);
+    $input = htmlspecialchars($input);
     return $input;
 }
 
@@ -22,14 +24,15 @@ function voltarAtras()
 
 function get_enum_values($table, $field)
 {
-	$connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-    $enum_array = array(); 
-    $query = 'SHOW COLUMNS FROM `'. $table .'` LIKE "' . $field . '"'; 
-    $result = mysqli_query($connection, $query); 
-    $row = mysqli_fetch_row($result); 
-	preg_match_all('/\'(.*?)\'/', $row[1], $enum_array);
-    foreach ($enum_array[1] as $mkey => $mval){
-		$enum_fields[$mkey + 1] = $mval; }
+    $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    $enum_array = array();
+    $query = 'SHOW COLUMNS FROM `' . $table . '` LIKE "' . $field . '"';
+    $result = mysqli_query($connection, $query);
+    $row = mysqli_fetch_row($result);
+    preg_match_all('/\'(.*?)\'/', $row[1], $enum_array);
+    foreach ($enum_array[1] as $mkey => $mval) {
+        $enum_fields[$mkey + 1] = $mval;
+    }
     return $enum_fields;
 }
 
@@ -41,8 +44,11 @@ function ligacaoBD()
 
     if (!$ligacao) {
         die("Erro na ligação: " . mysqli_error());
-}
+    }
     return $ligacao;
 }
 
-$clientsideval = 0; //Usada para a validação clientside
+$clientsideval = true; //Usada para a validação clientside
+if ($clientsideval) {
+    wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/script.js', array('jquery'), 1.1, true);
+}

@@ -15,7 +15,7 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
                 } else {//informar o utilizador da inserção com sucesso e apresentar botão para continuar
                     echo "<span class='information'>Inseriu os dados de novo tipo de unidade com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
-                    echo "<a href='gestao-de-itens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
+                    echo "<a href='gestao-de-unidades'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
             } else {//se o input está vazio, informar utilizador e botão para voltar atrás
                 echo "<div class='textoTabela'>O campo <strong>'Nome'</strong> é obrigatório!\n</div>";
@@ -37,13 +37,15 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
             }
             //formulário
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
-                    <div class='caixaFormulario'><form method='post' > <strong class='textoLabels'>Nome:</strong><span class='warning textoLabels' textoLabels'> * </span><br><input type='text'  name='nome_unidade' class='textoLabels'><br>
-                        <input type='hidden' value='inserir' name='estado'><br>
-                        <input class='submitButton textoLabels' type='submit' value='Inserir tipo de unidade' name='submit'>
-                    </form></div>";
+                    <div class='caixaFormulario'>";
+//            echo '<form method="post" action="'.$current_page.'">';
+            echo "<form method ='post'>";
+            echo "<strong class='textoLabels'>Nome:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_unidade' id='nome_unidade' class='textInput'><br>
+                        <input type='hidden' value='inserir' name='estado' class='textInput'><br>";
+            echo "<input class='submitButton textoLabels' type='submit' value='Inserir tipo de unidade'>";
+            echo "</form></div>";
         }
     }
 } else {
     echo "<span class='information'>Não tem autorização para aceder a esta página</span>";
 }
-?>

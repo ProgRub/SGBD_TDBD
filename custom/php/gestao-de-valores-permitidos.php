@@ -8,7 +8,7 @@ if (verificaCapability("manage_allowed_values")) {
         if ($_REQUEST["estado"] == "introducao") {
             $_SESSION["subitem_id"] = $_REQUEST["subitem"];
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
-                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' > <strong>Valor<span class='warning'>*</span>: </strong><br><input type='text' name='valor_permitido' ><br><br>";
+                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' > <strong>Valor<span class='warning'>*</span>: </strong><br><input type='text' class='textInput' name='valor_permitido' ><br><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'><input class='submitButton textoLabels' type='submit' value='Inserir valor permitido' name='submit'></form></div>";
         } else if ($_REQUEST["estado"] == "inserir") {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - inserção</strong></h3></div><div class='caixaFormulario'>";
@@ -24,7 +24,7 @@ if (verificaCapability("manage_allowed_values")) {
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL)."</span>";
                 } else {
                     echo "<span class='information'>Inseriu os dados de novo valor permitido com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
-                    echo "<a href='gestao-de-valores-permitidos'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
+                    echo "<a href='gestao-de-valores-permitidos'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
             } else {
                 echo "<span>Os seguintes campos são <span class='warning'><strong>obrigatórios</strong></span>:</span><ul>" . $campos . "</ul>";

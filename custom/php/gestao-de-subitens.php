@@ -65,7 +65,7 @@ if (verificaCapability("manage_subitems")) {
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
                 } else {
                     echo "<span class='information'>Inseriu os dados de novo subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
-                    echo "<a href='gestao-de-subitens'><input type='submit' class='continuarButton textoLabels' value='Continuar'>";
+                    echo "<a href='gestao-de-subitens'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
                 echo "</div>";
             }
@@ -112,7 +112,7 @@ if (verificaCapability("manage_subitems")) {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - introdução</strong></h3></div>
             <div class='caixaFormulario'><form method='post'>
 			<span class='warning'>* Campos obrigatórios</span><br><br>
-			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_subitem' ><br><br>
+			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br><input type='text' class='textInput' name='nome_subitem' ><br><br>
 			<br><strong>Tipo de valor: </strong><span class='warning textoLabels'> * </span></br>";
             $primeiro = true;
             foreach ($tipo_valores as $val_tip) {
@@ -162,7 +162,7 @@ if (verificaCapability("manage_subitems")) {
             } else {
                 echo "<span class='information'>Não há nenhum tipo de unidade.</span><br>";
             }
-            echo "<br><strong>Ordem do campo no formulário: </strong><span class='warning textoLabels'> * </span><br><input type='text' name='ordem_campo_form' ><br><br>
+            echo "<br><strong>Ordem do campo no formulário: </strong><span class='warning textoLabels'> * </span><br><input type='text' class='textInput' name='ordem_campo_form' ><br><br>
 			<br><strong>Obrigatório: </strong><span class='warning textoLabels'> * </span><br>
 			<input  type='radio' name='obrigatorio' checked value=sim><span class='textoLabels' >Sim</span><br>
 			<input  type='radio' name='obrigatorio' value=nao><span class='textoLabels' >Não</span><br>

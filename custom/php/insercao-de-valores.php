@@ -87,7 +87,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                         break;
                     case "double":
                     case "int":
-                        $inputFields .= " type='text'>";
+                        $inputFields .= " type='text' class='textInput'>";
                         break;
                     case "enum":
                         $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
@@ -188,8 +188,8 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             if (!$ocorreuErro) {
                 echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
 //                    echo "<a href='gestao-de-itens'>Continuar</a>";
-                echo "<a href='insercao-de-valores'><input type='submit' class='atrasButton textoLabels' value='Voltar'>";
-                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><input type='submit' class='continuarButton textoLabels' value='Escolher item'>";
+                echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Voltar</button></a>";
+                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><button class='continuarButton textoLabels'>Escolher item</button></a>";
             }
 ////            $query .= "COMMIT;";
 //            if (!mysqli_query($mySQL, $query)) {
@@ -206,8 +206,8 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";
             echo "<div class='caixaFormulario'><span class='information'>Introduza um dos nomes da criança a encontrar e/ou a data de nascimento dela</span>
                 <form method='post'>
-                <strong class='textoLabels'>Nome: </strong><br><input type='text' name='nome_crianca' class='textoLabels'><br>
-                <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br>                
+                <strong class='textoLabels'>Nome: </strong><br><input type='text' class='textInput' name='nome_crianca' class='textoLabels'><br>
+                <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' class='textInput' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br>                
                 <input type='hidden' name='estado' value='escolher_crianca'>
                 <input type='submit' class='submitButton' value='Submeter'>
                 </form></div>";
