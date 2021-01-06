@@ -23,6 +23,9 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
             }
             echo "</div>";
         } else {//apresentar tabela com todos as unidades e formulário para inserir
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_unidades.js', array('jquery'), 1.1, true);
+            }
             $query = "SELECT id,name FROM subitem_unit_type ORDER BY name";//as unidades devem ser ordenadas alfabeticamente
             $result = mysqli_query($mySQL, $query);
             if (mysqli_num_rows($result) > 0) {//se há unidades na base de dados faz-se a tabela

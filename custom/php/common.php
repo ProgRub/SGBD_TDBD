@@ -49,6 +49,3 @@ function ligacaoBD()
 }
 
 $clientsideval = true; //Usada para a validação clientside
-if ($clientsideval) {
-    wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/script.js', array('jquery'), 1.1, true);
-}

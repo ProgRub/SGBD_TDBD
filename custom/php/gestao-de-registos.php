@@ -82,21 +82,24 @@ if (verificaCapability("manage_records")) {
             }
             echo "</div>";
         } else {
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_registos.js', array('jquery'), 1.1, true);
+            }
             echo "<div class='caixaSubTitulo'><h3 >Dados de registo - introdução</h3></div>";
             echo "<div class='caixaFormulario'>";
             echo "<span class='information'><strong>Introduza os dados pessoais básicos da criança:</strong></span><br>
 			<span class='warning'>* Campos obrigatórios</span><br>";
             echo "<form method='post'>
 					<strong class='textoLabels'> Nome completo:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' name='child_name'><br>
+					<input type='text' class='textInput' id='child_name' name='child_name'><br>
 					<strong class='textoLabels'>Data de nascimento:<span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' name='birth_date' placeholder='AAAA-MM-DD'><br>
+					<input type='text' class='textInput' id='birth_date' name='birth_date' placeholder='AAAA-MM-DD'><br>
 					<strong class='textoLabels'>Nome completo do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' name='tutor_name'><br>
+					<input type='text' class='textInput' id='tutor_name' name='tutor_name'><br>
 					<strong class='textoLabels'>Telefone do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' name='tutor_phone'><br>
+					<input type='text' class='textInput' id='tutor_phone' name='tutor_phone'><br>
 					<strong class='textoLabels'>Endereço de e-mail do tutor: </strong><br>
-					<input type='text' class='textInput' name='tutor_email' placeholder='email@example.com'><br><br>
+					<input type='text' class='textInput' id='tutor_email' name='tutor_email' placeholder='email@example.com'><br><br>
 					<input type='hidden' value='validar' name='estado'>
 					<input type='submit' value='submeter' class='submitButton textoLabels'>
 					</form></div>";
