@@ -52,14 +52,17 @@ if (verificaCapability("manage_records")) {
 						  <ul><li>$tutor_email</strong></li></ul>
 						</ol>
 						<form method='post'>
-						<input type='hidden' value='inserir' name='estado'>" . voltarAtras() . " 
-						<input type='submit' value='submeter' class='submitButton'>
+						<p hidden>
+						<input type='hidden' value='inserir' name='estado'> 
 						<input type='hidden' value='$child_name' name='child_name'>
 						<input type='hidden' value='$birth_date' name='birth_date'>
 						<input type='hidden' value='$tutor_name' name='tutor_name'>
 						<input type='hidden' value='$tutor_phone' name='tutor_phone'>
 						<input type='hidden' value='$tutor_email' name='tutor_email'>
+						</p>
+						<input type='submit' value='submeter' class='submitButton'>
 						</form>";
+						//voltarAtras();		
             }
             echo "</div>";
         } elseif ($_POST["estado"] == "inserir") {

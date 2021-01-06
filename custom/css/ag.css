@@ -91,6 +91,11 @@ select {
   color: #00b050 !important;
 }
 
+
+[hidden] {
+	display: none;
+}
+
 div.caixaFormulario {
   width: auto !important;
   margin: auto !important;
