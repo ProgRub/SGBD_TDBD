@@ -6,9 +6,12 @@ if (verificaCapability("manage_allowed_values")) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
         if ($_REQUEST["estado"] == "introducao") {
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_valores_permitidos.js', array('jquery'), 1.1, true);
+            }
             $_SESSION["subitem_id"] = $_REQUEST["subitem"];
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
-                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' > <strong>Valor<span class='warning'>*</span>: </strong><br><input type='text' class='textInput' name='valor_permitido' ><br><br>";
+                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' > <strong class='textoLabels'>Valor<span class='warning'>*</span>: </strong><br><input type='text' class='textInput' id='valor_permitido' name='valor_permitido' ><br><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'><input class='submitButton textoLabels' type='submit' value='Inserir valor permitido' name='submit'></form></div>";
         } else if ($_REQUEST["estado"] == "inserir") {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - inserção</strong></h3></div><div class='caixaFormulario'>";

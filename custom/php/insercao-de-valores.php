@@ -51,6 +51,9 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "</ul>";
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos subitems
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/insercao_valores.js', array('jquery'), 1.1, true);
+            }
 //            echo $_REQUEST["item"]."\n";
             $_SESSION["item_id"] = $_REQUEST["item"];
             $query = "SELECT name from item WHERE id=" . $_SESSION["item_id"];
@@ -74,20 +77,23 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
             $result = mysqli_query($mySQL, $query);
 //            echo mysqli_num_rows($result);
+            $id = 0;
             while ($subItem = mysqli_fetch_assoc($result)) {
                 $nomeFormulario = $subItem["form_field_name"];
                 $inputFields = "<span class='textoLabels'><strong>$nomeFormulario</strong></span><span class='warning'>*</span><br>";
                 $inputFields .= "<input name='$nomeFormulario'";//criar a label e input com nome determinado pelos dados na base de dados
                 switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
-                        $inputFields .= " type='" . $subItem["form_field_type"] . "'>";
+                        $inputFields .= " type='" . $subItem["form_field_type"] . "' id='$id'>";
+                        $id++;
                         break;
                     case "bool":
                         $inputFields .= " type='radio'>";
                         break;
                     case "double":
                     case "int":
-                        $inputFields .= " type='text' class='textInput'>";
+                        $inputFields .= " type='text' class='textInput' id='$id'>";
+                        $id++;
                         break;
                     case "enum":
                         $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];

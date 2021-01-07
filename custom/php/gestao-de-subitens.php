@@ -70,6 +70,9 @@ if (verificaCapability("manage_subitems")) {
                 echo "</div>";
             }
         } else {
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
+            }
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM subitem")) > 0) {
                 $queryItem = "SELECT * FROM item ORDER BY name";
                 $tabelaItens = mysqli_query($mySQL, $queryItem);
@@ -112,7 +115,7 @@ if (verificaCapability("manage_subitems")) {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - introdução</strong></h3></div>
             <div class='caixaFormulario'><form method='post'>
 			<span class='warning'>* Campos obrigatórios</span><br><br>
-			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br><input type='text' class='textInput' name='nome_subitem' ><br><br>
+			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br><input type='text' class='textInput' id='nome_subitem' name='nome_subitem' ><br><br>
 			<br><strong>Tipo de valor: </strong><span class='warning textoLabels'> * </span></br>";
             $primeiro = true;
             foreach ($tipo_valores as $val_tip) {
@@ -126,7 +129,7 @@ if (verificaCapability("manage_subitems")) {
             }
             echo "<br><strong>Item: </strong><span class='warning textoLabels'> * </span></br>";
             if (mysqli_num_rows($tabelaItens2) > 0) {
-                echo '<select name="it">
+                echo '<select name="it" id="item"  class="textInput textoLabels">
 				<option value="selecione_um_item">Selecione um item:</option>';
                 while ($linhaItem = mysqli_fetch_assoc(($tabelaItens2))) {
 					$linha = $linhaItem["name"];
@@ -162,7 +165,7 @@ if (verificaCapability("manage_subitems")) {
             } else {
                 echo "<span class='information'>Não há nenhum tipo de unidade.</span><br>";
             }
-            echo "<br><strong>Ordem do campo no formulário: </strong><span class='warning textoLabels'> * </span><br><input type='text' class='textInput' name='ordem_campo_form' ><br><br>
+            echo "<br><strong>Ordem do campo no formulário: </strong><span class='warning textoLabels'> * </span><br><input type='text' class='textInput' id='ordem_campo_form' name='ordem_campo_form' ><br><br>
 			<br><strong>Obrigatório: </strong><span class='warning textoLabels'> * </span><br>
 			<input  type='radio' name='obrigatorio' checked value=sim><span class='textoLabels' >Sim</span><br>
 			<input  type='radio' name='obrigatorio' value=nao><span class='textoLabels' >Não</span><br>

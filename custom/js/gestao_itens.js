@@ -1,11 +1,15 @@
+document.getElementById("nome_item").addEventListener("click", function () {
+  this.className = "textInput";
+      this.placeholder = "";
+});
+
 document
   .getElementsByTagName("form")[1]
   .addEventListener("submit", function (event) {
     let input = document.getElementById("nome_item");
     if (input.value === "") {
-      //   console.log("VAZIO");
-	  input.className = "textInputWrong";
-	  input.placeholder="Nome é obrigatório!";
+      input.className = "textInputWrong";
+      input.placeholder = "Nome é obrigatório.";
       event.preventDefault();
     }
   });

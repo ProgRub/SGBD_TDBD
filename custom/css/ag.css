@@ -63,20 +63,24 @@ h3 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
 }
 
+.textInput:focus {
+  background-color: #efefef !important;
+}
+
 .textInputWrong {
   width: 45% !important;
   padding: 6px 10px !important;
   margin: 8px 0 !important;
   font-size: 14px !important;
   box-sizing: border-box !important;
-  border: 1px solid grey !important;
+  border: 1px solid rgb(123, 2, 2) !important;
   border-radius: 5px !important;
-  box-shadow: 0 4px 8px 0 rgba(135, 2, 2, 0.2), 0 3px 10px 0 rgba(135, 2, 2, 0.19) !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
   background-color: #fd7070 !important;
 }
 
-.textInput:focus {
-  background-color: #efefef !important;
+.textInputWrong::placeholder{
+	color:rgb(123, 2, 2);
 }
 
 select {
