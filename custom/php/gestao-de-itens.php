@@ -40,6 +40,9 @@ if (verificaCapability("manage_items")) {
             }
             echo "</div>";
         } else {
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_itens.js', array('jquery'), 1.1, true);
+            }
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM item")) > 0) { //ver se há items na tabela item
                 $queryTipos = "SELECT * FROM item_type ORDER BY name"; //TODOS OS TIPOS DE ITENS
                 $tabelaTipos = mysqli_query($mySQL, $queryTipos);
@@ -75,13 +78,13 @@ if (verificaCapability("manage_items")) {
             $queryTipos = "SELECT * FROM item_type"; //TODOS OS TIPOS DE ITENS
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de itens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><form method='post' > <strong>Nome: </strong><br><input type='text' class='textInput' name='nome_item' ><br><br>";
+            <div class='caixaFormulario'><form method='post' > <strong>Nome: </strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br><br>";
             echo "<br><strong>Tipo: </strong></br>";
             $primeiro = true;
             if (mysqli_num_rows($tabelaTipos) > 0) {
                 while ($linhaTipo = mysqli_fetch_assoc(($tabelaTipos))) {
                     if ($primeiro) {
-                        echo '<input  type="radio" name="tipo_item" checked value=' . $linhaTipo["id"] . '><span class="textoLabels" >' . $linhaTipo["name"] . '</span><br>';
+                        echo '<input  type="radio" name="tipo_item"  checked value=' . $linhaTipo["id"] . '><span class="textoLabels" >' . $linhaTipo["name"] . '</span><br>';
                         $primeiro = false;
                     } else {
                         echo '<input  type="radio" name="tipo_item" value=' . $linhaTipo["id"] . '><span class="textoLabels" >' . $linhaTipo["name"] . '</span><br>';
