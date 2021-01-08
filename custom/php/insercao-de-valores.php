@@ -51,6 +51,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "</ul>";
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos subitems
+//            global $clientsideval;
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/insercao_valores.js', array('jquery'), 1.1, true);
             }
@@ -80,7 +81,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $id = 0;
             while ($subItem = mysqli_fetch_assoc($result)) {
                 $nomeFormulario = $subItem["form_field_name"];
-                $inputFields = "<span class='textoLabels'><strong>$nomeFormulario</strong></span><span class='warning'>*</span><br>";
+                $inputFields = "<span class='textoLabels'><strong>".$subItem["name"]."</strong></span><span class='warning'>*</span><br>";
                 $inputFields .= "<input name='$nomeFormulario'";//criar a label e input com nome determinado pelos dados na base de dados
                 switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
@@ -101,11 +102,11 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                         if ($subItem["form_field_type"] == "radio") {
                             $inputFields .= " checked ";
                         }
-                        $id = 0;
+                        $index = 0;
                         while ($valor = mysqli_fetch_assoc($result2)) {
-                            $inputFields .= " id='$id' type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'><span for='$id' class='textoLabels'>" . $valor["value"] . "</span><br>";
-                            $id++;
-                            if ($id < mysqli_num_rows($result2)) {
+                            $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'><span for='$id' class='textoLabels'>" . $valor["value"] . "</span><br>";
+                            $index++;
+                            if ($index < mysqli_num_rows($result2)) {
 //                                echo $id."\n";
                                 $inputFields .= "<input name='$nomeFormulario'";
                             }
@@ -174,39 +175,39 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 $query = "SELECT id from subitem WHERE form_field_name='$key' AND state='active'";
                 $result = mysqli_query($mySQL, $query);
                 if (mysqli_num_rows($result) > 0) {
-                    $query = "INSERT INTO value (id,child_id,subitem_id,value,date,time,producer) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
+                    $query = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
                     array_push($insertQueries, $query);
                 }
             }
             $query = "START TRANSACTION;\n";
-//            $index=0;
+            if (!mysqli_query($mySQL, $query)) {
+                echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                $ocorreuErro = true;
+            }
             $ocorreuErro = false;
             foreach ($insertQueries as $insertQuery) {
-//                mysqli_query($mySQL, $insertQuery);
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
                     $ocorreuErro = true;
                     break;
-//                $query .= $insertQuery . ($index!=count($insertQueries)-1?",":";")."\n";
-//                $index++;
                 }
             }
             if (!$ocorreuErro) {
+                $query = "COMMIT;";
+                if (!mysqli_query($mySQL, $query)) {
+                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                    $ocorreuErro = true;
+                }
                 echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
-//                    echo "<a href='gestao-de-itens'>Continuar</a>";
                 echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Voltar</button></a>";
                 echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><button class='continuarButton textoLabels'>Escolher item</button></a>";
+            }else{
+                $query = "ROLLBACK TRANSACTION;";
+                if (!mysqli_query($mySQL, $query)) {
+                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                    $ocorreuErro = true;
+                }
             }
-////            $query .= "COMMIT;";
-//            if (!mysqli_query($mySQL, $query)) {
-//                echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
-//            } else {
-//                echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
-////                    echo "<a href='gestao-de-itens'>Continuar</a>";
-//                echo "<a href='insercao-de-valores'><input type='submit' class='atrasButton textoLabels' value='Voltar'>";
-//                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><input type='submit' class='continuarButton textoLabels' value='Escolher item'>";
-//            }
-//            echo $query . "\n";
             echo "</div>";
         } else {
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";

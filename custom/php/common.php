@@ -1,5 +1,5 @@
 <?php
-global $wp;
+global $wp,$current_page,$clientsideval;
 $current_page = add_query_arg(array(), $wp->request);
 //Verifica se o utilizador está autenticado e tem uma certa capability
 function verificaCapability($capability)
@@ -48,4 +48,4 @@ function ligacaoBD()
     return $ligacao;
 }
 
-$clientsideval = true; //Usada para a validação clientside
+$clientsideval= true; //Usada para a validação clientside

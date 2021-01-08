@@ -41,8 +41,8 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
             //formulário
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
                     <div class='caixaFormulario'>";
-//            echo '<form method="post" action="'.$current_page.'">';
-            echo "<form method ='post'>";
+            echo "<form method='post' action='".get_site_url().'/'.$current_page."'>";
+//            echo "<form method ='post'>";
             echo "<strong class='textoLabels'>Nome:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_unidade' id='nome_unidade' class='textInput'><br>
                         <input type='hidden' value='inserir' name='estado' class='textInput'><br>";
             echo "<input class='submitButton textoLabels' type='submit' value='Inserir tipo de unidade'>";
