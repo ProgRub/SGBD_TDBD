@@ -154,7 +154,7 @@ if (verificaCapability("manage_subitems")) {
             }
             echo "<br><strong>Tipo de unidade: </strong></br>";
             if (mysqli_num_rows($tabelaTiposUnid) > 0) {
-                echo '<select name="tipo_unidade">
+                echo '<select name="tipo_unidade" id="tipo_unidade"  class="textInput textoLabels">
 				<option value="selecione_tipo_unid">Selecione um tipo de unidade:</option>';
                 while ($linhaUnid = mysqli_fetch_assoc(($tabelaTiposUnid))) {
 					$linha = $linhaUnid["name"];
