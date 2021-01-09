@@ -6,16 +6,16 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
         die("Connection failed: " . mysqli_connect_error());
     } 
 	else {
-        if ($_POST["estado"] == "validar") { //Validar dados recebidos
+        if ($_REQUEST["estado"] == "validar") { //Validar dados recebidos
             $houveErros = False;
 			$dataNoFormatoCorreto = True;
             echo "<div class='caixaSubTitulo'><h3>Dados de registo - validação</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $child_name = testarInput($_POST["child_name"]);
-            $birth_date = testarInput($_POST["birth_date"]);
-            $tutor_name = testarInput($_POST["tutor_name"]);
-            $tutor_phone = testarInput($_POST["tutor_phone"]);
-            $tutor_email = testarInput($_POST["tutor_email"]);
+            $child_name = testarInput($_REQUEST["child_name"]);
+            $birth_date = testarInput($_REQUEST["birth_date"]);
+            $tutor_name = testarInput($_REQUEST["tutor_name"]);
+            $tutor_phone = testarInput($_REQUEST["tutor_phone"]);
+            $tutor_email = testarInput($_REQUEST["tutor_email"]);
             if (empty($child_name) || empty($birth_date) || empty($tutor_name) || empty($tutor_phone)) { //Se algum dos campos obrigatórios estiver vazio é apresentada a mensagem de erro e a variável $houveErros é colocada a True
                 echo "<p class='warning textoLabels'>Não preencheu todos os campos obrigatórios!</p>";
                 $houveErros = True;
@@ -79,14 +79,14 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             }
             echo "</div>";
         } 
-		elseif ($_POST["estado"] == "inserir") { //Inserção dos dados na tabela "child"
+		elseif ($_REQUEST["estado"] == "inserir") { //Inserção dos dados na tabela "child"
             echo "<div class='caixaSubTitulo'><h3>Dados de registo - inserção</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $child_name = testarInput($_POST['child_name']);
-            $birth_date = testarInput($_POST['birth_date']);
-            $tutor_name = testarInput($_POST['tutor_name']);
-            $tutor_phone = testarInput($_POST['tutor_phone']);
-            $tutor_email = testarInput($_POST['tutor_email']);
+            $child_name = testarInput($_REQUEST['child_name']);
+            $birth_date = testarInput($_REQUEST['birth_date']);
+            $tutor_name = testarInput($_REQUEST['tutor_name']);
+            $tutor_phone = testarInput($_REQUEST['tutor_phone']);
+            $tutor_email = testarInput($_REQUEST['tutor_email']);
             $insertChildQuery = "INSERT INTO child (id,name,birth_date,tutor_name,tutor_phone,tutor_email) VALUES (NULL,'$child_name','$birth_date','$tutor_name','$tutor_phone', '$tutor_email');"; //Query para inserir os dados na tabela "child"
             if (!mysqli_query($mySQL, $insertChildQuery)) { //Se houver algum erro ao executar a query é apresentada a mensagem de erro
                 echo "<span class='warning'>Erro: " . $insertChildQuery . "<br>" . mysqli_error($mySQL)."</span>";
