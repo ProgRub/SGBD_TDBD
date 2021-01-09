@@ -101,13 +101,17 @@ if (verificaCapability("manage_allowed_values")) {
                                 }
                                 if ($newValorPermitido) {
                                     echo "<td class='textoTabela cell' rowspan='$numeroValoresPermitidosSubitem'>" . $linhaSubitemEnum["id"] . "</td>";
-                                    echo "<td class='textoTabela cell' rowspan='$numeroValoresPermitidosSubitem'><a href='gestao-de-valores-permitidos?estado=introducao&subitem=".$linhaSubitemEnum["id"]."'>[" . $linhaSubitemEnum["name"] . "]</a></td>";
+                                    echo "<td class='textoTabela cell' rowspan='$numeroValoresPermitidosSubitem'>
+                                    <a href='gestao-de-valores-permitidos?estado=introducao&subitem=".$linhaSubitemEnum["id"]."'>[" . $linhaSubitemEnum["name"] . "]</a></td>";
                                     $newValorPermitido = false;
                                 }
                                 echo "<td class='textoTabela cell'>" . $linhaValoresPermitidos["id"] . "</td>";
                                 echo "<td class='textoTabela cell'>" . $linhaValoresPermitidos["value"] . "</td>";
                                 echo "<td class='textoTabela cell'>" . ($linhaValoresPermitidos["state"] == 'active' ? 'ativo' : 'inativo') . "</td>";
-                                echo "<td class='textoTabela cell'>[editar] [desativar]</td></tr>";
+                                echo "<td class='textoTabela cell'>
+                                <a href='edicao-de-dados?estado=editar&idValorPerm=".$linhaValoresPermitidos["id"]."&idSubitemValor=".$linhaSubitemEnum["id"]."'>[editar]</a>
+                                <a href='edicao-de-dados?estado=".($linhaValoresPermitidos["state"] == 'active' ? 'desativar' : 'ativar')."&idValorPerm=".$linhaValoresPermitidos["id"]."&idSubitemValor=".$linhaSubitemEnum["id"]."'>".($linhaValoresPermitidos["state"] == 'active' ? '[desativar]' : '[ativar]')."</a>
+                                </td></tr>";
                             }
                         }
                     }

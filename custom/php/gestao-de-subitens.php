@@ -124,16 +124,18 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                                 $rowUnidade = mysqli_fetch_assoc($tabelaUnidade); //Resultado da query
 								//Escrita dos valores das restantes colunas da tabela:
                                 echo "<td  class='textoTabela cell'>" . $rowSubitem["id"] . "</td>
-								<td class='textoTabela cell'>" . $rowSubitem["name"] . "</td>
-								<td class='textoTabela cell'>" . $rowSubitem["value_type"] . "</td>
-								<td class='textoTabela cell'>" . $rowSubitem["form_field_name"] . "</td>
-								<td class='textoTabela cell'>" . $rowSubitem["form_field_type"] . "</td>
-								<td class='textoTabela cell'>" . $rowUnidade["name"] . "</td>
-								<td class='textoTabela cell'>" . $rowSubitem["form_field_order"] . "</td>
-								<td class='textoTabela cell'>" . ($rowSubitem["mandatory"] == '1' ? 'sim' : 'não') . "</td>
-								<td class='textoTabela cell'>" . ($rowSubitem["state"] == 'active' ? 'ativo' : 'inativo') . "</td>
-								<td class='textoTabela cell'>[editar] [desativar]</td>
-                                </tr>";
+                                <td class='textoTabela cell'>" . $rowSubitem["name"] . "
+                                <td  class='textoTabela cell'>" . $rowSubitem["value_type"] . "
+                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_name"] . "
+                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_type"] . "
+                                <td  class='textoTabela cell'>" . $rowUnidade["name"] . "
+                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_order"] . "
+                                <td  class='textoTabela cell'>" . ($rowSubitem["mandatory"] == '1' ? 'sim' : 'não') . "</td>
+                                <td class='textoTabela cell'>" . ($rowSubitem["state"] == 'active' ? 'ativo' : 'inativo') . "</td>
+                                <td class='textoTabela cell'>
+                                <a href='edicao-de-dados?estado=editar&idSubitem=".$rowSubitem["id"]."&idItemSubitem=".$rowItem["id"]."'>[editar]</a>
+                                <a href='edicao-de-dados?estado=".($rowSubitem["state"] == 'active' ? 'desativar' : 'ativar')."&idSubitem=".$rowSubitem["id"]."&idItemSubitem=".$rowItem["id"]."'>".($rowSubitem["state"] == 'active' ? '[desativar]' : '[ativar]')."</a>
+                                </td>";
                             }
                         }
 						//Se não existirem subitens associados ao item da linha atual, passar para o próximo item

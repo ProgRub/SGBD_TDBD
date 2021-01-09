@@ -65,7 +65,10 @@ if (verificaCapability("manage_items")) {
                                 } else {
                                     echo "<tr class='row'>";
                                 }
-                                echo "<td  class='textoTabela cell'>" . $linhaItem["id"] . "</td><td class='textoTabela cell'>" . $linhaItem["name"] . "</td><td class='textoTabela cell'>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "</td><td class='textoTabela cell'>[editar] [desativar]</td>"; //DADOS DE CADA ITEM DESSE TIPO
+                                echo "<td  class='textoTabela cell'>" . $linhaItem["id"] . "</td><td class='textoTabela cell'>" . $linhaItem["name"] . "</td><td class='textoTabela cell'>" . ($linhaItem["state"] == 'active' ? 'ativo' : 'inativo') . "
+                                </td><td class='textoTabela cell'>
+                                <a href='edicao-de-dados?estado=editar&idItem=".$linhaItem["id"]."&tipoItem=".$linhaTipoItem["id"]."'>[editar]</a> 
+                                <a href='edicao-de-dados?estado=".($linhaItem["state"] == 'active' ? 'desativar' : 'ativar')."&idItem=".$linhaItem["id"]."&tipoItem=".$linhaTipoItem["id"]."'>".($linhaItem["state"] == 'active' ? '[desativar]' : '[ativar]')."</a> </td>";
                                 echo "</tr>";
                             }
                         }
