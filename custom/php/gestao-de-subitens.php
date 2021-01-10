@@ -124,12 +124,12 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                                 $rowUnidade = mysqli_fetch_assoc($tabelaUnidade); //Resultado da query
 								//Escrita dos valores das restantes colunas da tabela:
                                 echo "<td  class='textoTabela cell'>" . $rowSubitem["id"] . "</td>
-                                <td class='textoTabela cell'>" . $rowSubitem["name"] . "
-                                <td  class='textoTabela cell'>" . $rowSubitem["value_type"] . "
-                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_name"] . "
-                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_type"] . "
-                                <td  class='textoTabela cell'>" . $rowUnidade["name"] . "
-                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_order"] . "
+                                <td class='textoTabela cell'>" . $rowSubitem["name"] . "</td>
+                                <td  class='textoTabela cell'>" . $rowSubitem["value_type"] . "</td>
+                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_name"] . "</td>
+                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_type"] . "</td>
+                                <td  class='textoTabela cell'>" . $rowUnidade["name"] . "</td>
+                                <td  class='textoTabela cell'>" . $rowSubitem["form_field_order"] . "</td>
                                 <td  class='textoTabela cell'>" . ($rowSubitem["mandatory"] == '1' ? 'sim' : 'não') . "</td>
                                 <td class='textoTabela cell'>" . ($rowSubitem["state"] == 'active' ? 'ativo' : 'inativo') . "</td>
                                 <td class='textoTabela cell'>
