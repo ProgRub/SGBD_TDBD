@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "MUDOU3";
+//echo "MUDOU3";
 if (verificaCapability("manage_items")) {
 
     //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:

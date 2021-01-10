@@ -75,26 +75,24 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
 //            echo $action."\n";
             echo "<span class='warning'>Campos obrigatórios *</span>";
             echo "<form method='post' name='$nomeFormulario' action='$action'>";
-            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active' ORDER BY form_field_order";
             $result = mysqli_query($mySQL, $query);
 //            echo mysqli_num_rows($result);
             $id = 0;
             while ($subItem = mysqli_fetch_assoc($result)) {
                 $nomeFormulario = $subItem["form_field_name"];
-                $inputFields = "<span class='textoLabels'><strong>".$subItem["name"]."</strong></span><span class='warning'>*</span><br>";
+                $inputFields = "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";
                 $inputFields .= "<input name='$nomeFormulario'";//criar a label e input com nome determinado pelos dados na base de dados
                 switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
-                        $inputFields .= " type='" . $subItem["form_field_type"] . "' id='$id'>";
-                        $id++;
+                        $inputFields .= " type='text'  class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
                         break;
                     case "bool":
-                        $inputFields .= " type='radio'>";
+                        $inputFields .= " type='radio' value='verdadeiro'><br><input name='$nomeFormulario' type='radio' value='falso'>";
                         break;
                     case "double":
                     case "int":
-                        $inputFields .= " type='text' class='textInput' id='$id'>";
-                        $id++;
+                        $inputFields .= " type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
                         break;
                     case "enum":
                         $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
@@ -104,7 +102,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                         }
                         $index = 0;
                         while ($valor = mysqli_fetch_assoc($result2)) {
-                            $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'><span for='$id' class='textoLabels'>" . $valor["value"] . "</span><br>";
+                            $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
                             $index++;
                             if ($index < mysqli_num_rows($result2)) {
 //                                echo $id."\n";
@@ -120,6 +118,9 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                     $inputFields .= "<span class='textoLabels'>" . $unidade["name"] . "</span>";
                 }
                 echo $inputFields . "<br>";
+                if ($subItem["mandatory"] == 1) {
+                    $id++;
+                }
             }
             echo "<input type='hidden' value='validar' name='estado'><input type='submit' class='submitButton' name='submit' value='Submeter'>";
             echo "</form>";
@@ -128,7 +129,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - validar</h3></div>";
             echo "<div class='caixaFormulario'>";
 //            echo "MUDOU\n";
-            $query = "SELECT form_field_name,name from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
+            $query = "SELECT form_field_name,name,mandatory from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
             $result = mysqli_query($mySQL, $query);
             $error = false;
             $listaSubItems = array();
@@ -137,7 +138,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             }
             foreach ($listaSubItems as $subItem) {
                 $input = testarInput($_REQUEST[$subItem["form_field_name"]]);
-                if (empty($input)) {
+                if ($subItem["mandatory"] == 1 && empty($input)) {
                     echo "<span class='warning'>O campo do subitem " . $subItem["name"] . " é obrigatório!</span><br>";
                     $error = true;
                 }
@@ -201,7 +202,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
                 echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Voltar</button></a>";
                 echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><button class='continuarButton textoLabels'>Escolher item</button></a>";
-            }else{
+            } else {
                 $query = "ROLLBACK TRANSACTION;";
                 if (!mysqli_query($mySQL, $query)) {
                     echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
