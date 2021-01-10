@@ -49,10 +49,10 @@ if (verificaCapability("search")) {
 			$aux = 0;
 			echo "<div class='caixaFormulario'><form method='post'>
 			<span class='information'><strong>Irá ser realizada uma pesquisa que irá obter, como resultado, uma listagem de, para cada criança, dos seguintes dados pessoais escolhidos:</strong></span>
-			<form method='post'><table class='tabela'><ul>";
+			<form method='post'><table><ul>";
 			foreach($_REQUEST['atributos_obter'] as $chave=>$valor){
 				$aplicarFiltro = false;
-				echo "<tr class='row'><td class='textoTabela cell'><li>$valor</li></td>";
+				echo "<tr><td><li>$valor</li></td>";
 				foreach($_REQUEST['atributos_filtro'] as $chave1=>$valor1){
 					if($valor1 == $valor){
 						$aplicarFiltro = true;
@@ -60,7 +60,7 @@ if (verificaCapability("search")) {
 				}
 				if($aplicarFiltro==true){
 					if ($valor == id){
-						echo '<td class="textoTabela cell"><select name="oper">
+						echo '<td><select name="oper">
 						<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 						<option value="maior"> > </option>
 						<option value="maiorOuIgual"> >= </option>
@@ -72,32 +72,33 @@ if (verificaCapability("search")) {
 						</select></td>';
 					}
 					else{
-						echo '<td class="textoTabela cell"><select name="oper">
+						echo '<td><select name="oper">
 						<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 						<option value="igual">=</option>
 						<option value="diferente">!=</option>
 						<option value="like">LIKE</option>
 						</select></td>';
 					}
-					echo "<td class='textoTabela cell'><span class='textoLabels'><strong>$valor</strong></span><span class='warning'>*</span><br>
+					echo "<td><span class='textoLabels'><strong>$valor</strong></span><span class='warning'>*</span><br>
 					<input type='text' class='textInput2' id=".$valor." name=".$valor."></td></tr>";
 
 				}
 				else{
-					echo "<td class='textoTabela cell'></td><td class='textoTabela cell'></td></tr>";
+					echo "<td></td><td></td></tr>";
 				}
 
 				$aux++;
+				if($valor == "name"){$valor = "child.name";}
 				$_SESSION["atributos_obter" . $aux] = $valor;  
 			}
 			$_SESSION["n_atributos_obter"] = $aux;  
 			echo "</ul></table>
 			<span class='information'><strong>e do item: * " . $_SESSION["item_name"] . " * uma listagem dos valores dos subitens:</strong></span>";
 			$aux = 0;
-			echo "<table class='tabela'><ul>";
+			echo "<table><ul>";
 			foreach($_REQUEST['subitens_obter'] as $chave=>$valor){
 				$aplicarFiltro=false;
-				echo "<tr class='row'><td class='textoTabela cell'><li>$valor</li></td>";
+				echo "<tr><td><li>$valor</li></td>";
 				foreach($_REQUEST['subitens_filtro'] as $chave1=>$valor1){
 					if($valor1 == $valor){
 						$aplicarFiltro = true;
@@ -114,29 +115,29 @@ if (verificaCapability("search")) {
 						$inputFields .= "<input name='$nomeFormulario'";
 						switch ($rowSubitem["value_type"]) {
 							case "text":
-								echo '<td class="textoTabela cell"><select name="oper">
+								echo '<td><select name="oper">
 								<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 								<option value="igual">=</option>
 								<option value="diferente">!=</option>
 								<option value="like">LIKE</option>
 								</select></td>';
 								$inputFields .= " type='" . $rowSubitem["form_field_type"] . "' class='textInput2' id='$id'>";
-								echo "<td class='textoTabela cell'> $inputFields </td></tr>";
+								echo "<td> $inputFields </td></tr>";
 								$id++;
 								break;
 							case "bool":
-								echo '<td class="textoTabela cell"><select name="oper">
+								echo '<td><select name="oper">
 								<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 								<option value="igual">=</option>
 								<option value="diferente">!=</option>
 								<option value="like">LIKE</option>
 								</select></td>';
 								$inputFields .= " type='radio'>";
-								echo "<td class='textoTabela cell'> $inputFields </td></tr>";
+								echo "<td> $inputFields </td></tr>";
 								break;
 							case "double":
 							case "int":
-								echo '<td class="textoTabela cell"><select name="oper">
+								echo '<td><select name="oper">
 								<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 								<option value="maior"> > </option>
 								<option value="maiorOuIgual"> >= </option>
@@ -147,11 +148,11 @@ if (verificaCapability("search")) {
 								<option value="like">LIKE</option>
 								</select></td>';
 								$inputFields .= " type='text' class='textInput2' id='$id'>";
-								echo "<td class='textoTabela cell'> $inputFields </td></tr>";
+								echo "<td> $inputFields </td></tr>";
 								$id++;
 								break;
 							case "enum":
-								echo '<td class="textoTabela cell"><select name="oper">
+								echo '<td><select name="oper">
 								<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 								<option value="igual">=</option>
 								<option value="diferente">!=</option>
@@ -169,13 +170,13 @@ if (verificaCapability("search")) {
 										$inputFields .= "<input name='$nomeFormulario'";
 									}
 								}
-								echo "<td class='textoTabela cell'> $inputFields </td></tr>";
+								echo "<td> $inputFields </td></tr>";
 								break;
 						}
 					}
 				}
 				else{
-					echo "<td class='textoTabela cell'></td><td class='textoTabela cell'></td></tr>";
+					echo "<td></td><td></td></tr>";
 				}
 				
 				$aux++;
@@ -189,10 +190,34 @@ if (verificaCapability("search")) {
 		}
 		
 		elseif ($_REQUEST["estado"] == "execucao") {
+			
+			if($_SESSION["n_atributos_obter"]==0){
+			}
+			else{
+				
+				$query = "SELECT ";
+				for($i = 1;$i <= $_SESSION["n_atributos_obter"];$i++ ){
+					if($i == $_SESSION["n_atributos_obter"]){
+						$query .= "".$_SESSION["atributos_obter" . $i]."";	
+					}
+					else{
+						$query .= "".$_SESSION["atributos_obter" . $i].",";
+					}
+					
+				}
+			}
+			if ($_SESSION["n_atributos_obter"]!=0 && $_SESSION["n_subitens_obter"]!=0){
+				$query .= ",subitem.name FROM child, subitem WHERE" ;
+					
+			}
+			elseif($_SESSION["n_atributos_obter"]==0 && $_SESSION["n_subitens_obter"]!=0){
+				$query .= "SELECT subitem.name FROM subitem WHERE" ;
+			}
+			else{
+				$query .= " FROM child WHERE" ;
+			}
+			echo $query;
 
-			
-			
-			
 			
 		}
 		else{
