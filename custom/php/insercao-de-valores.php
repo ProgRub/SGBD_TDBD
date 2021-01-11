@@ -81,33 +81,52 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             $id = 0;
             while ($subItem = mysqli_fetch_assoc($result)) {
                 $nomeFormulario = $subItem["form_field_name"];
-                $inputFields = "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";
-                $inputFields .= "<input name='$nomeFormulario'";//criar a label e input com nome determinado pelos dados na base de dados
+                $inputFields = "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
                 switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
                     case "text":
-                        $inputFields .= " type='text'  class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
+                        if ($subItem["form_field_type"] == "text") {
+                            $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
+                            $inputFields .= " type='text'  class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
+                        } else {
+                            $inputFields .= "<textarea class='textArea' name='$nomeFormulario' rows='5' cols='50'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "></textarea>";
+                        }
                         break;
                     case "bool":
+                        $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
                         $inputFields .= " type='radio' value='verdadeiro'><br><input name='$nomeFormulario' type='radio' value='falso'>";
                         break;
                     case "double":
                     case "int":
+                        $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
                         $inputFields .= " type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
                         break;
                     case "enum":
-                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
-                        $result2 = mysqli_query($mySQL, $query);
-                        if ($subItem["form_field_type"] == "radio") {
-                            $inputFields .= " checked ";
+                        $isSelectBox = $subItem["form_field_type"] == "selectbox";
+                        if ($isSelectBox) {
+                            $inputFields .= "<select name='$nomeFormulario'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " class='textInput textoLabels'>";
+                            $inputFields .= "<option value='empty'>Selecione um valor</option>";
+                        } else {
+                            $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
+                            if ($subItem["form_field_type"] == "radio") {
+                                $inputFields .= " checked ";
+                            }
                         }
                         $index = 0;
+                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
+                        $result2 = mysqli_query($mySQL, $query);
                         while ($valor = mysqli_fetch_assoc($result2)) {
-                            $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
+                            if ($isSelectBox) {
+                                $inputFields .= "<option value='" . $valor["value"] . "'>" . $valor["value"] . "</option>";
+                            } else {
+                                $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
+                            }
                             $index++;
-                            if ($index < mysqli_num_rows($result2)) {
-//                                echo $id."\n";
+                            if ($index < mysqli_num_rows($result2) &&!$isSelectBox) {
                                 $inputFields .= "<input name='$nomeFormulario'";
                             }
+                        }
+                        if ($isSelectBox) {
+                            $inputFields .= "</select>";
                         }
                         break;
                 }
@@ -115,7 +134,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                     $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
                     $result3 = mysqli_query($mySQL, $query);
                     $unidade = mysqli_fetch_assoc($result3);
-                    $inputFields .= "<span class='textoLabels'>" . $unidade["name"] . "</span>";
+                    $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
                 }
                 echo $inputFields . "<br>";
                 if ($subItem["mandatory"] == 1) {

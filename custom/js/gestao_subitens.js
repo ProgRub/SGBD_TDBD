@@ -33,5 +33,9 @@ document
       input.className = "textInputWrong";
       input.placeholder = "Ordem do campo no formulário é obrigatório.";
       event.preventDefault();
+    }else if(parseInt(input.value)<=0){
+      input.className = "textInputWrong";
+      input.placeholder = "O número tem que ser superior a 0.";
+      event.preventDefault();
     }
   });

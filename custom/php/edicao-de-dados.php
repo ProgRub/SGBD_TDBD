@@ -209,12 +209,12 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     <input type='text' class='textInput' name='ordem_campo' id='ordem_campo' value='" . $linhaSubitem["form_field_order"] . "' ><br><br>";
 
                     //ESCOLHA DO VALOR DO MANDATORY (FICA CHECKED O VALOR ATUAL):
-                    echo "<br><strong>Obrigatório:</strong>
+                    echo "<br><strong>Obrigatório:</strong><br>
                     <input type='radio' id='obrig' value='1' name='obrigatorio' " . ($linhaSubitem["mandatory"] == '1' ? 'checked' : '') . "><span class='textoLabels' for='obrig'>sim</span><br>
                     <input type='radio' id='n_obrig' value='0' name='obrigatorio' " . ($linhaSubitem["mandatory"] == '0' ? 'checked' : '') . "><span for='n_obrig' class='textoLabels'>não</span><br>";
 
                     //ESCOLHA DO ESTADO DO SUBITEM (FICA CHECKED O VALOR ATUAL):
-                    echo "<br><strong>Estado:</strong>
+                    echo "<br><strong>Estado:</strong><br>
                     <input type='radio' id='at' value='active' name='estado_subitem' " . ($linhaSubitem["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>
                     <input type='radio' id='inat' value='inactive' name='estado_subitem' " . ($linhaSubitem["state"] == 'inactive' ? 'checked' : '') . "><span for='inat' class='textoLabels'>inativo</span><br>
                     <input type='hidden' value='subitemEditado' name='estado'>
