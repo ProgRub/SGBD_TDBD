@@ -35,6 +35,12 @@ tr.row:nth-child(even) {
   background-color: #8684ff;
 }
 
+.cell2 {
+  margin: 0;
+  border: 0px;
+  border-color: white;
+}
+
 .textoTabela {
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: 16px;
