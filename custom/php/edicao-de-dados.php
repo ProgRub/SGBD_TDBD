@@ -1,11 +1,10 @@
 <?php
 require_once("custom/php/common.php");
 //echo "MUDOU3";
-if (verificaCapability("manage_items")) {
+if (verificaCapability("manage_items")) { //SEM CAPABILITY?
 
     //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
     $mySQL = ligacaoBD();
-
 
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         die("Connection failed: " . mysqli_connect_error());
@@ -19,7 +18,7 @@ if (verificaCapability("manage_items")) {
 
                 //SUB-TITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3><strong>Edição de Dados - Editar Item</strong></h3></div>";
-                //QUERY PARA ENCONTRAR VALORES DO ITEM ESCOLHIDO E DO SEU TIPO DE ITEM_
+                //QUERY PARA ENCONTRAR VALORES DO ITEM ESCOLHIDO E DO SEU TIPO DE ITEM:
                 $queryItem = "SELECT item.name as itemName, item.id, item.item_type_id, item_type.name as typeName, item.state  
                 FROM item, item_type WHERE item.id ='" . $_REQUEST["idItem"] . "' AND item.item_type_id='" . $_REQUEST["tipoItem"] . "' 
                 AND item.item_type_id=item_type.id";
@@ -154,7 +153,7 @@ if (verificaCapability("manage_items")) {
                     //RESULTADO DA QUERY:
                     $tabelaItens = mysqli_query($mySQL, $queryItens);
 
-                    //SELECT VAZIO:
+                    //SELECT PARA ESCOLHA DO TIPO DE SUBITEM:
                     echo "<select name='item_subitem' id='item_subitem'  class='textInput textoLabels'>";
                     //PERCORRE A TABELA RESULTADO DA QUERY:
                     while ($linhaItens = mysqli_fetch_assoc(($tabelaItens))) {
@@ -189,8 +188,10 @@ if (verificaCapability("manage_items")) {
                     $queryTiposUnidades = "SELECT * FROM subitem_unit_type";
                     //RESULTADO DA QUERY:
                     $tabelaTiposUnidades = mysqli_query($mySQL, $queryTiposUnidades);
-                    //SELECT VAZIO:
+
+                    //SELECT PARA ESCOLHA DO TIPO DE UNIDADE:
                     echo "<select name='tipo_unidade' id='tipo_unidade'  class='textInput textoLabels'>";
+                    //OPÇÃO VAZIO:
                     echo '<option value=""></option>';
                     //PERCORRE OS TIPOS DE UNIDADE:
                     while ($linhaTipoUnidade = mysqli_fetch_assoc(($tabelaTiposUnidades))) {
