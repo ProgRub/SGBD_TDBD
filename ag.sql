@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 03, 2021 at 09:41 PM
+-- Generation Time: Jan 10, 2021 at 09:34 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.12
 
@@ -46,7 +46,8 @@ INSERT INTO `child` (`id`, `name`, `birth_date`, `tutor_name`, `tutor_phone`, `t
 (4, 'Davi José Torres Pinho', '2019-02-05', 'Érika Silva', '285169492', 'erikalva@gmail.com'),
 (5, 'Sandro Eduardo de Faria', '2012-03-21', 'Iara Benedita Pinto', '936765395', 'iarabnto@gmail.com'),
 (6, 'César Rodrigo Brito Pires', '2014-09-14', 'Renata Freitas de Mota', '264898184', ''),
-(7, 'Nádia Cátia de Pinho', '2017-05-08', 'Lucas Eduardo Maia de Melo', '238017974', 'lucalo@gmail.com');
+(7, 'Nádia Cátia de Pinho', '2017-05-08', 'Lucas Eduardo Maia de Melo', '238017974', 'lucalo@gmail.com'),
+(8, 'Vicente Valentim Guerreiro', '2018-04-22', 'Renata Assunção Castro', '259870457', 'renatro@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -182,7 +183,8 @@ INSERT INTO `subitem_unit_type` (`id`, `name`) VALUES
 (7, 'miligramas'),
 (8, 'caracóis/centimetro'),
 (9, 'ºC'),
-(10, 'ºF');
+(10, 'ºF'),
+(13, 'Kelvin');
 
 -- --------------------------------------------------------
 
@@ -269,7 +271,7 @@ ALTER TABLE `value`
 -- AUTO_INCREMENT for table `child`
 --
 ALTER TABLE `child`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `item`
@@ -299,13 +301,13 @@ ALTER TABLE `subitem_allowed_value`
 -- AUTO_INCREMENT for table `subitem_unit_type`
 --
 ALTER TABLE `subitem_unit_type`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `value`
 --
 ALTER TABLE `value`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Constraints for dumped tables
