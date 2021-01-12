@@ -48,4 +48,4 @@ function ligacaoBD()
     return $ligacao;
 }
 
-$clientsideval= true; //Usada para a validação clientside
+$clientsideval= false; //Usada para a validação clientside
