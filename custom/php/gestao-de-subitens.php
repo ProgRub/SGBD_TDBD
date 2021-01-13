@@ -4,7 +4,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
     $mySQL = ligacaoBD(); //Efetua a ligação com a base de dados
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) { //Se não for possível selecionar a base de dados "bitnami_wordpress" é apresentado o erro ocorrido
         die("Connection failed: " . mysqli_connect_error());
-    } 
+    }
 	else {
         if ($_REQUEST["estado"] == "inserir") {
             $houveErros = false;
@@ -33,47 +33,64 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             }
             if ($houveErros) { //Se algum campo do formulário não foi preenchido corretamente é apresentado um botão para voltar para a página anterior
                 voltarAtras();
-            } 
+            }
 			else {// Se os campos do formulário foram todos preenchidos corretamente:
-				
+
 				$nome_item = str_replace("_", " ", $nome_item); //Voltar a colocar o nome do item com espaços (em vez de underscores)
 				$tipo_unidade = str_replace("_", " ", $tipo_unidade); //Voltar a colocar o tipo de unidade com espaços (em vez de underscores)
-				
-				// ------- Nome do campo no formulário --------
-                //id do subitem: 
-                $querySubitemMaxId = "SELECT name FROM subitem";  //Query para determinar quantos tuplos existem na tabela "subitem"
-                $tabelaSubitemMaxId = mysqli_query($mySQL, $querySubitemMaxId); //Tabela com o nome de todos os subitens
-                $maxId = mysqli_num_rows($tabelaSubitemMaxId); //Número de subitens existentes
-                $newId = $maxId + 1; //Novo id
-				
-                $tirarAcento = Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
-                $itemSemAcento = $tirarAcento->transliterate($nome_item);
-                $tresPrimeirasLetrasItem = substr($itemSemAcento, 0, 3);
-                $subitem_ascii = preg_replace('/[^a-z0-9_ ]/i', '', $nome_subitem);
-                $subitemSemCaracteresVazios = str_replace(" ", "_", $subitem_ascii);
-                $nome_campo_form = $tresPrimeirasLetrasItem . "-" . $newId . "-" . $subitemSemCaracteresVazios;
-				
-				//----------------------------------------------
-								
+
                 $queryItem = "SELECT id FROM item WHERE name='$nome_item'"; //Query para descobrir o id do item selecionado
                 $result = mysqli_query($mySQL, $queryItem);
-                $item = mysqli_fetch_assoc($result); 
+                $item = mysqli_fetch_assoc($result);
                 $queryItem = "SELECT id FROM subitem_unit_type WHERE name='$tipo_unidade'"; //Query para descobrir o id do tipo de unidade selecionado
                 $result = mysqli_query($mySQL, $queryItem);
                 $unidade = mysqli_fetch_assoc($result);
-				
-				//Query para inserir os dados na tabela "subitem":
-                $insertQuery = "INSERT INTO subitem (id, name, item_id, value_type, form_field_name, form_field_type, unit_type_id, form_field_order, mandatory, state) VALUES ('$newId','$nome_subitem'," . $item["id"] . ",'$tipo_valor','$nome_campo_form','$tipo_camp_form'," . ($unidade==null?'NULL':$unidade["id"]) . ",$ordem_campo_form," . ($obrigatorio == 'sim' ? 1 : 0) . ",'active');";
-                if (!mysqli_query($mySQL, $insertQuery)) {//Se houver algum erro ao executar a query é apresentada a mensagem de erro
+
+                $query = "START TRANSACTION;\n";
+                $ocorreuErro = false;
+                if (!mysqli_query($mySQL, $query)) {
+                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                    $ocorreuErro = true;
+                }
+                $insertQuery = "INSERT INTO subitem (id, name, item_id, value_type, form_field_name, form_field_type, unit_type_id, form_field_order, mandatory, state) VALUES (NULL,'$nome_subitem'," . $item["id"] . ",'$tipo_valor','','$tipo_camp_form'," . ($unidade==null?'NULL':$unidade["id"]) . ",$ordem_campo_form," . ($obrigatorio == 'sim' ? 1 : 0) . ",'active');";
+                if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
-                } 
-				else {//Se não houver nenhum erro ao executar a query os dados são inseridos na tabela "subitem" e é apresentado um botão "Continuar" com uma ligação para esta mesma página 
+                    $ocorreuErro = true;
+                }
+                if (!$ocorreuErro) {
+                    $idItem=mysqli_insert_id($mySQL);
+                    $tirarAcento = Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
+                    $itemSemAcento = $tirarAcento->transliterate($nome_item);
+                    $tresPrimeirasLetrasItem = substr($itemSemAcento, 0, 3);
+                    $subitem_ascii = preg_replace('/[^a-z0-9_ ]/i', '', $nome_subitem);
+                    $subitemSemCaracteresVazios = str_replace(" ", "_", $subitem_ascii);
+                    $nome_campo_form = $tresPrimeirasLetrasItem . "-" . $idItem . "-" . $subitemSemCaracteresVazios;
+                    $updateQuery="UPDATE subitem SET form_field_name='$nome_campo_form' WHERE id=$idItem";
+                    if (!mysqli_query($mySQL, $updateQuery)) {
+                        echo "<span class='warning'>Erro: $updateQuery<br>mysqli_error($mySQL)</span>";
+                        $ocorreuErro = true;
+                    }
+                }
+                if (!$ocorreuErro) {
+                    $query = "COMMIT;";
+                    if (!mysqli_query($mySQL, $query)) {
+                        $ocorreuErro = true;
+                    }
+                } else {
+                    $query = "ROLLBACK;";
+                    if (!mysqli_query($mySQL, $query)) {
+                        $ocorreuErro = true;
+                    }
+                }
+				if(!$ocorreuErro) {//Se não houver nenhum erro ao executar a query os dados são inseridos na tabela "subitem" e é apresentado um botão "Continuar" com uma ligação para esta mesma página
                     echo "<span class='information'>Inseriu os dados de novo subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
                     echo "<a href='gestao-de-subitens'><button class='continuarButton textoLabels'>Continuar</button></a>";
+                }else{
+				    voltarAtras();
                 }
                 echo "</div>";
             }
-        } 
+        }
 		else { //Estado inicial:
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
@@ -106,15 +123,15 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 						if (mysqli_num_rows($tabelaSubitens) > 0) { //Se existirem subitens associados ao item da linha atual
                             $newSubitem = true;
                             $numeroSubitens = mysqli_num_rows($tabelaSubitens); //Número de subitens associados ao item da linha atual
-							
+
                             while ($rowSubitem = mysqli_fetch_assoc($tabelaSubitens)) { //Enquanto existirem tuplos na tabela dos subitens associados ao item da linha atual
                                 if ($newSubitem) { //Para o primeiro subitem associado ao item da linha atual:
 									//Rowspan para definir o número de linhas que a célula "item" deve abranger (para incluir todos os subitens associados)
-									//E escrever o nome do item nessa célula/linha 
+									//E escrever o nome do item nessa célula/linha
                                     echo "<tr class='row'>
 									<td class='textoTabela cell' rowspan='$numeroSubitens'>" . $rowItem["name"] . "</td>";
                                     $newSubitem = false;
-                                } 
+                                }
 								else {
 									//Caso haja mais do que um subitem associado ao item, o nome do item já não é necessário escrever nessas linhas
                                     echo "<tr class='row'>";
@@ -143,19 +160,19 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     echo "</table>";
 					//--------------------------------------------------------------------------------------------------------------
                 }
-            } 
+            }
 			else { //Se não houverem tuplos na tabela subitem
                 echo "<span class='information'>Não há subitems especificados.</span>";
             }
-			
-			
+
+
             $tipo_valores = get_enum_values("subitem", "value_type"); //Para obter todos os tipos de valores presentes no atributo value_type
             $tipo_camp_form = get_enum_values("subitem", "form_field_type"); //Para obter todos os tipos de campo de formulário presentes no atributo form_field_type
             $queryItens = "SELECT name FROM item"; //Para obter o nome de todos os itens 
             $tabelaItens2 = mysqli_query($mySQL, $queryItens); //Tabela com o nome de todos os itens 
             $queryTiposUnid = "SELECT name FROM subitem_unit_type"; //Para obter o nome de todos os tipos de unidades
             $tabelaTiposUnid = mysqli_query($mySQL, $queryTiposUnid); //Tabela com o nome de todos os tipos de unidades
-			
+
 			//Formulário para inserir os dados do subitem:
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - introdução</strong></h3></div>
             <div class='caixaFormulario'>
@@ -167,14 +184,14 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             $primeiro = true;
             foreach ($tipo_valores as $val_tip) { //Escrever cada tipo de valor em um "radio" diferente
                 $input = "<input";
-                if ($primeiro) { 
+                if ($primeiro) {
                     $input .= " checked"; //Para o primeiro tipo de valor ficar selecionado
                     $primeiro = false;
                 }
                 $input .= " type='radio' name='tipo_valor' value=$val_tip><span class='textoLabels'>$val_tip</span><br>";
                 echo $input;
             }
-			
+
             echo "<br><strong>Item: </strong><span class='warning textoLabels'> * </span></br>";
             if (mysqli_num_rows($tabelaItens2) > 0) { //Se existirem itens, apresenta uma selectbox com todos os itens para o utilizador escolher um
                 echo '<select name="it" id="item"  class="textInput textoLabels">
@@ -186,7 +203,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     echo '<option value= ' . $option . ' >' . $linhaItem["name"] . '</option>';
                 }
                 echo '</select><br>';
-            } 
+            }
 			else { //Caso não existam itens
                 echo "Não há nenhum item.<br>";
             }
@@ -211,7 +228,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     echo '<option value=' . $option . '>' . $linhaUnid["name"] . '</option>';
                 }
                 echo '</select><br>';
-            } 
+            }
 			else { //Caso não haja tipos de unidades
                 echo "<span class='information'>Não há nenhum tipo de unidade.</span><br>";
             }
@@ -228,8 +245,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 			</form></div>";
         }
     }
-} 
+}
 else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
-    echo "Não tem autorização para aceder a esta página"; 
+    echo "Não tem autorização para aceder a esta página";
 }
 ?>

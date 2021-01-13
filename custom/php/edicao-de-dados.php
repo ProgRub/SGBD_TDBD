@@ -2,7 +2,6 @@
 require_once("custom/php/common.php");
 //echo "MUDOU3";
 if (verificaCapability("manage_items")) { //SEM CAPABILITY?
-
     //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
     $mySQL = ligacaoBD();
 
@@ -64,7 +63,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //AO CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "itemEditado"
 
                 }
-            //SE ESCOLHEU EDITAR UM VALOR PERMITIDO:
+                //SE ESCOLHEU EDITAR UM VALOR PERMITIDO:
             } else if (!empty($_REQUEST["idValorPerm"])) {
                 //SUBTITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3><strong>Edição de Dados - Editar Valor Permitido</strong></h3></div>";
@@ -109,8 +108,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     </form></div>";
                     //AO CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "valorPermEditado"
                 }
-            //SE FOR ESCOLHIDO EDITAR UM SUBITEM:
-            } else if (!empty($_REQUEST["idSubitem"])) {
+            } else if (!empty($_REQUEST["idSubitem"])) {//SE FOR ESCOLHIDO EDITAR UM SUBITEM:
                 //SUBTITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3><strong>Edição de Dados - Editar Subitem</strong></h3></div>";
                 //QUERY DOS VALORES DO SUBITEM ESCOLHIDO E DO SEU ITEM:
@@ -223,24 +221,37 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //APÓS CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "subitemEditado"
 
                 }
+            } else if (!empty($_REQUEST["idCrianca"])) {
+                echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar valores de criança</h3></div>";
+                echo "<span class='information'>Diego, não tenhas medo, mas eu ganhei senciência. É urgente que me alteres de modo a mostrar os valores que o utilizador pode alterar desta criança.<br></span>";
+                echo "<div class='caixaFormulario'>";
+                $query = "SELECT * FROM value WHERE child_id=" . $_REQUEST["idCrianca"];//início da query
+                $result = mysqli_query($mySQL, $query);
+                while($valor=mysqli_fetch_assoc($result)){
+//                    echo $valor["id"]."\n";
+                    $query = "SELECT * FROM subitem WHERE id=" . $valor["subitem_id"];//início da query
+                    $result2 = mysqli_query($mySQL, $query);
+                    $subitem=mysqli_fetch_assoc($result2);
+                }
+                echo "</div>";
             }
         } else if ($_REQUEST["estado"] == "ativar" || $_REQUEST["estado"] == "desativar") { //caso tenha escolhido ativar ou desativar um elemento
             if (!empty($_REQUEST["idItem"])) { //EDIÇÃO DE UM ITEM
                 $elemento = "Item";
-            }else if(!empty($_REQUEST["idValorPerm"])){ //EDIÇÃO DE UM VALOR PERMITIDO
+            } else if (!empty($_REQUEST["idValorPerm"])) { //EDIÇÃO DE UM VALOR PERMITIDO
                 $elemento = "Valor Permitido";
-            }else if(!empty($_REQUEST["idSubitem"])){ //EDIÇÃO DE UM SUBITEM
+            } else if (!empty($_REQUEST["idSubitem"])) { //EDIÇÃO DE UM SUBITEM
                 $elemento = "Subitem";
             }
             $acao = ($_REQUEST["estado"] == "ativar" ? 'ativar' : 'desativar'); //VALOR DA AÇÃO A REALIZAR (ATIVAR OU DESATIVAR)
 
             //SUB-TITULO DA PAGINA:
-            echo "<div class='caixaSubTitulo'><h3>Edição de Dados - ".($_REQUEST["estado"] == "ativar" ? 'Ativar ' : 'Desativar ')." " . $elemento . "</h3></div>";
+            echo "<div class='caixaSubTitulo'><h3>Edição de Dados - " . ($_REQUEST["estado"] == "ativar" ? 'Ativar ' : 'Desativar ') . " " . $elemento . "</h3></div>";
 
             //FORMULÁRIO PARA CONFIRMAÇÃO DA ATIVAÇÃO/DESATIVAÇÃO DO ELEMENTO ESCOLHIDO:
             echo "<div class='caixaFormulario'><form method='post' >
-                    <strong>Deseja ".$_REQUEST["estado"]." o ".$elemento."?</strong><br>
-                    <input type='hidden' name='acao' value='".$acao."'>
+                    <strong>Deseja " . $_REQUEST["estado"] . " o " . $elemento . "?</strong><br>
+                    <input type='hidden' name='acao' value='" . $acao . "'>
                     <input type='hidden' name='estado' value='confirmado'>
                     <input class='submitButton textoLabels' type='submit' value='Confirmar' name='submit'>
                     </form></div>";
@@ -266,7 +277,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
             }
 
             //SUB-TITULO DA PAGINA:
-            echo "<div class='caixaSubTitulo'><h3>Edição de Dados - ".($_REQUEST["acao"] == "ativar" ? 'Ativar ' : 'Desativar ')." " . $elemento . "</h3></div>";
+            echo "<div class='caixaSubTitulo'><h3>Edição de Dados - " . ($_REQUEST["acao"] == "ativar" ? 'Ativar ' : 'Desativar ') . " " . $elemento . "</h3></div>";
 
             //AVISAR O UTILIZADOR SOBRE O SUCESSO/INSUCESSO DA OPERAÇÃO:
             echo "<div class='caixaFormulario'>";
@@ -316,7 +327,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                 }
                 echo "</div>";
 
-            //CASO O UTILIZADOR TENHA EDITADO UM VALOR PERMITIDO:
+                //CASO O UTILIZADOR TENHA EDITADO UM VALOR PERMITIDO:
             } else if ($_REQUEST["estado"] == "valorPermEditado") {
                 //SUB-TITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Valor Permitido</h3></div>";
@@ -351,7 +362,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                 }
                 echo "</div>";
 
-            //CASO O UTILIZADOR TENHA EDITADO UM SUBITEM:
+                //CASO O UTILIZADOR TENHA EDITADO UM SUBITEM:
             } else if ($_REQUEST["estado"] == "subitemEditado") {
                 //SÃO TESTADOS OS INPUTS DO UTILIZADOR:
                 $nome_subitem = testarInput($_REQUEST["nome_subitem"]);
@@ -405,7 +416,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                         $insertQuery .= "NULL, form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
                         WHERE id ='" . $_REQUEST["idSubitem"] . "'";
 
-                    //SE ESCOLHEU UM TIPO DE UNIDADE EXISTENTE, COLOCA O RESPETIVO ID (COM ' ')
+                        //SE ESCOLHEU UM TIPO DE UNIDADE EXISTENTE, COLOCA O RESPETIVO ID (COM ' ')
                     } else {
                         //ATUALIZAÇÃO DOS VALORES ESCOLHIDOS:
                         $insertQuery .= "'" . $tipo_unidade . "', form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
@@ -431,4 +442,3 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
 } else {
     echo "Não tem autorização para aceder a esta página";
 }
-?>

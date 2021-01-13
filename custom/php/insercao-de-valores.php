@@ -22,7 +22,13 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             if (mysqli_num_rows($result) > 0) {//se houver pelo menos uma criança, listar todas como links numa lista ordenada
                 echo "<ol>";
                 while ($child = mysqli_fetch_assoc($result)) {
-                    echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a></li> ";
+                    echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a>";
+                    $query = "SELECT id FROM value WHERE child_id=" . $child["id"];//início da query
+                    $result2 = mysqli_query($mySQL, $query);
+                    if (mysqli_num_rows($result2) > 0) {
+                        echo " <a href='edicao-de-dados?estado=editar&idCrianca=" . $child["id"] . "'>[editar valores]</a>";
+                    }
+                    echo "</li> ";
                 }
                 echo "</ol>";
             } else {
@@ -204,15 +210,15 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                             array_push($valoresAListar, $value);
                         }
                     }
-                    $primeiro=true;
+                    $primeiro = true;
                     foreach ($valoresAListar as $input) {
                         if ($subItem["form_field_type"] == "text" || $subItem["form_field_type"] == "textbox") {
                             $input = testarInput($input);
                         }
                         if (!empty($input)) {
-                            if ($primeiro){
+                            if ($primeiro) {
                                 echo "<li><p class='textoValidar'>$nomeFormulario</p></li><ul>";
-                                $primeiro=false;
+                                $primeiro = false;
                             }
                             echo "<li>$input</li>";
                         }
@@ -260,11 +266,11 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 }
             }
             $query = "START TRANSACTION;\n";
+            $ocorreuErro = false;
             if (!mysqli_query($mySQL, $query)) {
                 echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
                 $ocorreuErro = true;
             }
-            $ocorreuErro = false;
             foreach ($insertQueries as $insertQuery) {
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
@@ -278,15 +284,19 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                     echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
                     $ocorreuErro = true;
                 }
-                echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
-                echo "<a href='insercao-de-valores'><button class='atrasButton textoLabels'>Voltar</button></a>";
-                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><button class='continuarButton textoLabels'>Escolher item</button></a>";
             } else {
                 $query = "ROLLBACK;";
                 if (!mysqli_query($mySQL, $query)) {
                     echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
                     $ocorreuErro = true;
                 }
+            }
+            if (!$ocorreuErro) {
+                echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
+                echo "<a href='insercao-de-valores'><button class='atrasButton textoLabels'>Voltar</button></a>";
+                echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><button class='continuarButton textoLabels'>Escolher item</button></a>";
+            } else {
+                voltarAtras();
             }
             echo "</div>";
         } else {
