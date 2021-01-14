@@ -150,9 +150,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                                 <td class='textoTabela cell'>" . ($rowSubitem["mandatory"] == '1' ? 'sim' : 'não') . "</td>
                                 <td class='textoTabela cell'>" . ($rowSubitem["state"] == 'active' ? 'ativo' : 'inativo') . "</td>
                                 <td class='textoTabela cell'>
-                                <a href='edicao-de-dados?estado=editar&idSubitem=".$rowSubitem["id"]."&idItemSubitem=".$rowItem["id"]."'>[editar]</a>
-                                <a href='edicao-de-dados?estado=".($rowSubitem["state"] == 'active' ? 'desativar' : 'ativar')."&idSubitem=".$rowSubitem["id"]."&idItemSubitem=".$rowItem["id"]."'>".($rowSubitem["state"] == 'active' ? '[desativar]' : '[ativar]')."</a>
-                                </td>";
+                                <a href='edicao-de-dados?estado=editar&id=".$rowSubitem["id"]."&tipo=subitem'>[editar] </a><a href='edicao-de-dados?estado=".($rowSubitem["state"] == 'active' ? 'desativar' : 'ativar')."&id=".$rowSubitem["id"]."&tipo=subitem'>".($rowSubitem["state"] == 'active' ? '[desativar]' : '[ativar]')."</a></td>";
                             }
                         }
 						//Se não existirem subitens associados ao item da linha atual, passar para o próximo item

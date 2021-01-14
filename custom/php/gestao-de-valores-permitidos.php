@@ -158,11 +158,7 @@ if (verificaCapability("manage_allowed_values")) {
                                 echo "<td class='textoTabela cell'>" . $linhaValoresPermitidos["id"] . "</td>";
                                 echo "<td class='textoTabela cell'>" . $linhaValoresPermitidos["value"] . "</td>";
                                 echo "<td class='textoTabela cell'>" . ($linhaValoresPermitidos["state"] == 'active' ? 'ativo' : 'inativo') . "</td>";
-                                echo "<td class='textoTabela cell'>
-                                <a href='edicao-de-dados?estado=editar&idValorPerm=".$linhaValoresPermitidos["id"]."&idSubitemValor=".$linhaSubitemEnum["id"]."'>[editar]</a>
-                                <a href='edicao-de-dados?estado=".($linhaValoresPermitidos["state"] == 'active' ? 'desativar' : 'ativar')."&idValorPerm=".$linhaValoresPermitidos["id"]."&idSubitemValor=".$linhaSubitemEnum["id"]."'>
-                                ".($linhaValoresPermitidos["state"] == 'active' ? '[desativar]' : '[ativar]')."</a>
-                                </td></tr>";
+                                echo "<td class='textoTabela cell'><a href='edicao-de-dados?estado=editar&id=".$linhaValoresPermitidos["id"]."&tipo=valorPermitido'>[editar]</a><a href='edicao-de-dados?estado=".($linhaValoresPermitidos["state"] == 'active' ? 'desativar' : 'ativar')."&id=".$linhaValoresPermitidos["id"]."&tipo=valorPermitido'>".($linhaValoresPermitidos["state"] == 'active' ? ' [desativar]' : ' [ativar]')."</a></td></tr>";
                             }
                         }
                     }

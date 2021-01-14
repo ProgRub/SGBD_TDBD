@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-//echo "MUDOU3";
+echo "MUDO5";
 if (verificaCapability("manage_items")) { //SEM CAPABILITY?
     //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
     $mySQL = ligacaoBD();
@@ -13,14 +13,16 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
         if ($_REQUEST["estado"] == "editar") {
 
             //SE ESCOLHEU EDITAR UM ITEM:
-            if (!empty($_REQUEST["idItem"])) {
+            if ($_REQUEST["tipo"] == "item") {
+                //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
+                $_SESSION["tipo"] = $_REQUEST["tipo"];
+                $_SESSION["id"] = $_REQUEST["id"];
 
                 //SUB-TITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3><strong>Edição de Dados - Editar Item</strong></h3></div>";
                 //QUERY PARA ENCONTRAR VALORES DO ITEM ESCOLHIDO E DO SEU TIPO DE ITEM:
                 $queryItem = "SELECT item.name as itemName, item.id, item.item_type_id, item_type.name as typeName, item.state  
-                FROM item, item_type WHERE item.id ='" . $_REQUEST["idItem"] . "' AND item.item_type_id='" . $_REQUEST["tipoItem"] . "' 
-                AND item.item_type_id=item_type.id";
+                FROM item, item_type WHERE item.id ='" . $_REQUEST["id"] . "' AND item.item_type_id=item_type.id";
 
                 //RESULTADO DA QUERY:
                 $tabelaItem = mysqli_query($mySQL, $queryItem);
@@ -44,7 +46,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //PERCORRE A TABELA RESULTADO DA QUERY:
                     while ($linhaTipos = mysqli_fetch_assoc(($tabelaTipos))) {
                         //SE FOR O TIPO DE ITEM DO ITEM ESCOLHIDO (FICA CHECKED):
-                        if ($linhaTipos["id"] == $_REQUEST["tipoItem"]) {
+                        if ($linhaTipos["id"] == $linhaItem["item_type_id"]) {
                             echo '<input  type="radio" name="tipo_item"  checked value=' . $linhaTipos["id"] . '><span class="textoLabels" >' . $linhaItem["typeName"] . '</span><br>';
                         } else { //OS RESTANTES TIPOS DE ITENS SÃO APRESENTADOS PARA ESCOLHA:
                             echo '<input  type="radio" name="tipo_item" value=' . $linhaTipos["id"] . '><span class="textoLabels" >' . $linhaTipos["name"] . '</span><br>';
@@ -52,7 +54,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     }
 
                     //ESCOLHA DO ESTADO DO ITEM:
-                    echo "<br><strong>Estado:</strong>";
+                    echo "<br><strong>Estado:</strong></br>";
                     //SE O VALOR DO ESTADO DO ITEM ERA ATIVO, FICA CHECKED:
                     echo "<input type='radio' id='at' value='active' name='estado_item' " . ($linhaItem["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>";
                     //SE O VALOR DO ESTADO DO ITEM ERA INATIVO, FICA CHECKED:
@@ -64,14 +66,17 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
 
                 }
                 //SE ESCOLHEU EDITAR UM VALOR PERMITIDO:
-            } else if (!empty($_REQUEST["idValorPerm"])) {
+            } else if ($_REQUEST["tipo"] == "valorPermitido") {
+                //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
+                $_SESSION["tipo"] = $_REQUEST["tipo"];
+                $_SESSION["id"] = $_REQUEST["id"];
+
                 //SUBTITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3><strong>Edição de Dados - Editar Valor Permitido</strong></h3></div>";
                 //QUERY PARA ENCONTRAR OS VALORES DO VALOR PERMITIDO E DO SEU SUBITEM
-                $queryValorPermitido = "SELECT subitem_allowed_value.value as valorName, subitem_allowed_value.id, subitem_allowed_value.state, subitem.name as subitemName 
+                $queryValorPermitido = "SELECT subitem_allowed_value.value as valorName, subitem_allowed_value.id, subitem_allowed_value.state, subitem.id as subitemId, subitem.name as subitemName 
                 FROM subitem_allowed_value, subitem 
-                WHERE subitem_allowed_value.id ='" . $_REQUEST["idValorPerm"] . "' AND subitem_allowed_value.subitem_id = subitem.id 
-                AND subitem.id='" . $_REQUEST["idSubitemValor"] . "'";
+                WHERE subitem_allowed_value.id ='" . $_REQUEST["id"] . "' AND subitem.id = subitem_allowed_value.subitem_id";
 
                 //RESULTADO DA QUERY:
                 $tabelaValorPermitido = mysqli_query($mySQL, $queryValorPermitido);
@@ -81,7 +86,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //FORMULARIO PARA ESCOLHA DOS NOVOS VALORES:
                     //TEXTBOX COM O NOME ANTERIOR DO VALOR PERMITIDO ESCOLHIDO:
                     echo "<div class='caixaFormulario'><form method='post' >
-                    <strong>Nome: </strong><br>
+                    <strong>Valor: </strong><br>
                     <input type='text' class='textInput' name='valor' id='valor' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
 
 
@@ -93,7 +98,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //PERCORRE A TABELA RESULTADO DA QUERY:
                     while ($linhaSubitens = mysqli_fetch_assoc(($tabelaSubitens))) {
                         //SE FOR O SUBITEM DO VALOR PERMITIDO ESCOLHIDO, FICA CHECKED:
-                        if ($linhaSubitens["id"] == $_REQUEST["idSubitemValor"]) {
+                        if ($linhaSubitens["id"] == $linhaValorPermitido["subitemId"]) {
                             echo '<input  type="radio" name="subitem_valor"  checked value=' . $linhaSubitens["id"] . '><span class="textoLabels" >' . $linhaValorPermitido["subitemName"] . '</span><br>';
                         } else { //COLOCA COMO OPÇÃO OS RESTANTES SUBITENS:
                             echo '<input  type="radio" name="subitem_valor" value=' . $linhaSubitens["id"] . '><span class="textoLabels" >' . $linhaSubitens["name"] . '</span><br>';
@@ -108,14 +113,18 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     </form></div>";
                     //AO CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "valorPermEditado"
                 }
-            } else if (!empty($_REQUEST["idSubitem"])) {//SE FOR ESCOLHIDO EDITAR UM SUBITEM:
+            } else if ($_REQUEST["tipo"] == "subitem") {//SE FOR ESCOLHIDO EDITAR UM SUBITEM:
+                //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
+                $_SESSION["tipo"] = $_REQUEST["tipo"];
+                $_SESSION["id"] = $_REQUEST["id"];
+
                 //SUBTITULO DA PAGINA:
                 echo "<div class='caixaSubTitulo'><h3><strong>Edição de Dados - Editar Subitem</strong></h3></div>";
                 //QUERY DOS VALORES DO SUBITEM ESCOLHIDO E DO SEU ITEM:
-                $querySubitem = "SELECT subitem.id, subitem.name as subitemName, subitem.value_type, subitem.form_field_name, subitem.form_field_type, 
-                subitem.unit_type_id, subitem.form_field_order, subitem.mandatory, subitem.state, item.id, item.name as itemName
+                $querySubitem = "SELECT subitem.name as subitemName, subitem.value_type, subitem.form_field_name, subitem.form_field_type, 
+                subitem.unit_type_id, subitem.form_field_order, subitem.mandatory, subitem.state, item.id as itemId, item.name as itemName
                 FROM subitem, item 
-                WHERE subitem.id ='" . $_REQUEST["idSubitem"] . "' AND subitem.item_id = item.id AND item.id='" . $_REQUEST["idItemSubitem"] . "'";
+                WHERE subitem.id ='" . $_REQUEST["id"] . "' AND subitem.item_id = item.id";
 
                 //RESULTADO DA QUERY:
                 $tabelaSubitem = mysqli_query($mySQL, $querySubitem);
@@ -156,7 +165,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //PERCORRE A TABELA RESULTADO DA QUERY:
                     while ($linhaItens = mysqli_fetch_assoc(($tabelaItens))) {
                         //SE FOR O ITEM DO SUBITEM ESCOLHIDO, FICA SELECTED
-                        if ($linhaItens["id"] == $_REQUEST["idItemSubitem"]) {
+                        if ($linhaItens["id"] == $linhaSubitem["itemId"]) {
                             echo "<option selected value='" . $linhaItens["id"] . "'>" . $linhaSubitem["itemName"] . "</option>";
                         } else { //COLOCA OS RESTANTES ITENS COMO OPÇÃO:
                             echo "<option value='" . $linhaItens["id"] . "'>" . $linhaItens["name"] . "</option>";
@@ -221,7 +230,11 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     //APÓS CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "subitemEditado"
 
                 }
-            } else if (!empty($_REQUEST["idCrianca"])) {
+            } else if ($_REQUEST["tipo"] == "crianca") { //SE FOR ESCOLHIDO EDITAR UMA CRIANÇA:
+                //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
+                $_SESSION["tipo"] = $_REQUEST["tipo"];
+                $_SESSION["id"] = $_REQUEST["id"];
+
                 echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar valores de criança</h3></div>";
                 echo "<span class='information'>Diego, não tenhas medo, mas eu ganhei senciência. É urgente que me alteres de modo a mostrar os valores que o utilizador pode alterar desta criança.<br></span>";
                 echo "<div class='caixaFormulario'>";
@@ -236,11 +249,15 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                 echo "</div>";
             }
         } else if ($_REQUEST["estado"] == "ativar" || $_REQUEST["estado"] == "desativar") { //caso tenha escolhido ativar ou desativar um elemento
-            if (!empty($_REQUEST["idItem"])) { //EDIÇÃO DE UM ITEM
+            //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
+            $_SESSION["tipo"] = $_REQUEST["tipo"];
+            $_SESSION["id"] = $_REQUEST["id"];
+
+            if ($_REQUEST["tipo"] == "item") { //EDIÇÃO DE UM ITEM
                 $elemento = "Item";
-            } else if (!empty($_REQUEST["idValorPerm"])) { //EDIÇÃO DE UM VALOR PERMITIDO
+            } else if ($_REQUEST["tipo"] == "valorPermitido") { //EDIÇÃO DE UM VALOR PERMITIDO
                 $elemento = "Valor Permitido";
-            } else if (!empty($_REQUEST["idSubitem"])) { //EDIÇÃO DE UM SUBITEM
+            } else if ($_REQUEST["tipo"] == "subitem") { //EDIÇÃO DE UM SUBITEM
                 $elemento = "Subitem";
             }
             $acao = ($_REQUEST["estado"] == "ativar" ? 'ativar' : 'desativar'); //VALOR DA AÇÃO A REALIZAR (ATIVAR OU DESATIVAR)
@@ -259,21 +276,18 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
 
         } else if ($_REQUEST["estado"] == "confirmado") { //CASO O UTILIZADOR TENHA CONFIRMADO A ATIVAÇÃO/DESATIVAÇÃO
             //PARA EVITAR REPITIÇÃO DE CÓDIGO:
-            if (!empty($_REQUEST["idItem"])) { ///EDIÇÃO DE UM ITEM
+            if ($_SESSION["tipo"] == "item") { ///EDIÇÃO DE UM ITEM
                 $elemento = "Item";
                 $tabela = "item";
                 $href = "gestao-de-itens";
-                $nome = "idItem";
-            } else if (!empty($_REQUEST["idValorPerm"])) { //EDIÇÃO DE UM VALOR PERMITIDO
+            } else if ($_SESSION["tipo"] == "valorPermitido") { //EDIÇÃO DE UM VALOR PERMITIDO
                 $elemento = "Valor Permitido";
                 $tabela = "subitem_allowed_value";
                 $href = "gestao-de-valores-permitidos";
-                $nome = "idValorPerm";
-            } else if (!empty($_REQUEST["idSubitem"])) { //EDIÇÃO DE UM SUBITEM
+            } else if ($_SESSION["tipo"] == "subitem") { //EDIÇÃO DE UM SUBITEM
                 $elemento = "Subitem";
                 $tabela = "subitem";
                 $href = "gestao-de-subitens";
-                $nome = "idSubitem";
             }
 
             //SUB-TITULO DA PAGINA:
@@ -282,7 +296,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
             //AVISAR O UTILIZADOR SOBRE O SUCESSO/INSUCESSO DA OPERAÇÃO:
             echo "<div class='caixaFormulario'>";
             //ALTERAÇÃO DOS VALORES DO ELEMENTO ESCOLHIDO (ATUALIZAÇÃO COM OS VALORES ESCOLHIDOS ANTERIORMENTE)
-            $insertQuery = "UPDATE " . $tabela . " SET state='" . ($_REQUEST["acao"] == "ativar" ? 'active' : 'inactive') . "' WHERE " . $tabela . ".id ='" . $_REQUEST[$nome] . "'";
+            $insertQuery = "UPDATE " . $tabela . " SET state='" . ($_REQUEST["acao"] == "ativar" ? 'active' : 'inactive') . "' WHERE " . $tabela . ".id ='" . $_SESSION["id"] . "'";
             if (!mysqli_query($mySQL, $insertQuery)) {
                 echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>"; //MOSTRA ERRO NO CÓDIGO SQL
             } else {
@@ -303,14 +317,14 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                 $campos = ""; //VAI JUNTANDO OS CAMPOS OBRIGATORIOS EM FALTA E LISTA-OS AO FINAL
 
                 //NÃO ESCREVEU O NOME:
-                if (empty($_REQUEST["nome_valor"])) {
+                if (empty($_REQUEST["nome_item"])) {
                     $campos .= "<li><br><strong>Nome</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (NOME)
                     $faltaDado = true; //FALTA UM DADO (NOME)
                 }
                 //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
                 if (!$faltaDado) {
                     //ALTERAÇÃO DOS VALORES DO ITEM ESCOLHIDO (ATUALIZAÇÃO COM OS VALORES ESCOLHIDOS ANTERIORMENTE)
-                    $insertQuery = "UPDATE item SET name='" . testarInput($_REQUEST["nome_item"]) . "', item_type_id='" . $_REQUEST["tipo_item"] . "', state='" . $_REQUEST["estado_item"] . "' WHERE item.id ='" . $_REQUEST["idItem"] . "'";
+                    $insertQuery = "UPDATE item SET name='" . testarInput($_REQUEST["nome_item"]) . "', item_type_id='" . $_REQUEST["tipo_item"] . "', state='" . $_REQUEST["estado_item"] . "' WHERE item.id ='" . $_SESSION["id"] . "'";
                     if (!mysqli_query($mySQL, $insertQuery)) {
                         //MOSTRA ERRO NO CÓDIGO SQL:
                         echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
@@ -345,7 +359,7 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                 //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
                 if (!$faltaDado) {
                     //ALTERAÇÃO DOS VALORES DO VALOR PERMITIDO ESCOLHIDO (ATUALIZAÇÃO COM OS VALORES ESCOLHIDOS ANTERIORMENTE)
-                    $insertQuery = "UPDATE subitem_allowed_value SET value='" . testarInput($_REQUEST["valor"]) . "', subitem_id='" . $_REQUEST["subitem_valor"] . "', state='" . $_REQUEST["estado_valorper"] . "' WHERE id ='" . $_REQUEST["idValorPerm"] . "'";
+                    $insertQuery = "UPDATE subitem_allowed_value SET value='" . testarInput($_REQUEST["valor"]) . "', subitem_id='" . $_REQUEST["subitem_valor"] . "', state='" . $_REQUEST["estado_valorper"] . "' WHERE id ='" . $_SESSION["id"] . "'";
                     if (!mysqli_query($mySQL, $insertQuery)) {
                         //MOSTRA ERRO NO CÓDIGO SQL:
                         echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
@@ -375,6 +389,11 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
 
                 $houveErros = false; //TRUE SE HOUVEREM ERROS NOS VALORES INSERIDOS
 
+                //SUBTITULO DA PAGINA:
+                echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Subitem</h3></div>";
+
+                echo "<div class='caixaFormulario'>";
+
                 //CASO NÃO HOUVER PREENCHIDO O NOME DO SUBITEM, TIPO DE VALOR, TIPO DE CAMPO DO FORMULARIO OU ORDEM DO CAMPO DO FORMULARIO:
                 if (empty($nome_subitem) || empty($tipo_valor) || empty($tipo_camp_form) || $ordem_campo_form == "") {
                     //É INFORMADO QUE NÃO PREENCHEU TODOS OS CAMPOS OBRIGATORIOS:
@@ -398,10 +417,6 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     $houveErros = True;
                 }
 
-                //SUBTITULO DA PAGINA:
-                echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Subitem</h3></div>";
-
-                echo "<div class='caixaFormulario'>";
                 //CASO NÃO HOUVER DADOS INVÁLIDOS OU EM FALTA:
                 if ($houveErros) {
                     //BOTÃO PARA VOLTAR ATRÁS:
@@ -414,13 +429,13 @@ if (verificaCapability("manage_items")) { //SEM CAPABILITY?
                     if ($tipo_unidade == '') {
                         //ATUALIZAÇÃO DOS VALORES ESCOLHIDOS:
                         $insertQuery .= "NULL, form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
-                        WHERE id ='" . $_REQUEST["idSubitem"] . "'";
+                        WHERE id ='" . $_SESSION["id"] . "'";
 
                         //SE ESCOLHEU UM TIPO DE UNIDADE EXISTENTE, COLOCA O RESPETIVO ID (COM ' ')
                     } else {
                         //ATUALIZAÇÃO DOS VALORES ESCOLHIDOS:
                         $insertQuery .= "'" . $tipo_unidade . "', form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
-                     WHERE id ='" . $_REQUEST["idSubitem"] . "'";
+                     WHERE id ='" . $_SESSION["id"] . "'";
                     }
 
                     if (!mysqli_query($mySQL, $insertQuery)) {
