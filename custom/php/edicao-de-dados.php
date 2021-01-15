@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "MUDO5";
+//echo "MUDO5";
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -29,7 +29,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             //PERCORRE A TABELA DO RESULTADO DA QUERY:
             while ($linhaItem = mysqli_fetch_assoc(($tabelaItem))) { //APENAS 1 RESULTADO (REFERENTE AO ITEM ESCOLHIDO)
                 //FORMULÁRIO PARA A ESCOLHA DOS NOVOS VALORES:
-                echo "<div class='caixaFormulario'><form method='post' >";
+                $action=get_site_url().'/'.$current_page;
+                echo "<div class='caixaFormulario'><form method='post' action='$action'>";
 
                 //TEXTBOX COM O NOME ANTERIOR DO ITEM ESCOLHIDO:
                 echo "<strong>Nome: </strong><br>
@@ -84,7 +85,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             while ($linhaValorPermitido = mysqli_fetch_assoc(($tabelaValorPermitido))) {
                 //FORMULARIO PARA ESCOLHA DOS NOVOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO VALOR PERMITIDO ESCOLHIDO:
-                echo "<div class='caixaFormulario'><form method='post' >
+                $action=get_site_url().'/'.$current_page;
+                echo "<div class='caixaFormulario'><form method='post' action='$action'>
                 <strong>Valor: </strong><br>
                 <input type='text' class='textInput' name='valor' id='valor' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
 
@@ -136,7 +138,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
                 //FORMULARIO PARA EDIÇÃO DOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO SUBITEM ESCOLHIDO:
-                echo "<div class='caixaFormulario'><form method='post' >
+                $action=get_site_url().'/'.$current_page;
+                echo "<div class='caixaFormulario'><form method='post' action='$action'>
                 <strong>Nome: </strong><br>
                 <input type='text' class='textInput' name='nome_subitem' id='nome_subitem' value='" . $linhaSubitem["subitemName"] . "' ><br><br>";
 
@@ -235,16 +238,118 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $_SESSION["id"] = $_REQUEST["id"];
 
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar valores de criança</h3></div>";
-            echo "<span class='information'>Diego, não tenhas medo, mas eu ganhei senciência. É urgente que me alteres de modo a mostrar os valores que o utilizador pode alterar desta criança.<br></span>";
             echo "<div class='caixaFormulario'>";
-            $query = "SELECT * FROM value WHERE child_id=" . $_REQUEST["idCrianca"];//início da query
+//            echo $action."\n";
+            echo "<span class='warning'>Campos obrigatórios *</span>";
+            $action=get_site_url().'/'.$current_page."?estado=valoresCriancaEditado";
+            echo "<form method='post' action='$action'>";
+            $query = "SELECT subitem_id,value,time FROM value WHERE child_id=" . $_REQUEST["id"];//início da query
             $result = mysqli_query($mySQL, $query);
-            while ($valor = mysqli_fetch_assoc($result)) {
-//                    echo $valor["id"]."\n";
-                $query = "SELECT * FROM subitem WHERE id=" . $valor["subitem_id"];//início da query
-                $result2 = mysqli_query($mySQL, $query);
-                $subitem = mysqli_fetch_assoc($result2);
+            $id = 0;
+//            echo "MUDOU<br>";
+            $idSubItemAnterior = -1;
+            $tempoValorAnterior = "";
+            $tipoFormSubItemAnterior = "";
+            $valoresNaBD = array();
+            while ($valorBD = mysqli_fetch_assoc($result)) {
+                array_push($valoresNaBD, $valorBD);
             }
+            $index = 0;
+            for ($index = 0; $index < count($valoresNaBD); $index++) {
+                $valorBD = $valoresNaBD[$index];
+                $query = "SELECT * FROM subitem WHERE id=" . $valorBD["subitem_id"] . " AND state='active' ORDER BY form_field_order";//início da query
+                $result2 = mysqli_query($mySQL, $query);
+                $subItem = mysqli_fetch_assoc($result2);
+                $valor = $valorBD["value"];
+                if ($subItem["form_field_type"] == "checkbox") {
+                    foreach (array_slice($valoresNaBD, $index + 1) as $possivelCheckbox) {
+                        if ($possivelCheckbox["time"] == $valorBD["time"] && $possivelCheckbox["subitem_id"] == $valorBD["subitem_id"]) {
+                            $valor .= "," . $possivelCheckbox["value"];
+                            $index++;
+                        }
+                    }
+                }
+                $nomeFormulario = $subItem["form_field_name"];
+                $criarNovoInput = true;
+                $inputFields = "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
+                switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
+                    case "text":
+                        if ($subItem["form_field_type"] == "text") {
+                            $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
+                            $inputFields .= " type='text'  class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " value='" . $valor . "'>";
+                        } else {
+                            $inputFields .= "<textarea class='textArea' name='$nomeFormulario' rows='5' cols='50'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " value='" . $valor . "'></textarea>";
+                        }
+                        break;
+                    case "bool":
+                        if ($valor == "verdadeiro") {
+                            $inputFields .= "<input name='$nomeFormulario' checked type='radio' value='verdadeiro'>Verdadeiro<br><input name='$nomeFormulario' type='radio' value='falso'>Falso";
+                        } else {
+                            $inputFields .= "<input name='$nomeFormulario' type='radio' value='verdadeiro'>Verdadeiro<br><input name='$nomeFormulario' checked type='radio' value='falso'>Falso";
+                        }
+                        break;
+                    case "double":
+                    case "int":
+                        $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
+                        $inputFields .= " type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " value='" . $valor . "'>";
+                        break;
+                    case "enum":
+                        $isSelectBox = $subItem["form_field_type"] == "selectbox";
+                        $contarOpcoes = 0;
+                        if ($isSelectBox) {
+                            $inputFields .= "<select name='$nomeFormulario'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " class='textInput textoLabels'>";
+                            $inputFields .= "<option value='empty'>Selecione um valor</option>";
+                        } else {
+                            $inputFields .= "<input name='$nomeFormulario";//input com nome determinado pelos dados na base de dados
+                            if ($subItem["form_field_type"] == "radio") {
+                                $inputFields .= "'";
+                            } else {
+                                $inputFields .= "_$index'";
+                            }
+                        }
+                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
+                        $result3 = mysqli_query($mySQL, $query);
+//                        echo $valor . "<br>";
+                        $valoresOpcoes = explode(",", $valor);
+                        $indexValor = 0;
+                        while ($valorPermitido = mysqli_fetch_assoc($result3)) {
+                            $valorOpcao = $valoresOpcoes[$indexValor];
+//                                echo $valor["value"] . " " . $valorPermitido["value"] . "<br>";
+                            if ($isSelectBox) {
+                                $inputFields .= "<option " . ($valor == $valorPermitido["value"] ? "selected" : "") . " value='" . $valorPermitido["value"] . "'>" . $valorPermitido["value"] . "</option>";
+                            } else {
+                                $inputFields .= " " . ($valorOpcao == $valorPermitido["value"] ? "checked" : "") . " type='" . $subItem["form_field_type"] . "' value='" . $valorPermitido["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valorPermitido["value"] . "</span><br>";
+                            }
+                            $contarOpcoes++;
+                            if ($contarOpcoes < mysqli_num_rows($result3) && !$isSelectBox) {
+                                $inputFields .= "<input name='$nomeFormulario";
+                                if ($subItem["form_field_type"] == "checkbox") {
+                                    $inputFields .= "_$contarOpcoes";
+                                    if ($valorOpcao == $valorPermitido["value"]) {
+                                        $indexValor++;
+                                    }
+                                }
+                                $inputFields .= "'";
+                            }
+                        }
+                        if ($isSelectBox) {
+                            $inputFields .= "</select>";
+                        }
+                        break;
+                }
+                if ($subItem["unit_type_id"] != null) {//se o subitem tem uma unidade associada acrescentá-la ao lado do input
+                    $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                    $result4 = mysqli_query($mySQL, $query);
+                    $unidade = mysqli_fetch_assoc($result4);
+                    $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                }
+                echo $inputFields . "<br>";
+                if ($subItem["mandatory"] == 1) {
+                    $id++;
+                }
+            }
+            echo "<input type='hidden' value='valoresCriancaEditado' name='estado'><input type='submit' class='submitButton' name='submit' value='Submeter'>";
+            echo "</form>";
             echo "</div>";
         }
     } else if ($_REQUEST["estado"] == "ativar" || $_REQUEST["estado"] == "desativar") { //caso tenha escolhido ativar ou desativar um elemento
@@ -265,7 +370,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         echo "<div class='caixaSubTitulo'><h3>Edição de Dados - " . ($_REQUEST["estado"] == "ativar" ? 'Ativar ' : 'Desativar ') . " " . $elemento . "</h3></div>";
 
         //FORMULÁRIO PARA CONFIRMAÇÃO DA ATIVAÇÃO/DESATIVAÇÃO DO ELEMENTO ESCOLHIDO:
-        echo "<div class='caixaFormulario'><form method='post' >
+        $action=get_site_url().'/'.$current_page;
+        echo "<div class='caixaFormulario'><form method='post' action='$action'>
                 <strong>Deseja " . $_REQUEST["estado"] . " o " . $elemento . "?</strong><br>
                 <input type='hidden' name='acao' value='" . $acao . "'>
                 <input type='hidden' name='estado' value='confirmado'>
@@ -448,6 +554,10 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     echo "<a href='gestao-de-subitens'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
             }
+            echo "</div>";
+        }else if ($_REQUEST["estado"] == "valoresCriancaEditado") {
+            echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar valores de criança</h3></div>";
+            echo "<div class='caixaFormulario'>";
             echo "</div>";
         }
     }

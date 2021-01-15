@@ -26,7 +26,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                     $query = "SELECT id FROM value WHERE child_id=" . $child["id"];//início da query
                     $result2 = mysqli_query($mySQL, $query);
                     if (mysqli_num_rows($result2) > 0) {
-                        echo " <a href='edicao-de-dados?estado=editar&idCrianca=" . $child["id"] . "'>[editar valores]</a>";
+                        echo " <a href='edicao-de-dados?estado=editar&id=" . $child["id"] . "&tipo=crianca'>[editar valores]</a>";
                     }
                     echo "</li> ";
                 }
@@ -56,10 +56,10 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             }
             echo "</ul>";
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos subitems
+        } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos valores
 //            global $clientsideval;
             if ($clientsideval) {
-                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/insercao_valores.js', array('jquery'), 1.1, true);
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
             }
 //            echo $_REQUEST["item"]."\n";
             $_SESSION["item_id"] = $_REQUEST["item"];
@@ -76,8 +76,8 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
 //            echo $_SESSION["item_type_id"]."\n";
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . "</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $nomeFormulario = sprintf("item_type_%d_item_%d", $_SESSION["item_type_id"], $_SESSION["item_id"]);// "item_type_". $_SESSION["item_type_id"] . "item_" . $_SESSION["item_id"];
-            $action = sprintf("?estado=validar&item=%d", $_SESSION["item_id"]);//"insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] ;
+            $nomeFormulario = sprintf("item_type_%d_item_%d", $_SESSION["item_type_id"], $_SESSION["item_id"]);
+            $action = sprintf("%s?estado=validar&item=%d", get_site_url().'/'.$current_page,$_SESSION["item_id"]);
 //            echo $action."\n";
             echo "<span class='warning'>Campos obrigatórios *</span>";
             echo "<form method='post' name='$nomeFormulario' action='$action'>";
@@ -226,7 +226,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                     echo "</ul>";
                 }
                 echo "</ul>";
-                $action = sprintf("?estado=inserir&item=%d", $_SESSION["item_id"]);//"insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] ;
+                $action = sprintf("%s?estado=inserir&item=%d",get_site_url().'/'.$current_page, $_SESSION["item_id"]);//"insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] ;
                 echo "<form method='post' action='$action'>";
                 foreach ($listaSubItems as $subItem) {
                     $nomeFormulario = $subItem["form_field_name"];
@@ -300,9 +300,10 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             }
             echo "</div>";
         } else {
+            $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";
             echo "<div class='caixaFormulario'><span class='information'>Introduza um dos nomes da criança a encontrar e/ou a data de nascimento dela</span>
-                <form method='post'>
+                <form method='post' action='$action'>
                 <strong class='textoLabels'>Nome: </strong><br><input type='text' class='textInput' name='nome_crianca' class='textoLabels'><br>
                 <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' class='textInput' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br>                
                 <input type='hidden' name='estado' value='escolher_crianca'>

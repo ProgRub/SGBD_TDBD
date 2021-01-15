@@ -172,9 +172,10 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             $tabelaTiposUnid = mysqli_query($mySQL, $queryTiposUnid); //Tabela com o nome de todos os tipos de unidades
 
 			//Formulário para inserir os dados do subitem:
+            $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - introdução</strong></h3></div>
             <div class='caixaFormulario'>
-			<form method='post'>
+			<form method='post' action='$action'>
 			<span class='warning'>* Campos obrigatórios</span><br><br>
 			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br>
 			<input type='text' class='textInput' id='nome_subitem' name='nome_subitem' ><br><br>

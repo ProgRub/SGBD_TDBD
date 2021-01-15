@@ -12,8 +12,9 @@ if (verificaCapability("search")) {
             $tabelaNomeItem = mysqli_query($mySQL, $queryNomeItem);
             $nomeItem = mysqli_fetch_assoc($tabelaNomeItem);
             $_SESSION["item_name"] = $nomeItem["name"];
-			
-			echo "<form method='post'><table class='tabela'>";
+
+            $action=get_site_url().'/'.$current_page;
+			echo "<form method='post' action='$action'><table class='tabela'>";
 			echo "<tr class='row'><th class='textoTabela cell'>Atributo</th><th class='textoTabela cell'>Obter</th><th class='textoTabela cell'>Filtro</th> </tr>";
 			$atributos = array("id", "name", "birth_date", "tutor_name", "tutor_phone", "tutor_email"); 		
 			for ($i = 0; $i < 6; $i++) {
@@ -66,9 +67,10 @@ if (verificaCapability("search")) {
 			//------------------------------------
 			
 			$aux = 0;
-			echo "<div class='caixaFormulario'><form method='post'>
+            $action=get_site_url().'/'.$current_page; //dois forms? <form method='post' action='$action'>
+			echo "<div class='caixaFormulario'>
 			<span class='information'><strong>Irá ser realizada uma pesquisa que irá obter, como resultado, uma listagem de, para cada criança, dos seguintes dados pessoais escolhidos:</strong></span>
-			<form method='post'><table><ul>";
+			<form method='post'  action='$action'><table><ul>";
 			
 			foreach($_SESSION["atrib_filtro"] as $chave=>$valor){
 				echo "<tr><td class='cell2'><li>$valor</li></td>";

@@ -25,8 +25,9 @@ if (verificaCapability("manage_allowed_values")) {
             $_SESSION["subitem_id"] = $_REQUEST["subitem"];
 
             //FORMULÁRIO PARA INSERIR UM NOVO VALOR PERMITIDO:
+            $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
-                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' >
+                <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' action='$action'>
                 <strong class='textoLabels'>Valor<span class='warning'>*</span>: </strong><br>
                 <input type='text' class='textInput' id='valor_permitido' name='valor_permitido' ><br><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'>

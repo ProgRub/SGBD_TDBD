@@ -130,8 +130,9 @@ if (verificaCapability("manage_items")) {
             $tabelaTipos = mysqli_query($mySQL, $queryTipos);
 
             //SUBTITULO DA PAGINA E INICIO DO FORMULÁRIO:
+            $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de itens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><form method='post' > <strong>Nome: </strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br><br>"; //TEXTBOX PARA ESCREVER O NOME DO ITEM A INSERIR:
+            <div class='caixaFormulario'><form method='post' action='$action'> <strong>Nome: </strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br><br>"; //TEXTBOX PARA ESCREVER O NOME DO ITEM A INSERIR:
             echo "<br><strong>Tipo: </strong></br>";
 
             //PARA MARCAR CHECKED NO PRIMEIRO ITEM APRESENTADO:

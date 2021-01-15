@@ -65,7 +65,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
 				<ul><li>$tutor_email</strong></li></ul>
 				</ol>";
 				//Output de formulário com todos os campos preenchidos como inputs hidden (para poder aceder a esses valores na página seguinte):
-				echo "<form method='post'><p hidden>
+                $action=get_site_url().'/'.$current_page;
+				echo "<form method='post' action='$action'><p hidden>
 				<input type='hidden' value='inserir' name='estado'> 
 				<input type='hidden' value='$child_name' name='child_name'>
 				<input type='hidden' value='$birth_date' name='birth_date'>
@@ -107,7 +108,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             echo "<div class='caixaFormulario'>";
             echo "<span class='information'><strong>Introduza os dados pessoais básicos da criança:</strong></span><br>
 			<span class='warning'>* Campos obrigatórios</span><br>";
-            echo "<form method='post'>
+            $action=get_site_url().'/'.$current_page;
+            echo "<form method='post' action='$action'>
 					<strong class='textoLabels'> Nome completo:</strong><span class='warning textoLabels'> * </span><br>
 					<input type='text' class='textInput' id='child_name' name='child_name'><br>
 					<strong class='textoLabels'>Data de nascimento:<span class='warning textoLabels'> * </span><br>
