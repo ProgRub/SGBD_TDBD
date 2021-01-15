@@ -42,7 +42,7 @@ if (verificaCapability("manage_items")) {
                 //INSERÇÃO DO NOVO ITEM NA BASE DE DADOS (COM OS VALORES PRETENDIDOS):
                 $insertQuery = "INSERT INTO item (id, name,item_type_id,state) VALUES (NULL,'" . testarInput($_REQUEST["nome_item"]) . "'," . $_REQUEST["tipo_item"] . ",'" . $_REQUEST["estado_item"] . "');";
 
-                //SE OCORREU NENHUM ERRO NA INSERÇÃO:
+                //SE OCORREU ERRO NA INSERÇÃO:
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     //MOSTRA ERRO QUE OCORREU:
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL)."</span>";

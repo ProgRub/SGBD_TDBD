@@ -243,7 +243,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             echo "<span class='warning'>Campos obrigatórios *</span>";
             $action=get_site_url().'/'.$current_page."?estado=valoresCriancaEditado";
             echo "<form method='post' action='$action'>";
-            $query = "SELECT subitem_id,value,time FROM value WHERE child_id=" . $_REQUEST["id"];//início da query
+            $query = "SELECT subitem_id,value,time,id,date FROM value WHERE child_id=" . $_REQUEST["id"];//início da query
             $result = mysqli_query($mySQL, $query);
             $id = 0;
 //            echo "MUDOU<br>";
@@ -254,6 +254,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             while ($valorBD = mysqli_fetch_assoc($result)) {
                 array_push($valoresNaBD, $valorBD);
             }
+            $_SESSION["valoresCrianca"] = $valoresNaBD;
             $index = 0;
             for ($index = 0; $index < count($valoresNaBD); $index++) {
                 $valorBD = $valoresNaBD[$index];
@@ -263,7 +264,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 $valor = $valorBD["value"];
                 if ($subItem["form_field_type"] == "checkbox") {
                     foreach (array_slice($valoresNaBD, $index + 1) as $possivelCheckbox) {
-                        if ($possivelCheckbox["time"] == $valorBD["time"] && $possivelCheckbox["subitem_id"] == $valorBD["subitem_id"]) {
+                        if ($possivelCheckbox["time"] == $valorBD["time"] &&$possivelCheckbox["date"] == $valorBD["date"]&& $possivelCheckbox["subitem_id"] == $valorBD["subitem_id"]) {
                             $valor .= "," . $possivelCheckbox["value"];
                             $index++;
                         }
@@ -556,8 +557,24 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             }
             echo "</div>";
         }else if ($_REQUEST["estado"] == "valoresCriancaEditado") {
+//            echo "MUDOU<br>";
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar valores de criança</h3></div>";
             echo "<div class='caixaFormulario'>";
+            foreach ($_SESSION["valoresCrianca"] as $valor){
+                echo $valor["value"]."<br>";
+            }
+            foreach ($_REQUEST as $key => $value) {//key é o nome do formulário e value é o valor
+                $nomeFormulario = $key;
+                if (is_numeric($key[-1])) {
+                    $nomeFormulario = substr($key, 0, -2);
+                }
+                $query = "SELECT id from subitem WHERE form_field_name='$nomeFormulario' AND state='active'";
+                $result = mysqli_query($mySQL, $query);
+                if (mysqli_num_rows($result) > 0) {
+                    $query = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
+                    array_push($insertQueries, $query);
+                }
+            }
             echo "</div>";
         }
     }

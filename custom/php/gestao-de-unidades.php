@@ -1,44 +1,58 @@
 <?php
 require_once("custom/php/common.php");
 if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez login e tem esta capacidade
-    $mySQL = ligacaoBD();
-    if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {//se selecionar a base de dados der erro
+    $mySQL = ligacaoBD();//ESTABELECE A LIGAÇÃO COM A BASE DE DADOS
+    if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {//SELECIONAR A BASE DE DADOS, SE DER ERRO -> DIE
         die("Connection failed: " . mysqli_connect_error());
-    } else {
-        if ($_REQUEST["estado"] == "inserir") {//Vai-se inserir os dados na base de dados
+    } else {//SE NÃO DER ERRO
+        if ($_REQUEST["estado"] == "inserir") {//SE ESTADO É INSERIR VAI-SE INSERIR NA BASE DE DADOS
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - inserção</h3></div>";
             echo "<div class='caixaFormulario'>";
             $nomeUnidade = testarInput($_REQUEST["nome_unidade"]);
-            if (!empty($nomeUnidade)) {//se após testar o input este não for vazio, pode-se inserir os dados
+
+            //SE FOR TRUE, FALTOU PREENCHER ALGUM CAMPO OBRIGATÓRIO
+            $faltaDado = false;
+            //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA NUMA LISTA
+            $campos = "";
+
+            if (empty($nomeUnidade)){
+                $campos .= "<li><br><strong>Nome</strong></li>";
+                $faltaDado = true;
+            }
+
+            if (!$faltaDado) {//SE NÃO FALTA O NOME PODEMOS INSERIR NA BASE DE DADOS
                 $insertQuery = "INSERT INTO subitem_unit_type (id, name) VALUES (NULL,'$nomeUnidade');";
-                if (!mysqli_query($mySQL, $insertQuery)) {//se há erro ao inserir os dados
+
+                if (!mysqli_query($mySQL, $insertQuery)) {//SE HÁ ERRO AO INSERIR OS DADOS
                     echo "<span class='warning'>Erro: $insertQuery<br>mysqli_error($mySQL)</span>";
-                } else {//informar o utilizador da inserção com sucesso e apresentar botão para continuar
+                } else {//INFORMAR UTILIZADOR DE INSERÇÃO COM SUCESSO E MOSTRAR BOTÃO PARA CONTINUAR
                     echo "<span class='information'>Inseriu os dados de novo tipo de unidade com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
                     echo "<a href='gestao-de-unidades'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
-            } else {//se o input está vazio, informar utilizador e botão para voltar atrás
-                echo "<div class='textoTabela'>O campo <strong>'Nome'</strong> é obrigatório!\n</div>";
+            } else {
+                //LISTA OS NOMES DOS CAMPOS EM FALTA
+                echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
+                //BOTÃO PARA VOLTAR ATRÁS
                 voltarAtras();
             }
             echo "</div>";
-        } else {//apresentar tabela com todos as unidades e formulário para inserir
+        } else {//SE O ESTADO NÃO FOR INSERIR
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_unidades.js', array('jquery'), 1.1, true);
             }
-            $query = "SELECT id,name FROM subitem_unit_type ORDER BY name";//as unidades devem ser ordenadas alfabeticamente
+            $query = "SELECT id,name FROM subitem_unit_type ORDER BY name";//AS UNIDADES DEVEM SER ORDENADAS ALFABETICAMENTE
             $result = mysqli_query($mySQL, $query);
-            if (mysqli_num_rows($result) > 0) {//se há unidades na base de dados faz-se a tabela
+            if (mysqli_num_rows($result) > 0) {//SE HÁ UNIDADES NA BASE DE DADOS
                 $table = "<table class='tabela'><tr><th class='textoTabela cell'>id</th><th class='textoTabela  cell'>unidade</th></tr>";
-                while ($row = mysqli_fetch_assoc($result)) {//cada linha da tabela tem o id e o nome da unidade
+                while ($row = mysqli_fetch_assoc($result)) {//CADA LINHA DA TABELA TEM O ID E O NOME DA UNIDADE
                     $table .= "<tr class='row'><td class='textoTabela  cell'>" . $row["id"] . "</td><td class='textoTabela  cell'>" . $row["name"] . "</td></tr>";
                 }
                 $table .= "</table>";
                 echo $table;
-            } else {//se não há unidades informamos o utilizador
+            } else {//SE NÃO HÁ UNIDADES INFORMAMOS O UTILIZADOR
                 echo "<span class='information'>Não há tipos de unidades.</span>";
             }
-            //formulário
+            //FORMULÁRIO
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
                     <div class='caixaFormulario'>";
             $action=get_site_url().'/'.$current_page;
@@ -49,6 +63,6 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
             echo "</form></div>";
         }
     }
-} else {
+} else {//SE UTILIZADOR NÃO FEZ LOGIN E/OU NÃO TEM A CAPACIDADE
     echo "<span class='information'>Não tem autorização para aceder a esta página</span>";
 }

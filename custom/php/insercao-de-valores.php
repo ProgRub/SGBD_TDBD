@@ -1,156 +1,135 @@
 <?php
 require_once("custom/php/common.php");
-if (verificaCapability("insert_values")) {//verificar se utilizador fez login e tem esta capacidade
-    $mySQL = ligacaoBD();
-    if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {//se selecionar a base de dados der erro
+if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E TEM A CAPACIDADE
+    $mySQL = ligacaoBD();//ESTABELECE A LIGAÇÃO COM A BASE DE DADOS
+    if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {//SE SELECINAR A BASE DE DADOS DÁ ERRO
         die("Connection failed: " . mysqli_connect_error());
     } else {
-        if ($_REQUEST["estado"] == "escolher_crianca") {//escolher criança com nome e data de nascimento especificadas
+        if ($_REQUEST["estado"] == "escolher_crianca") {//SE ESTADO É ESCOLHER_CRIANCA UTILIZADOR VAI ESCOLHER CRIANÇA
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - escolher</h3></div>";
             echo "<div class='caixaFormulario'>";
             $nomeCrianca = testarInput($_REQUEST["nome_crianca"]);
             $dataNascimento = testarInput($_REQUEST["data_nascimento"]);
-            $query = "SELECT name,birth_date,id FROM child WHERE ";//início da query
-            $query .= "name LIKE '%$nomeCrianca%'";
-            if (!empty($dataNascimento)) {//se foi especificada data adiciona-se esta à query
-                if (!empty($nomeCrianca)) {//se foi especificado o nome é preciso acresentar um AND
-                    $query .= "AND ";
-                }
-                $query .= "birth_date='$dataNascimento'";
+            $query = "SELECT name,birth_date,id FROM child WHERE name LIKE '%$nomeCrianca%'";//INÍCIO DA QUERY
+            if (!empty($dataNascimento)) {//SE FOI ESPECIFICADA DATA DE NASCIMENTO ACRESCENTA-SE À QUERY
+                $query .= "AND birth_date='$dataNascimento'";
             }
-            $result = mysqli_query($mySQL, $query);
-            if (mysqli_num_rows($result) > 0) {//se houver pelo menos uma criança, listar todas como links numa lista ordenada
+            $criancas = mysqli_query($mySQL, $query);
+            if (mysqli_num_rows($criancas) > 0) {//SE HOUVER PELO MENOS UMA CRIANÇA LISTAR UMA LISTA COM TODAS
                 echo "<ol>";
-                while ($child = mysqli_fetch_assoc($result)) {
-                    echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a>";
-                    $query = "SELECT id FROM value WHERE child_id=" . $child["id"];//início da query
-                    $result2 = mysqli_query($mySQL, $query);
-                    if (mysqli_num_rows($result2) > 0) {
+                while ($child = mysqli_fetch_assoc($criancas)) {
+                    echo "<li><a href='insercao-de-valores?estado=escolher_item&crianca=" . $child['id'] . "'>[" . $child["name"] . "] (" . $child["birth_date"] . ")</a>";//LIST ITEM TEM O NOME E DATA DA CRIANÇA, É UM LINK
+                    $query = "SELECT id FROM value WHERE child_id=" . $child["id"];
+                    $valoresCrianca = mysqli_query($mySQL, $query);
+                    if (mysqli_num_rows($valoresCrianca) > 0) {//SE A CRIANÇA TEM VALORES ASSOCIADOS A ELA NA BASE DE DADOS, APRESENTAR LINK PARA EDITÁ-LOS
                         echo " <a href='edicao-de-dados?estado=editar&id=" . $child["id"] . "&tipo=crianca'>[editar valores]</a>";
                     }
                     echo "</li> ";
                 }
                 echo "</ol>";
-            } else {
+            } else {//INFORMAR UTILIZADOR QUE NÃO HÁ CRIANÇAS COM OS DADOS ESPECIFICADOS
                 echo "<span class='information'>Não há crianças com os dados especificados.</span><br>";
             }
-            voltarAtras();//mostrar botão para voltar atrás
-//            }
+            voltarAtras();
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "escolher_item") {//escolher item dos que estão na base de dados, apresentados numa lista desordenada em que cada item é um link
+        } elseif ($_REQUEST["estado"] == "escolher_item") {//SE ESTADO É ESCOLHER_ITEM UTILIZADOR VAI ESCOLHER ITEM NO QUAL INSERIR OS VALORES
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
             $_SESSION["child_id"] = $_REQUEST["crianca"];
             echo "<ul>";
-            $query = "SELECT name,id FROM item_type ORDER BY id";
-            $result = mysqli_query($mySQL, $query);
-            while ($tipoItem = mysqli_fetch_assoc($result)) {
-//                echo mysqli_num_rows(($result));
+            $query = "SELECT name,id FROM item_type ORDER BY id";//QUERY PARA OBTER OS TIPOS DE ITEM
+            $tipoItens = mysqli_query($mySQL, $query);
+            while ($tipoItem = mysqli_fetch_assoc($tipoItens)) {
                 echo "<li>" . $tipoItem["name"] . "</li><ul>";
-                $query = "SELECT name,id FROM item WHERE item_type_id=" . $tipoItem["id"];
-                $result2 = mysqli_query($mySQL, $query);
-                while ($item = mysqli_fetch_assoc($result2)) {
-                    echo "<li><a href='insercao-de-valores?estado=introducao&item=" . $item["id"] . "'>[" . $item["name"] . "]</a></li>";
+                $query = "SELECT name,id FROM item WHERE item_type_id=" . $tipoItem["id"];//QUERY PARA OBTER OS ITENS ASSOCIADO AO TIPO DE ITEM
+                $itens = mysqli_query($mySQL, $query);
+                while ($item = mysqli_fetch_assoc($itens)) {
+                    echo "<li><a href='insercao-de-valores?estado=introducao&item=" . $item["id"] . "'>[" . $item["name"] . "]</a></li>";//LIST ITEM É LINK PARA PRÓXIMO ESTADO
                 }
                 echo "</ul>";
             }
             echo "</ul>";
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "introducao") {//introduzir novos valores
-//            global $clientsideval;
+        } elseif ($_REQUEST["estado"] == "introducao") {//SE ESTADO É INTRODUCAO UTILIZADOR VAI ESPECIFICAR VALORES A INTRODUZIR
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
             }
-//            echo $_REQUEST["item"]."\n";
             $_SESSION["item_id"] = $_REQUEST["item"];
-            $query = "SELECT name from item WHERE id=" . $_SESSION["item_id"];
-            $result = mysqli_query($mySQL, $query);
-            $item = mysqli_fetch_assoc($result);
+            $query = "SELECT name,item_type_id from item WHERE id=" . $_SESSION["item_id"];//QUERY PARA GUARDAR NOME DO ITEM E ID DO TIPO DE ITEM EM VÁRIAVEL DE SESSÃO
+            $item = mysqli_fetch_assoc( mysqli_query($mySQL, $query));
             $_SESSION["item_name"] = $item["name"];
-            $query = "SELECT item_type_id from item WHERE id=" . $_SESSION["item_id"];
-            $result = mysqli_query($mySQL, $query);
-            $item = mysqli_fetch_assoc($result);
             $_SESSION["item_type_id"] = $item["item_type_id"];
-//            echo $_SESSION["item_id"]."\n";
-//            echo $_SESSION["item_name"]."\n";
-//            echo $_SESSION["item_type_id"]."\n";
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . "</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $nomeFormulario = sprintf("item_type_%d_item_%d", $_SESSION["item_type_id"], $_SESSION["item_id"]);
+            $nomeFormulario = sprintf("item_type_%d_item_%d", $_SESSION["item_type_id"], $_SESSION["item_id"]);//NOME DO FORMULÁRIO
             $action = sprintf("%s?estado=validar&item=%d", get_site_url().'/'.$current_page,$_SESSION["item_id"]);
-//            echo $action."\n";
             echo "<span class='warning'>Campos obrigatórios *</span>";
             echo "<form method='post' name='$nomeFormulario' action='$action'>";
-            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active' ORDER BY form_field_order";
-            $result = mysqli_query($mySQL, $query);
-//            echo mysqli_num_rows($result);
-            $id = 0;
-            while ($subItem = mysqli_fetch_assoc($result)) {
-                $nomeFormulario = $subItem["form_field_name"];
+            $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active' ORDER BY form_field_order";//QUERY PARA BUSCAR SUBITENS ASSOCIADOS AO ITEM, QUE ESTÃO ATIVOS, ORDENADOS PELO FORM_FIELD_ORDER
+            $subItens = mysqli_query($mySQL, $query);
+            $id = 0;//INPUTS SÓ TEM ID SE FOREM OBRIGATÓRIOS, PURAMENTE PARA A VALIDAÇÃO CLIENT-SIDE
+            while ($subItem = mysqli_fetch_assoc($subItens)) {
+                $nomeInput = $subItem["form_field_name"];//NOME DO INPUT
                 $inputFields = "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
-                switch ($subItem["value_type"]) {//definir o tipo de input de acordo com o valor
+                switch ($subItem["value_type"]) {//DEFINIR O TIPO DE INPUT DE ACORDO COM O TIPO DE VALOR
                     case "text":
-                        if ($subItem["form_field_type"] == "text") {
-                            $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
-                            $inputFields .= " type='text'  class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
-                        } else {
-                            $inputFields .= "<textarea class='textArea' name='$nomeFormulario' rows='5' cols='50'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "></textarea>";
+                        if ($subItem["form_field_type"] == "text") {//SE É TEXT FAZER INPUT TEXT
+                            $inputFields .= "<input name='$nomeInput' type='text'  class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
+                        } else {//SE NÃO, É TEXTBOX E FAZ-SE UMA TEXTAREA
+                            $inputFields .= "<textarea class='textArea' name='$nomeInput' rows='5' cols='50'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "></textarea>";
                         }
                         break;
                     case "bool":
-                        $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
-                        $inputFields .= " type='radio' value='verdadeiro'><br><input name='$nomeFormulario' type='radio' value='falso'>";
+                        $inputFields .= "<input name='$nomeInput' type='radio' checked value='verdadeiro'><br><input name='$nomeInput' type='radio' value='falso'>";
                         break;
                     case "double":
                     case "int":
-                        $inputFields .= "<input name='$nomeFormulario'";//input com nome determinado pelos dados na base de dados
-                        $inputFields .= " type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
+                        $inputFields .= "<input name='$nomeInput' type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
                         break;
                     case "enum":
-                        $isSelectBox = $subItem["form_field_type"] == "selectbox";
+                        $isSelectBox = $subItem["form_field_type"] == "selectbox";//VER SE INPUT É DO TIPO SELECTBOX
                         $index = 0;
-                        if ($isSelectBox) {
-                            $inputFields .= "<select name='$nomeFormulario'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " class='textInput textoLabels'>";
+                        if ($isSelectBox) {//SE É DO TIPO SELECTBOX CRIAR O SELECT E INSERIR UMA OPÇÃO "PLACEHOLDER"
+                            $inputFields .= "<select name='$nomeInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " class='textInput textoLabels'>";
                             $inputFields .= "<option value='empty'>Selecione um valor</option>";
-                        } else {
-                            $inputFields .= "<input name='$nomeFormulario";//input com nome determinado pelos dados na base de dados
-                            if ($subItem["form_field_type"] == "radio") {
+                        } else {//SE NÃO É SELECT BOX CRIAR INPUT
+                            $inputFields .= "<input name='$nomeInput";
+                            if ($subItem["form_field_type"] == "radio") {//SE É RADIO O PRIMEIRO FICA CHECKED
                                 $inputFields .= "'";
                                 $inputFields .= " checked ";
-                            } else {
+                            } else {//SE NÃO É, É CHECKBOX, ACRESCENTA-SE _$INDEX PARA DISTINGUIR AS DIFERENTES CHECKBOXES DE MODO A INSERIR EM TUPLOS SEPARADOS MAIS À FRENTE
                                 $inputFields .= "_$index'";
                             }
                         }
-                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];
-                        $result2 = mysqli_query($mySQL, $query);
-                        while ($valor = mysqli_fetch_assoc($result2)) {
-                            if ($isSelectBox) {
+                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"];//QUERY PARA ARRANJAR OS VALORES PERMITIDOS DO ENUM
+                        $valoresPermitidos = mysqli_query($mySQL, $query);
+                        while ($valor = mysqli_fetch_assoc($valoresPermitidos)) {
+                            if ($isSelectBox) {//SE É SELECTBOX, CADA VALOR FICA NUMA OPÇÃO DO SELECTBOX
                                 $inputFields .= "<option value='" . $valor["value"] . "'>" . $valor["value"] . "</option>";
-                            } else {
+                            } else {//CAS CONTRÁRIO, ESPECIFICAR TYPE DO INPUT E VALOR
                                 $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
                             }
                             $index++;
-                            if ($index < mysqli_num_rows($result2) && !$isSelectBox) {
-                                $inputFields .= "<input name='$nomeFormulario";
+                            if ($index < mysqli_num_rows($valoresPermitidos) && !$isSelectBox) {//VERIFICAR, SE NÃO FOR SELECTBOX, SE DEVE-SE COMEÇAR OUTRO INPUT, ISTO É, NÃO SE CHEGOU AO FIM DOS VALORES PERMITIDOS
+                                $inputFields .= "<input name='$nomeInput";
                                 if ($subItem["form_field_type"] == "checkbox") {
                                     $inputFields .= "_$index";
                                 }
                                 $inputFields .= "'";
                             }
                         }
-                        if ($isSelectBox) {
+                        if ($isSelectBox) {//SE INPUT É DO TIPO SELECTBOX, FECHAR A TAG HTML
                             $inputFields .= "</select>";
                         }
                         break;
                 }
-                if ($subItem["unit_type_id"] != null) {//se o subitem tem uma unidade associada acrescentá-la ao lado do input
+                if ($subItem["unit_type_id"] != null) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
                     $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
-                    $result3 = mysqli_query($mySQL, $query);
-                    $unidade = mysqli_fetch_assoc($result3);
+                    $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
                     $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
                 }
                 echo $inputFields . "<br>";
-                if ($subItem["mandatory"] == 1) {
+                if ($subItem["mandatory"] == 1) {//SÓ SE AUMENTA O ID SE O SUBITEM ERA OBRIGATÓRIO
                     $id++;
                 }
             }
@@ -203,7 +182,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br>";
                 echo "<ul>";
                 foreach ($listaSubItems as $subItem) {
-                    $nomeFormulario = $subItem["form_field_name"];
+                    $nomeInput = $subItem["form_field_name"];
                     $valoresAListar = array();
                     foreach ($_REQUEST as $key => $value) {
                         if (strpos($key, $subItem["form_field_name"]) !== false) {
@@ -217,7 +196,7 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                         }
                         if (!empty($input)) {
                             if ($primeiro) {
-                                echo "<li><p class='textoValidar'>$nomeFormulario</p></li><ul>";
+                                echo "<li><p class='textoValidar'>$nomeInput</p></li><ul>";
                                 $primeiro = false;
                             }
                             echo "<li>$input</li>";
@@ -229,9 +208,9 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
                 $action = sprintf("%s?estado=inserir&item=%d",get_site_url().'/'.$current_page, $_SESSION["item_id"]);//"insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] ;
                 echo "<form method='post' action='$action'>";
                 foreach ($listaSubItems as $subItem) {
-                    $nomeFormulario = $subItem["form_field_name"];
+                    $nomeInput = $subItem["form_field_name"];
                     foreach ($_REQUEST as $key => $value) {
-                        if (strpos($key, $nomeFormulario) !== false) {
+                        if (strpos($key, $nomeInput) !== false) {
                             $input = $value;
                             if ($subItem["form_field_type"] == "text" || $subItem["form_field_type"] == "textbox") {
                                 $input = testarInput($input);
@@ -254,11 +233,11 @@ if (verificaCapability("insert_values")) {//verificar se utilizador fez login e 
             echo "<div class='caixaFormulario'>";
             $insertQueries = array();
             foreach ($_REQUEST as $key => $value) {//key é o nome do formulário e value é o valor
-                $nomeFormulario = $key;
+                $nomeInput = $key;
                 if (is_numeric($key[-1])) {
-                    $nomeFormulario = substr($key, 0, -2);
+                    $nomeInput = substr($key, 0, -2);
                 }
-                $query = "SELECT id from subitem WHERE form_field_name='$nomeFormulario' AND state='active'";
+                $query = "SELECT id from subitem WHERE form_field_name='$nomeInput' AND state='active'";
                 $result = mysqli_query($mySQL, $query);
                 if (mysqli_num_rows($result) > 0) {
                     $query = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
