@@ -267,11 +267,8 @@ if (verificaCapability("search")) {
 
                 }
             } else {
-                if (count($_SESSION["atrib_obter"]) != 0 && count($_SESSION["sub_filtro"]) != 0) {
-                    $query .= ' FROM child, subitem, value ';
-                    $queryI .= '<br>FROM child, subitem, value ';
-                }
-                if (count($_SESSION["atrib_obter"]) != 0 && count($_SESSION["sub_filtro"]) == 0) {
+                
+                if (count($_SESSION["atrib_obter"]) != 0 && count($_SESSION["sub_filtro"]) >= 0) {
                     $query .= ' FROM child ';
                     $queryI .= '<br>FROM child ';
                 }
@@ -354,11 +351,16 @@ if (verificaCapability("search")) {
                     }
                 }
 
-                if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0) {
+                if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0 && count($_SESSION["sub_obter"]) > 0) {
                     $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
                     $queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
                 }
-                if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) > 0) {
+				if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0 && count($_SESSION["sub_obter"]) == 0) {
+                    $query .= 'WHERE ';
+                    $queryI .= '<br>WHERE ';
+                }
+			
+                if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) > 0  && count($_SESSION["sub_obter"]) != 0) {
                     $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
                     $queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
                 }
@@ -393,15 +395,30 @@ if (verificaCapability("search")) {
                 }
 
                 $auxx = 0;
+				$primeiro = true;
                 if (count($_SESSION["sub_filtro"]) > 0) {
                     foreach ($_SESSION["sub_filtro"] as $chave => $valor) {
 						if(is_array($val_sub_filtrar[$auxx])){
-							$query .= 'AND ( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-							$queryI .= '<br>AND (child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+							if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro==true) {
+								$query .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								$queryI .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								$primeiro = false;
+							}
+							else{
+								$query .= 'AND ( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								$queryI .= '<br>AND (child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+							}
 						}
 						else{
-							$query .= 'AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-							$queryI .= '<br>AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+							if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro==true) {
+								$query .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								$queryI .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								$primeiro = false;
+							}
+							else{
+								$query .= 'AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								$queryI .= '<br>AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+							}
 						}
 
                         switch ($oper_sub[$auxx]) {
@@ -508,59 +525,13 @@ if (verificaCapability("search")) {
 								}
 							}
 						}
-
-                        if (count($_SESSION["sub_obter"]) == 0) {
-                            $query .= 'AND subitem.id IN (SELECT subitem_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                            $queryI .= '<br>AND subitem.id IN (SELECT subitem_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-
-                            switch ($oper_sub[$auxx]) {
-                                case "maior":
-                                    $query .= '> ';
-                                    $queryI .= '> ';
-                                    break;
-                                case "maiorOuIgual":
-                                    $query .= '>= ';
-                                    $queryI .= '>= ';
-                                    break;
-                                case "igual":
-                                    $query .= '= ';
-                                    $queryI .= '= ';
-                                    break;
-                                case "menor":
-                                    $query .= '< ';
-                                    $queryI .= '< ';
-                                    break;
-                                case "menorOuIgual":
-                                    $query .= '<= ';
-                                    $queryI .= '<= ';
-                                    break;
-                                case "diferente":
-                                    $query .= '!= ';
-                                    $queryI .= '!= ';
-                                    break;
-                                case "like":
-                                    $query .= 'LIKE ';
-                                    $queryI .= 'LIKE ';
-                                    break;
-                            }
-
-                            if (is_numeric($val_sub_filtrar[$auxx])) {
-                                $query .= '' . $val_sub_filtrar[$auxx] . ') ';
-                                $queryI .= '' . $val_sub_filtrar[$auxx] . ') ';
-                            } else {
-                                if ($oper_sub[$auxx] == "like") {
-                                    $query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-                                    $queryI .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-                                } else {
-                                    $query .= '"' . $val_sub_filtrar[$auxx] . '") ';
-                                    $queryI .= '"' . $val_sub_filtrar[$auxx] . '") ';
-                                }
-                            }
-                        }
-                        $auxx++;
-                    }
+						
+						$auxx++;
+					}
+											
                 }
             }
+
 
             echo "<strong><span class='textoValidar'>QUERY:</span></strong><br>";
             echo $queryI;
@@ -592,8 +563,8 @@ if (verificaCapability("search")) {
                 }
                 echo "</table>";
             }
-            echo "<a href='".get_site_url().'/'."download'><button class='continuarButton textoLabels'>Exportar Tabela para XLSX</button></a>";
 
+            
         } else {
 
             echo "<div class='caixaSubTitulo'><h3>Pesquisa - escolher item</h3></div>";
