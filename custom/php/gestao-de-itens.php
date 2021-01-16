@@ -83,6 +83,7 @@ if (verificaCapability("manage_items")) {
                     echo "<table class='tabela'>";
                     echo "<tr class='row'><th class='textoTabela cell'>tipo de item</th><th class='textoTabela cell'>id</th><th class='textoTabela cell'>nome do item</th><th class='textoTabela cell'>estado</th><th class='textoTabela cell'>ação</th></tr>";
 
+                    $numeroTiposDeItem=0;
                     //PERCORRE TABELA RESULTADO DA QUERY DE TODOS OS TIPOS DE ITEM:
                     while ($linhaTipoItem = mysqli_fetch_assoc($tabelaTipos)) {
                         //QUERY PARA OBTER TODOS OS ITENS DAQUELE TIPO:
@@ -102,9 +103,10 @@ if (verificaCapability("manage_items")) {
                                 //SE FOR A PRIMEIRA VEZ QUE CRIA A CÉLULA COM O NOME DO TIPO:
                                 if ($newItem) {
                                     //CELULA COM NOME DO TIPO DE ITEM E ROWSPAN IGUAL AO NÚMERO DE ITENS DESSE TIPO:
-                                    echo "<tr class='row'><td class='textoTabela cell' rowspan='$numeroItens'>" . $linhaTipoItem["name"] . "</td>";
+                                    echo "<tr class='row'><td class='textoTabela cell ".($numeroTiposDeItem%2==0?"par":"impar")."' rowspan='$numeroItens'>" . $linhaTipoItem["name"] . "</td>";
                                     //PARA EVITAR QUE CRIE NOVAMENTE A MESMA CÉLULA:
                                     $newItem = false;
+                                    $numeroTiposDeItem++;
                                 } else {
                                     echo "<tr class='row'>";
                                 }

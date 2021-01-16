@@ -92,7 +92,7 @@ if (verificaCapability("manage_allowed_values")) {
                 <th class='textoTabela cell'>estado</th><th class='textoTabela cell'>ação</th></tr>";
 
                 //QUERY PARA OBTER TODOS OS ITENS QUE TÊM SUBITENS ENUM:
-                $queryItensComSubitens = "SELECT DISTINCT item.id, item.name FROM subitem, item  WHERE item.id = subitem.item_id AND subitem.value_type='enum'";
+                $queryItensComSubitens = "SELECT DISTINCT item.id, item.name FROM subitem, item  WHERE item.id = subitem.item_id AND subitem.value_type='enum' ORDER BY item.name";
                 $tabelaItensComSubitens = mysqli_query($mySQL, $queryItensComSubitens);
 
                 //PERCORRE TABELA RESULTADO COM OS ITENS DAQUELE SUBITEM:
@@ -100,7 +100,7 @@ if (verificaCapability("manage_allowed_values")) {
                     $newItem = true;
 
                     //QUERY PARA OBTER TODOS OS SUBITENS DO TIPO ENUM DAQUELE ITEM:
-                    $querySubitemEnum = "SELECT * FROM subitem WHERE item_id ='" . $linhaItemComSubitens["id"] . "' AND value_type='enum'";
+                    $querySubitemEnum = "SELECT * FROM subitem WHERE item_id ='" . $linhaItemComSubitens["id"] . "' AND value_type='enum' ORDER BY name";
                     $tabelaSubitemEnum = mysqli_query($mySQL, $querySubitemEnum);
 
                     //QUERY PARA OBTER TODOS OS VALORES PERMITIDOS DO ITEM:
@@ -128,12 +128,13 @@ if (verificaCapability("manage_allowed_values")) {
                     mysqli_data_seek($tabelaSubitemEnum,0);
 
                     //PERCORRE TABELA RESULTADO DE TODOS OS SUBITENS DO TIPO ENUM DAQUELE ITEM:
+                    $numeroItens=0;
                     while ($linhaSubitemEnum = mysqli_fetch_assoc($tabelaSubitemEnum)) {
                         //PARA EVITAR CRIAR A CELULA DO SUBITEM VARIAS VEZES:
                         $newValorPermitido = true;
 
                         //QUERY PARA OBTER TODOS OS VALORES PERMITIDOS DE CADA SUBITEM DAQUELE ITEM:
-                        $queryValoresPermitidosSubitem = "SELECT * FROM subitem_allowed_value WHERE subitem_id =".$linhaSubitemEnum["id"];
+                        $queryValoresPermitidosSubitem = "SELECT * FROM subitem_allowed_value WHERE subitem_id =".$linhaSubitemEnum["id"]." ORDER BY value";
                         $tabelaValoresPermitidosSubitem = mysqli_query($mySQL, $queryValoresPermitidosSubitem);
 
                         //NÚMERO DE VALORES PERMITIDOS DE CADA SUBITEM (PARA ROWSPAN):
@@ -143,8 +144,9 @@ if (verificaCapability("manage_allowed_values")) {
                         if ($numeroValoresPermitidosSubitem == 0) {
                             //SE É UM ITEM DIFERENTE NA TABELA (CRIA APENAS UMA VEZ):
                             if ($newItem) {
-                                echo "<tr class='row'><td class='textoTabela cell' rowspan='$numeroValoresPermitidosItem'>" . $linhaItemComSubitens["name"] . "</td>";
+                                echo "<tr class='row'><td class='textoTabela cell ".($numeroItens%2==0?"par":"impar")."'' rowspan='$numeroValoresPermitidosItem'>" . $linhaItemComSubitens["name"] . "</td>";
                                 $newItem = false;
+                                $numeroItens++;
                             } else {
                                 echo "<tr class='row'>";
                             }

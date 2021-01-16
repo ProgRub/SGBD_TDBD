@@ -117,19 +117,20 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 					<th class='textoTabela cell'>ação</th>
 					</tr>";
 					//-----
+                    $numeroItens=0;
                     while ($rowItem = mysqli_fetch_assoc($tabelaItens)) { //Enquanto existirem tuplos na tabela com os itens
                         $querySubitens = "SELECT * FROM subitem WHERE item_id = " . $rowItem["id"] . " ORDER BY name"; //Query para encontrar todos os subitens associados ao item da linha atual
                         $tabelaSubitens = mysqli_query($mySQL, $querySubitens); //Tabela com todos os subitens associados ao item da linha atual
 						if (mysqli_num_rows($tabelaSubitens) > 0) { //Se existirem subitens associados ao item da linha atual
                             $newSubitem = true;
                             $numeroSubitens = mysqli_num_rows($tabelaSubitens); //Número de subitens associados ao item da linha atual
-
                             while ($rowSubitem = mysqli_fetch_assoc($tabelaSubitens)) { //Enquanto existirem tuplos na tabela dos subitens associados ao item da linha atual
                                 if ($newSubitem) { //Para o primeiro subitem associado ao item da linha atual:
 									//Rowspan para definir o número de linhas que a célula "item" deve abranger (para incluir todos os subitens associados)
 									//E escrever o nome do item nessa célula/linha
                                     echo "<tr class='row'>
-									<td class='textoTabela cell' rowspan='$numeroSubitens'>" . $rowItem["name"] . "</td>";
+									<td class='textoTabela cell ".($numeroItens%2==0?"par":"impar")."' rowspan='$numeroSubitens'>" . $rowItem["name"] . "</td>";
+                                    $numeroItens++;
                                     $newSubitem = false;
                                 }
 								else {
@@ -145,7 +146,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                                 <td class='textoTabela cell'>" . $rowSubitem["value_type"] . "</td>
                                 <td class='textoTabela cell'>" . $rowSubitem["form_field_name"] . "</td>
                                 <td class='textoTabela cell'>" . $rowSubitem["form_field_type"] . "</td>
-                                <td class='textoTabela cell'>" . $rowUnidade["name"] . "</td>
+                                <td class='textoTabela cell'>" . (empty($rowUnidade["name"])?"-":$rowUnidade["name"]) . "</td>
                                 <td class='textoTabela cell'>" . $rowSubitem["form_field_order"] . "</td>
                                 <td class='textoTabela cell'>" . ($rowSubitem["mandatory"] == '1' ? 'sim' : 'não') . "</td>
                                 <td class='textoTabela cell'>" . ($rowSubitem["state"] == 'active' ? 'ativo' : 'inativo') . "</td>

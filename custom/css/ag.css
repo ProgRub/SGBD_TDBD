@@ -10,7 +10,7 @@ table.tabela {
   padding: 1px;
   text-align: center;
   border-collapse: inherit;
-  color:black;
+  color: black;
 }
 
 th.cell {
@@ -27,11 +27,11 @@ tr.row {
   width: 100%;
 }
 
-tr.row:nth-child(odd) {
+tr.row:nth-child(odd), td.impar {
   background-color: #99d5fd;
 }
 
-tr.row:nth-child(even) {
+tr.row:nth-child(even),td.par {
   background-color: #b0aeff;
 }
 
@@ -85,8 +85,8 @@ h3 {
   background-color: #fd7070 !important;
 }
 
-.textInputWrong::placeholder{
-	color:rgb(123, 2, 2);
+.textInputWrong::placeholder {
+  color: rgb(123, 2, 2);
 }
 
 .textInput2 {
@@ -109,7 +109,6 @@ select {
   border: 1px solid grey !important;
   border-radius: 5px !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
-
 }
 
 .warning {
@@ -124,9 +123,8 @@ select {
   color: #00b050 !important;
 }
 
-
 [hidden] {
-	display: none;
+  display: none;
 }
 
 div.caixaFormulario {
