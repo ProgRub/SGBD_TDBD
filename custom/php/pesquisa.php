@@ -546,6 +546,5 @@ if (verificaCapability("search")) {
 	}		
 }
 else{
-	echo "Não tem autorização para aceder a esta página";
+    echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
-?>

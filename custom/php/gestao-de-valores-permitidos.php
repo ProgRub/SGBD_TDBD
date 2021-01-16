@@ -194,6 +194,5 @@ if (verificaCapability("manage_allowed_values")) {
     }
 //CASO NÃO TENHA A CAPABILITY:
 } else {
-    echo "Não tem autorização para aceder a esta página";
+    echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
-?>

@@ -174,6 +174,5 @@ if (verificaCapability("manage_items")) {
     }
 //SE NÃO TIVER A CAPABILITY:
 } else {
-    echo "Não tem autorização para aceder a esta página";
+    echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
-?>

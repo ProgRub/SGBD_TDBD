@@ -64,5 +64,5 @@ if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez logi
         }
     }
 } else {//SE UTILIZADOR NÃO FEZ LOGIN E/OU NÃO TEM A CAPACIDADE
-    echo "<span class='information'>Não tem autorização para aceder a esta página</span>";
+    echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }

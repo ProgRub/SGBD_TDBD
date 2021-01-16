@@ -127,7 +127,5 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
     }
 } 
 else { //Se o utilizador não está autenticado ou não tem a capability "manage_records" não pode aceder à página
-    echo "Não tem autorização para aceder a esta página";
+    echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
-
-?>

@@ -56,13 +56,13 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             }
             $_SESSION["item_id"] = $_REQUEST["item"];
             $query = "SELECT name,item_type_id from item WHERE id=" . $_SESSION["item_id"];//QUERY PARA GUARDAR NOME DO ITEM E ID DO TIPO DE ITEM EM VÁRIAVEL DE SESSÃO
-            $item = mysqli_fetch_assoc( mysqli_query($mySQL, $query));
+            $item = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
             $_SESSION["item_name"] = $item["name"];
             $_SESSION["item_type_id"] = $item["item_type_id"];
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . "</h3></div>";
             echo "<div class='caixaFormulario'>";
             $nomeFormulario = sprintf("item_type_%d_item_%d", $_SESSION["item_type_id"], $_SESSION["item_id"]);//NOME DO FORMULÁRIO
-            $action = sprintf("%s?estado=validar&item=%d", get_site_url().'/'.$current_page,$_SESSION["item_id"]);
+            $action = sprintf("%s?estado=validar&item=%d", get_site_url() . '/' . $current_page, $_SESSION["item_id"]);
             echo "<span class='warning'>Campos obrigatórios *</span>";
             echo "<form method='post' name='$nomeFormulario' action='$action'>";
             $query = "SELECT * from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active' ORDER BY form_field_order";//QUERY PARA BUSCAR SUBITENS ASSOCIADOS AO ITEM, QUE ESTÃO ATIVOS, ORDENADOS PELO FORM_FIELD_ORDER
@@ -136,17 +136,17 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             echo "<input type='hidden' value='validar' name='estado'><input type='submit' class='submitButton' name='submit' value='Submeter'>";
             echo "</form>";
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "validar") {
+        } elseif ($_REQUEST["estado"] == "validar") {//SE O ESTADO É VALIDAR VERIFICA-SE SE HÁ CAMPOS OBRIGATÓRIOS NÃO PREENCHIDOS
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - validar</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $query = "SELECT form_field_name,name,mandatory,form_field_type from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";
-            $result = mysqli_query($mySQL, $query);
+            $query = "SELECT form_field_name,name,mandatory,form_field_type from subitem WHERE item_id=" . $_SESSION["item_id"] . " AND state='active'";//QUERY PARA OBTER SUBITENS
+            $subItens = mysqli_query($mySQL, $query);
             $error = false;
-            $listaSubItems = array();
-            while ($subItem = mysqli_fetch_assoc($result)) {
+            $listaSubItems = array();//GUARDA-SE OS SUBITENS NUM ARRAY PARA NÃO TER DE ESTAR SEMPRE A FAZER A QUERY
+            while ($subItem = mysqli_fetch_assoc($subItens)) {
                 array_push($listaSubItems, $subItem);
             }
-            foreach ($listaSubItems as $subItem) {
+            foreach ($listaSubItems as $subItem) {//PERCORRE-SE O ARRAY DOS SUBITENS PARA VER SE CAMPOS OBRIGATÓRIOS NÃO FORAM PREENCHIDOS
                 if ($subItem["mandatory"] == 1) {
                     switch ($subItem["form_field_type"]) {
                         case "text":
@@ -158,19 +158,21 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                             }
                             break;
                         case "selectbox":
-                            if ($_REQUEST[$subItem["form_field_name"]] == "empty") {
+                            if ($_REQUEST[$subItem["form_field_name"]] == "empty") {//SE O UTILIZADOR NÃO SELECIONOU OPÇÃO E DEIXOU NO "PLACEHOLDER"
                                 echo "<span class='warning'>O campo do subitem " . $subItem["name"] . " é obrigatório!</span><br>";
                                 $error = true;
                             }
                             break;
-                        case "checkbox":
-                            $valoresChecked = array();
-                            foreach ($_REQUEST as $key => $value) {
-                                if (strpos($key, $subItem["form_field_name"]) !== false) {
+                        case "checkbox"://SE FOR CHECKBOX VER SE NENHUMA DAS CHECKBOX ESTÁ CHECKED
+                            $umaCheckBoxPreenchida = false;
+                            foreach ($_REQUEST as $key => $value) {//KEY É O NOME DO INPUT NO HTML
+                                if (strpos($key, $subItem["form_field_name"]) !== false) {//VER SE O NOME DO INPUT CONTÉM O NOME DO INPUT NA BD, CONTÉM PORQUE NOME DO INPUT NO HTML É UNICO PARA AS DIFERENTES CHECKBOXES
                                     array_push($valoresChecked, $key);
+                                    $umaCheckBoxPreenchida = true;
+                                    break;
                                 }
                             }
-                            if (count($valoresChecked) == 0) {
+                            if (!$umaCheckBoxPreenchida) {
                                 echo "<span class='warning'>O campo do subitem " . $subItem["name"] . " é obrigatório!</span><br>";
                                 $error = true;
                             }
@@ -178,108 +180,101 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                     }
                 }
             }
-            if (!$error) {
+            if (!$error) {//SE TODOS OS CAMPOS OBRIGATÓRIOS FORAM PREENCHIDOS
                 echo "<span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br>";
                 echo "<ul>";
                 foreach ($listaSubItems as $subItem) {
-                    $nomeInput = $subItem["form_field_name"];
-                    $valoresAListar = array();
+                    $nomeInput = $subItem["name"];
+                    $valoresAListar = array();//VALORES DO SUBITEM QUE VÃO PARA A BD, ÚTIL PARA LISTAR AS DIFERENTES CHECKBOXES QUE FORAM ASSINALADAS
                     foreach ($_REQUEST as $key => $value) {
                         if (strpos($key, $subItem["form_field_name"]) !== false) {
                             array_push($valoresAListar, $value);
                         }
                     }
-                    $primeiro = true;
+                    echo "<li><p class='textoValidar'>$nomeInput</p></li><ul>";
                     foreach ($valoresAListar as $input) {
-                        if ($subItem["form_field_type"] == "text" || $subItem["form_field_type"] == "textbox") {
+                        if ($subItem["form_field_type"] == "text" || $subItem["form_field_type"] == "textbox") {//SÓ É PRECISO TESTAR INPUT SE INPUTS PERMITEM UTILIZADOR CUSTOMIZAR VALOR
                             $input = testarInput($input);
                         }
-                        if (!empty($input)) {
-                            if ($primeiro) {
-                                echo "<li><p class='textoValidar'>$nomeInput</p></li><ul>";
-                                $primeiro = false;
-                            }
-                            echo "<li>$input</li>";
-                        }
+                        echo "<li>$input</li>";
                     }
                     echo "</ul>";
                 }
                 echo "</ul>";
-                $action = sprintf("%s?estado=inserir&item=%d",get_site_url().'/'.$current_page, $_SESSION["item_id"]);//"insercao_de_valores?estado=validar&item=" . $_SESSION["item_id"] ;
-                echo "<form method='post' action='$action'>";
+                $action = sprintf("%s?estado=inserir&item=%d", get_site_url() . '/' . $current_page, $_SESSION["item_id"]);
+                echo "<form method='post' action='$action'>";//FORMULÁRIO COM INPUTS HIDDEN
                 foreach ($listaSubItems as $subItem) {
                     $nomeInput = $subItem["form_field_name"];
-                    foreach ($_REQUEST as $key => $value) {
-                        if (strpos($key, $nomeInput) !== false) {
+                    foreach ($_REQUEST as $key => $value) {//KEY É O NOME DO INPUT QUE VEM DA PÁGINA ANTERIOR, PARA PRESERVAR AS CHECKBOXES ÚNICAS
+                        if (strpos($key, $nomeInput) !== false) {//CONTÉM POR CAUSA DAS CHECKBOXES, COMO REFERIDO ANTERIORMENTE
                             $input = $value;
                             if ($subItem["form_field_type"] == "text" || $subItem["form_field_type"] == "textbox") {
                                 $input = testarInput($input);
                             }
-                            if (!empty($input)) {
-                                echo "<input type='hidden' name='$key' value='$input'>";
-                            }
+                            echo "<input type='hidden' name='$key' value='$input'>";
                         }
                     }
                 }
                 echo "<input type='submit' class='submitButton' value='Submeter'>";
                 echo "</form>";
-            } else {
+            } else {//SE HÁ PELO MENOS UM CAMPO OBRIGATÓRIO NÃO PREENCHIDO MOSTRAR BOTÃO PARA VOLTAR ATRÁS E LISTA DE CAMPOS OBRIGATÓRIOS EM FALTA
                 voltarAtras();
             }
             echo "</div>";
         } elseif
-        ($_REQUEST["estado"] == "inserir") {
+        ($_REQUEST["estado"] == "inserir") {//SE ESTADO É INSERIR VAMOS INSERIR OS VALORES NA BASE DE DADOS
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - inserção</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $insertQueries = array();
-            foreach ($_REQUEST as $key => $value) {//key é o nome do formulário e value é o valor
-                $nomeInput = $key;
-                if (is_numeric($key[-1])) {
-                    $nomeInput = substr($key, 0, -2);
-                }
-                $query = "SELECT id from subitem WHERE form_field_name='$nomeInput' AND state='active'";
-                $result = mysqli_query($mySQL, $query);
+            $insertQueries = array();//ARRAY ONDE SE VAI METER TODAS AS QUERIES DE INSERT GERADAS
+            foreach ($_REQUEST as $key => $value) {//KEY É O NOME DO INPUT QUE VEM DESDE O ESTADO INTRODUCAO E VALUE O VALOR DO INPUT
+//                $nomeInput = $key;
+//                if (is_numeric($key[-1])) {//VERIFICAR SE O ÚLTIMO DÍGITO É NUMÉRICO, NESTE CASO INPUT ERA CHECKBOX POR ISSO TIRAMOS O IDENTIFICADOR ÚNICO QUE ESTAVA NO NOME DO INPUT PARA FICAR SÓ O NOME DO INPUT NA BD
+//                    $nomeInput = substr($key, 0, -2);
+//                }
+                $idSubItem=explode("-",$key)[1];//ID DO SUBITEM APARECE DEPOIS DE UM TRAÇO POR ISSO ESTARÁ NA POSIÇÃO 1 DO ARRAY OBTIDO PELO EXPLODE
+//                $query = "SELECT id from subitem WHERE form_field_name='$nomeInput' AND state='active'";//QUERY PARA OBTER ID DO SUBITEM
+//                $result = mysqli_query($mySQL, $query);mysqli_fetch_assoc($result)["id"]
                 if (mysqli_num_rows($result) > 0) {
-                    $query = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL," . $_SESSION["child_id"] . "," . mysqli_fetch_assoc($result)["id"] . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
+                    $query = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL," . $_SESSION["child_id"] . "," . $idSubItem . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
                     array_push($insertQueries, $query);
                 }
             }
-            $query = "START TRANSACTION;\n";
+            $query = "START TRANSACTION;\n";//INÍCIO DE TRANSAÇÃO
             $ocorreuErro = false;
             if (!mysqli_query($mySQL, $query)) {
                 echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
                 $ocorreuErro = true;
             }
-            foreach ($insertQueries as $insertQuery) {
+            foreach ($insertQueries as $insertQuery) {//EFETUAR AS QUERIES DE INSERT
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
                     $ocorreuErro = true;
                     break;
                 }
             }
-            if (!$ocorreuErro) {
+            if (!$ocorreuErro) {//SE NÃO HOUVE ERROS ANTERIORMENTE, COMMIT DA TRANSAÇÃO
                 $query = "COMMIT;";
                 if (!mysqli_query($mySQL, $query)) {
                     echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
                     $ocorreuErro = true;
                 }
-            } else {
+            } else {//CASO CONTRÁRIO, ROLLBACK DA TRANSAÇÃO
                 $query = "ROLLBACK;";
                 if (!mysqli_query($mySQL, $query)) {
                     echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
                     $ocorreuErro = true;
                 }
             }
-            if (!$ocorreuErro) {
+            if (!$ocorreuErro) {//SE NÃO ACONTECEU ERROS INFORMAR UTILIZADOR DE INSERÇÃO COM SUCESSO E MOSTRAR OS DOIS BOTÕES
                 echo "<span class='information'>Inseriu o(s) valor(es) com sucesso.<br>Clique em <strong>Voltar</strong> para voltar ao início da inserção de valores ou em <strong>Escolher item</strong> se quiser continuar a inserir valores associados a esta criança.<br></span>";
                 echo "<a href='insercao-de-valores'><button class='atrasButton textoLabels'>Voltar</button></a>";
                 echo "<a href='?estado=escolher_item&crianca=" . $_SESSION["child_id"] . "'><button class='continuarButton textoLabels'>Escolher item</button></a>";
-            } else {
+            } else {//SE OCORREU UM ERRO MOSTRAR O BOTÃO PARA VOLTAR ATRÁS
                 voltarAtras();
             }
             echo "</div>";
-        } else {
-            $action=get_site_url().'/'.$current_page;
+        } else {//SE NÃO VEM NADA SOBRE O ESTADO APRESENTAR O FORMULÁRIO PARA INSERIR NOME E DATA DA CRIANÇA
+            $action = get_site_url() . '/' . $current_page;
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - criança - procurar</h3></div>";
             echo "<div class='caixaFormulario'><span class='information'>Introduza um dos nomes da criança a encontrar e/ou a data de nascimento dela</span>
                 <form method='post' action='$action'>
@@ -290,6 +285,6 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                 </form></div>";
         }
     }
-} else {
-    echo "Não tem autorização para aceder a esta página";
+} else {//CASO NÃO TENHA EFETUADO LOGIN E/OU NÃO TEM A CAPACIDADE
+    echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
