@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-
+echo "mudou4";
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -307,15 +307,17 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                     $_SESSION["numeroCheckbox"] = $numeroCheckbox;
                     echo "<input type='hidden' value='true' name='checkbox'>";
+
                 }else if($subitem["form_field_type"] == "selectbox"){
-                    echo "<select name='valor' id='valor'  class='textInput textoLabels'>";
+                    echo "<select name='value' id='value'  class='textInput textoLabels'>";
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
                         if ($valorPermitido["value"] == $valor["value"]) {
-                            echo "<option id='value' selected value='" . $valorPermitido["value"] . "' name='value'>".$valorPermitido["value"]."</label><br>";
+                            echo "<option id='value' selected value='" . $valorPermitido["value"] . "' name='value'> ".$valorPermitido["value"]."</option>";
                         } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
-                            echo "<input id='value' value='" . $valorPermitido["value"] . "' name='value'><label class='textoLabels'>".$valorPermitido["value"]."</label><br>";
+                            echo "<option id='value' value='" . $valorPermitido["value"] . "' name='value'> ".$valorPermitido["value"]."</option>";
                         }
                     }
+                    echo "</select><br>";
                 }
 
             }else if (($subitem["value_type"] == "int" || $subitem["value_type"] == "double" || $subitem["value_type"] == "text") && ($subitem["form_field_type"] == "text" || $subitem["form_field_type"] == "textbox")){
@@ -534,6 +536,11 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     //MENSAGEM DE ERRO NO CÓDIGO SQL
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
                 } else {
+                    $deleteQuery = "DELETE FROM subitem_allowed_value WHERE subitem_id ='" . $_SESSION["id"] . "'";
+                    if (!mysqli_query($mySQL, $deleteQuery)) {
+                        //MENSAGEM DE ERRO NO CÓDIGO SQL
+                        echo "<span class='warning'>Erro: " . $deleteQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                    }
                     //O UTILIZADOR É INFORMADO SOBRE O SUCESSO DA EDIÇÃO:
                     echo "<span class='information'>Alterou os dados do subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 
