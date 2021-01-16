@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-if (verificaCapability("manage_unit_types")) {//verificar se utilizador fez login e tem esta capacidade
+if (verificaCapability("manage_unit_types")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E TEM ESTA CAPACIDADE
     $mySQL = ligacaoBD();//ESTABELECE A LIGAÇÃO COM A BASE DE DADOS
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {//SELECIONAR A BASE DE DADOS, SE DER ERRO -> DIE
         die("Connection failed: " . mysqli_connect_error());
