@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "MUDOU124";
+echo "MUDO4333";
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -305,7 +305,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                         $numeroCheckbox++;
                     }
                     $_SESSION["numeroCheckbox"] = $numeroCheckbox;
-                }else if($subitem["form_field_type"] == "select"){
+                    echo "<input type='hidden' value='true' name='checkbox'>";
+                }else if($subitem["form_field_type"] == "selectbox"){
                     echo "<select name='valor' id='valor'  class='textInput textoLabels'>";
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
                         if ($valorPermitido["value"] == $valor["value"]) {
@@ -316,7 +317,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
 
-            }else if (($subitem["value_type"] == "int" || $subitem["value_type"] == "double" || $subitem["value_type"] == "text") && $subitem["form_field_type"] == "text"){
+            }else if (($subitem["value_type"] == "int" || $subitem["value_type"] == "double" || $subitem["value_type"] == "text") && ($subitem["form_field_type"] == "text" || $subitem["form_field_type"] == "textbox")){
                echo "<input type='text' class='textInput' name='value' id='value' value='" . $valor["value"] . "' ><br><br>";
 
             }else if($subitem["value_type"] == "bool"){
@@ -548,7 +549,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $faltaDado = false; //TRUE SE FALTAR ALGUM DADO
             $campos = ""; //VAI JUNTANDO OS CAMPOS OBRIGATORIOS EM FALTA E LISTA-OS AO FINAL
 
-            if(empty($_SESSION["numeroCheckbox"])){
+            if(empty($_REQUEST["checkbox"])){
                 //NÃO ESCREVEU O NOME:
                 if (empty($_REQUEST["value"])) {
                     $campos .= "<li><br><strong>Valor</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (Valor)
@@ -618,10 +619,6 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     //AO CLICAR NO BOTÃO, O UTILIZADOR VOLTA PARA A PAGINA INSERÇÃO DE VALORES
                     echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Continuar</button></a>";
                 }
-
-
-
-
             }
 
         }
