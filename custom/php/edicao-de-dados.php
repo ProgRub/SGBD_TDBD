@@ -185,7 +185,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                         echo "<option value='" . $linhaItens["id"] . "'>" . $linhaItens["name"] . "</option>";
                     }
                 }
-                echo '</select><br>';
+                echo '</select><br><br>';
 
                 //ESCOLHA DO TIPO DO CAMPO NO FORMULARIO:
                 echo "<strong>Tipo do campo no formulário<span class='warning'>*</span>:</strong><br>";
@@ -219,11 +219,11 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                         echo "<option value='" . $linhaTipoUnidade["id"] . "'>" . $linhaTipoUnidade["name"] . "</option>";
                     }
                 }
-                echo '</select><br>';
+                echo '</select><br><br>';
 
                 //TEXTBOX COM A ORDEM DO CAMPO NO FORMULARIO ANTERIOR PREENCHIDO:
                 echo "<strong>Ordem do campo no formulário<span class='warning'>*</span>:</strong><br>
-                <input type='text' class='textInput' name='ordem_campo' id='ordem_campo_form' value='" . $linhaSubitem["form_field_order"] . "' ><br><br>";
+                <input type='text' class='textInput' name='ordem_campo' id='ordem_campo_form' value='" . $linhaSubitem["form_field_order"] . "' ><br>";
 
                 //ESCOLHA DO VALOR DO MANDATORY (FICA CHECKED O VALOR ATUAL):
                 echo "<br><strong>Obrigatório<span class='warning'>*</span>:</strong><br>
@@ -233,7 +233,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //ESCOLHA DO ESTADO DO SUBITEM (FICA CHECKED O VALOR ATUAL):
                 echo "<br><strong>Estado:</strong><br>
                 <input type='radio' id='at' value='active' name='estado_subitem' " . ($linhaSubitem["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>
-                <input type='radio' id='inat' value='inactive' name='estado_subitem' " . ($linhaSubitem["state"] == 'inactive' ? 'checked' : '') . "><span for='inat' class='textoLabels'>inativo</span><br>
+                <input type='radio' id='inat' value='inactive' name='estado_subitem' " . ($linhaSubitem["state"] == 'inactive' ? 'checked' : '') . "><span for='inat' class='textoLabels'>inativo</span><br><br>
                 <input type='hidden' value='subitemEditado' name='estado'>
                 <input class='submitButton textoLabels' type='submit' value='Editar Subitem' name='submit'>
                 </form></div>";
@@ -324,7 +324,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     echo "<input type='hidden' value='true' name='checkbox'>";
 
                 }else if($subitem["form_field_type"] == "selectbox"){
-                    echo "<select name='value' id='value'  class='textInput textoLabels'>";
+                    echo "<select name='value'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." class='textInput textoLabels'>";
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
                         if ($valorPermitido["value"] == $valor["value"]) {
                             echo "<option id='value' selected value='" . $valorPermitido["value"] . "' name='value'> ".$valorPermitido["value"]."</option>";
