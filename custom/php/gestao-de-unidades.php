@@ -16,7 +16,7 @@ if (verificaCapability("manage_unit_types")) {//VERIFICAR SE UTILIZADOR FEZ LOGI
             $campos = "";
 
             if (empty($nomeUnidade)){
-                $campos .= "<li><br><strong>Nome</strong></li>";
+                $campos .= "<li><strong>Nome</strong></li>";
                 $faltaDado = true;
             }
 

@@ -158,6 +158,8 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             while ($subItem = mysqli_fetch_assoc($subItens)) {
                 array_push($listaSubItems, $subItem);
             }
+            //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA PARA DEPOIS LISTA-LOS:
+            $campos = "";
             foreach ($listaSubItems as $subItem) {//PERCORRE-SE O ARRAY DOS SUBITENS PARA VER SE CAMPOS OBRIGATÓRIOS NÃO FORAM PREENCHIDOS
                 if ($subItem["mandatory"] == 1) {
                     switch ($subItem["form_field_type"]) {
@@ -165,13 +167,13 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                         case "textbox":
                             $input = testarInput($_REQUEST[$subItem["form_field_name"]]);
                             if (empty($input)) {
-                                echo "<span class='warning'>O campo do subitem " . $subItem["name"] . " é obrigatório!</span><br>";
+                                $campos .= "<li><strong>". $subItem["name"]."</strong></li>";
                                 $error = true;
                             }
                             break;
                         case "selectbox":
                             if ($_REQUEST[$subItem["form_field_name"]] == "empty") {//SE O UTILIZADOR NÃO SELECIONOU OPÇÃO E DEIXOU NO "PLACEHOLDER"
-                                echo "<span class='warning'>O campo do subitem " . $subItem["name"] . " é obrigatório!</span><br>";
+                                $campos .= "<li><strong>". $subItem["name"]."</strong></li>";
                                 $error = true;
                             }
                             break;
@@ -185,7 +187,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                                 }
                             }
                             if (!$umaCheckBoxPreenchida) {
-                                echo "<span class='warning'>O campo do subitem " . $subItem["name"] . " é obrigatório!</span><br>";
+                                $campos .= "<li><strong>". $subItem["name"]."</strong></li>";
                                 $error = true;
                             }
                             break;
@@ -230,6 +232,8 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                 echo "<input type='submit' class='submitButton' value='Submeter'>";
                 echo "</form>";
             } else {//SE HÁ PELO MENOS UM CAMPO OBRIGATÓRIO NÃO PREENCHIDO MOSTRAR BOTÃO PARA VOLTAR ATRÁS E LISTA DE CAMPOS OBRIGATÓRIOS EM FALTA
+                //LISTA OS NOMES DOS CAMPOS EM FALTA
+                echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
                 voltarAtras();
             }
             echo "</div>";

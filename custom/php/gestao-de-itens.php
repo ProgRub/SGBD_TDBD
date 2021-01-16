@@ -24,12 +24,12 @@ if (verificaCapability("manage_items")) {
 
             //SE NÃO PREENCHEU O NOME:
             if (empty($_REQUEST["nome_item"])) {
-                $campos .= "<li><br><strong>Nome</strong></li>";
+                $campos .= "<li><strong>Nome</strong></li>";
                 $faltaDado = true;
             }
             //SE NÃO PREENCHEU O TIPO:
             if (empty($_REQUEST["tipo_item"])) {
-                $campos .= "<li><br><strong>Tipo</strong></li>";
+                $campos .= "<li><strong>Tipo</strong></li>";
                 $faltaDado = true;
             }
             //SE NÃO ESCOLHEU O ESTADO:
@@ -134,8 +134,8 @@ if (verificaCapability("manage_items")) {
             //SUBTITULO DA PAGINA E INICIO DO FORMULÁRIO:
             $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de itens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><form method='post' action='$action'> <strong>Nome: </strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br><br>"; //TEXTBOX PARA ESCREVER O NOME DO ITEM A INSERIR:
-            echo "<br><strong>Tipo: </strong></br>";
+            <div class='caixaFormulario'><form method='post' action='$action'> <strong>Nome<span class='warning'>*</span>:</strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br><br>"; //TEXTBOX PARA ESCREVER O NOME DO ITEM A INSERIR:
+            echo "<br><strong>Tipo<span class='warning'>*</span>:</strong></br>";
 
             //PARA MARCAR CHECKED NO PRIMEIRO ITEM APRESENTADO:
             $primeiro = true;
@@ -166,7 +166,7 @@ if (verificaCapability("manage_items")) {
 
             //OPÇÕES RADIO COM OS VALORES "ATIVO" E "INATIVO" PARA O ESTADO DO ITEM A INSERIR E BOTÃO DE SUBMIT:
             echo "
-            <br><strong>Estado:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked><span class='textoLabels' for='at'>ativo</span><br>
+            <br><strong>Estado<span class='warning'>*</span>:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked><span class='textoLabels' for='at'>ativo</span><br>
             <input type='radio' id='inat' value='inactive' name='estado_item'><span for='inat' class='textoLabels' >inativo</span><br>
             <input type='hidden' value='inserir' name='estado'>
             <input class='submitButton textoLabels' type='submit' value='Inserir item' name='submit'>
