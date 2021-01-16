@@ -44,8 +44,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                 $campos .= "<li><strong>A ordem do campo no formulário tem que ser um número superior a 0!</strong></li>";
                 $houveErros = True;
             }
-            if (empty($obrigatorio)) {
-                $campos .= "<li><strong>Endereço de email inválido!</strong></li>";
+            if ($obrigatorio=="") {
+                $campos .= "<li><strong>Obrigatório</strong></li>";
                 $houveErros = true;
             }
             if ($houveErros) { //Se algum campo do formulário não foi preenchido corretamente é apresentado um botão para voltar para a página anterior

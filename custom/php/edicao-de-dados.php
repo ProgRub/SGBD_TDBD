@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "mudou4";
+//echo "mudou4";
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -534,8 +534,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 $campos .= "<li><strong>A ordem do campo no formulário tem que ser um número superior a 0!</strong></li>";
                 $houveErros = True;
             }
-            if (empty($obrigatorio)) {
-                $campos .= "<li><strong>Endereço de email inválido!</strong></li>";
+//            echo $obrigatorio."\n";
+            if ($obrigatorio=="") {
+                $campos .= "<li><strong>Obrigatório</strong></li>";
                 $houveErros = true;
             }
 
@@ -571,7 +572,6 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                         //MENSAGEM DE ERRO NO CÓDIGO SQL
                         echo "<span class='warning'>Erro: " . $deleteQuery . "<br>" . mysqli_error($mySQL) . "</span>";
                     }
-
                     $deleteQuery = "DELETE FROM subitem_allowed_value WHERE subitem_id ='" . $_SESSION["id"] . "'";
                     if (!mysqli_query($mySQL, $deleteQuery)) {
                         //MENSAGEM DE ERRO NO CÓDIGO SQL
