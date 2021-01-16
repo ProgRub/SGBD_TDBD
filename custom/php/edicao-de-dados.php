@@ -483,7 +483,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $tresPrimeirasLetrasItem = substr($itemSemAcento, 0, 3);
             $subitem_ascii = preg_replace('/[^a-z0-9_ ]/i', '', $nome_subitem);
             $subitemSemCaracteresVazios = str_replace(" ", "_", $subitem_ascii);
-            $nome_campo_form = $tresPrimeirasLetrasItem . "-" . $_REQUEST["item_subitem"] . "-" . $subitemSemCaracteresVazios;
+            $nome_campo_form = $tresPrimeirasLetrasItem . "-" . $_SESSION["id"] . "-" . $subitemSemCaracteresVazios;
             
             $houveErros = false; //TRUE SE HOUVEREM ERROS NOS VALORES INSERIDOS
 
