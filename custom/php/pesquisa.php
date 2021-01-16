@@ -12,9 +12,8 @@ if (verificaCapability("search")) {
             $tabelaNomeItem = mysqli_query($mySQL, $queryNomeItem);
             $nomeItem = mysqli_fetch_assoc($tabelaNomeItem);
             $_SESSION["item_name"] = $nomeItem["name"];
-
-            $action=get_site_url().'/'.$current_page;
-			echo "<form method='post' action='$action'><table class='tabela'>";
+			
+			echo "<form method='post'><table class='tabela'>";
 			echo "<tr class='row'><th class='textoTabela cell'>Atributo</th><th class='textoTabela cell'>Obter</th><th class='textoTabela cell'>Filtro</th> </tr>";
 			$atributos = array("id", "name", "birth_date", "tutor_name", "tutor_phone", "tutor_email"); 		
 			for ($i = 0; $i < 6; $i++) {
@@ -67,10 +66,9 @@ if (verificaCapability("search")) {
 			//------------------------------------
 			
 			$aux = 0;
-            $action=get_site_url().'/'.$current_page; //dois forms? <form method='post' action='$action'>
-			echo "<div class='caixaFormulario'>
+			echo "<div class='caixaFormulario'><form method='post'>
 			<span class='information'><strong>Irá ser realizada uma pesquisa que irá obter, como resultado, uma listagem de, para cada criança, dos seguintes dados pessoais escolhidos:</strong></span>
-			<form method='post'  action='$action'><table><ul>";
+			<form method='post'><table><ul>";
 			
 			foreach($_SESSION["atrib_filtro"] as $chave=>$valor){
 				echo "<tr><td class='cell2'><li>$valor</li></td>";
@@ -115,6 +113,8 @@ if (verificaCapability("search")) {
 
 			echo "<table><ul>";
 						
+			$n_check = 1;
+			
 			foreach($_SESSION["sub_filtro"] as $chave=>$valor){
 				echo "<tr><td class='cell2'><li>$valor</li></td>";
 
@@ -168,23 +168,36 @@ if (verificaCapability("search")) {
 							<option value="igual">=</option>
 							<option value="diferente">!=</option>
 							</select></td>';
+							
+							$isSelectBox = $rowSubitem["form_field_type"] == "selectbox";
+							$index = 0;
+							if ($isSelectBox) {
+								$inputFields = "<select name=val_sub_filtrar[]>";
+								$inputFields .= "<option value='empty'>Selecione um valor</option>";
+							}
+							else{
+								$inputFields ="";
+							}						
 							$query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $rowSubitem["id"];
 							$result2 = mysqli_query($mySQL, $query);
-							if ($rowSubitem["form_field_type"] == "radio") {
-								$inputFields .= " checked ";
-							}
-							$index = 0;
-							$inputFields = "<span class='textoLabels'><strong>$nomeFormulario</strong></span><span class='warning'>*</span><br>";
-							$inputFields .= "<input name=val_sub_filtrar[x][]";
 							while ($val = mysqli_fetch_assoc($result2)) {
-								$inputFields .= " type='" . $rowSubitem["form_field_type"] . "' value='" . $val["value"] . "'><span for='$id' class='textoLabels'>" . $val["value"] . "</span><br>";
-								$index++;
-								if ($index < mysqli_num_rows($result2)) {
-									$inputFields .= "<input name=val_sub_filtrar[x][]";
+								if ($isSelectBox) {
+									$inputFields .= "<option value='" . $val["value"] . "'>" . $val["value"] . "</option>";
+								}
+								if($rowSubitem["form_field_type"] == "checkbox"){
+									$inputFields .= "<input name=val_sub_filtrar[check".$n_check."][]";
+									$inputFields .= " type=checkbox value='" . $val["value"] . "'" . ($rowSubitem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $val["value"] . "</span><br>";
+								}
+								if($rowSubitem["form_field_type"] == "radio"){
+									$inputFields .= "<input name=val_sub_filtrar[] type='radio' value='" . $val["value"] . "'" . ($rowSubitem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $val["value"] . "</span><br>";
 								}
 							}
+							if ($isSelectBox) {
+								$inputFields .= "</select>";
+							}
+							$n_check++;
 							echo "<td class='cell2'> $inputFields </td></tr>";
-							break;
+							break;														
 					}
 				}				
 			}
@@ -214,68 +227,301 @@ if (verificaCapability("search")) {
 			$oper_sub = $_REQUEST['oper_sub'];
 			$val_sub_filtrar = $_REQUEST['val_sub_filtrar'];
 			
-			$primeiro = true;
-			foreach($_SESSION["atrib_obter"] as $chave=>$valor){
-				if($valor == "name"){$valor = "child.name";}
-				if($primeiro==true){
-					$query = "SELECT " . $valor;
-					$primeiro = false;	
-				}
-				else{
-					$query.= ", " . $valor;
+			//-------------------------------------------------------------------------------------------------------
+			
+			
+			
+			//FALTA VERIFICAÇÃO DOS DADOS INSERIDOS
+			
+			
+			
+			/*$num_total_a_preencher = (count($_SESSION["atrib_filtro"]) + count($_SESSION["sub_filtro"]))*2;*/
+			//--------------------------------------------------------------------------------------------------------
+			
+
+			if(count($_SESSION["atrib_obter"])!=0){
+				$primeiro = true;
+				foreach($_SESSION["atrib_obter"] as $chave=>$valor){
+					if($valor == "name"){$valor = 'child.name AS "Nome da criança"';}
+					if($valor == "id"){$valor = "child.id";}
+					if($primeiro==true){
+						$query = 'SELECT ' . $valor;
+						$queryI = 'SELECT ' . $valor;
+						$primeiro = false;	
+					}
+					else{
+						$query.= ', ' . $valor;
+						$queryI.= ', ' . $valor;
+					}
 				}
 			}
 
+
+
 			if (count($_SESSION["sub_obter"])!=0){
 				if(count($_SESSION["atrib_obter"])==0){
-					$query = "SELECT name, value FROM subitem, value ";
+					$query = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
+					$queryI = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
 				}
 				else{
-					$query .= ", subitem.name, value FROM child, subitem, value ";
+					$query .= ', subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
+					$queryI .= ', subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
 					
 				}
 			}
 			else{
-				if(count($_SESSION["atrib_obter"])!=0){
-					$query .= " FROM child ";
+				if(count($_SESSION["atrib_obter"])!=0 && count($_SESSION["sub_filtro"])!=0){
+					$query .= ' FROM child, subitem, value ';
+					$queryI .= '<br>FROM child, subitem, value ';
+				}
+				if(count($_SESSION["atrib_obter"])!=0 && count($_SESSION["sub_filtro"])==0){
+					$query .= ' FROM child ';
+					$queryI .= '<br>FROM child ';
+				}
+				
+			}
+			
+			//**********where
+			
+			if(count($_SESSION["atrib_obter"])+count($_SESSION["sub_obter"])!=0){
+				
+				
+				if(count($_SESSION["atrib_filtro"])>0){
+					$query .= 'WHERE ';
+					$queryI .= '<br>WHERE ';
+					
+					$auxx=0;
+					foreach($_SESSION["atrib_filtro"] as $chave=>$valor){
+						if($valor == "name"){$valor = "child.name";}
+						if($valor == "id"){$valor = "child.id";}
+						$query .= ''.$valor.' ';
+						$queryI .= ''.$valor.' ';
+						
+						switch ($oper_atrib[$auxx]) {
+						case "maior":
+						$query .= '> ';
+						$queryI .= '> ';
+						break;		
+						case "maiorOuIgual":
+						$query .= '>= ';
+						$queryI .= '>= ';
+						break;		
+						case "igual":
+						$query .= '= ';
+						$queryI .= '= ';
+						break;		
+						case "menor":
+						$query .= '< ';
+						$queryI .= '< ';
+						break;		
+						case "menorOuIgual":
+						$query .= '<= ';
+						$queryI .= '<= ';
+						break;		
+						case "diferente":
+						$query .= '!= ';
+						$queryI .= '!= ';
+						break;		
+						case "like":
+						$query .= 'LIKE ';
+						$queryI .= 'LIKE ';
+						break;		
+						}
+						
+						if(is_numeric ($val_atrib_filtrar[$auxx])){
+							$query .= ''.$val_atrib_filtrar[$auxx].' ';
+							$queryI .= ''.$val_atrib_filtrar[$auxx].' ';					
+						}
+						else{
+							$query .= '"'.$val_atrib_filtrar[$auxx].'" ';
+							$queryI .= '"'.$val_atrib_filtrar[$auxx].'" ';
+						}
+						
+						
+						if(($auxx+1)<count($_SESSION["atrib_filtro"])){
+							$query .='AND ';
+							$queryI .='<br>AND ';
+							
+						}
+						$auxx++;	
+					}
+				}
+				
+				//********
+				
+					if(count($_SESSION["atrib_filtro"])==0 && count($_SESSION["sub_filtro"])>0){
+						$query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+					if(count($_SESSION["atrib_filtro"])>0 && count($_SESSION["sub_filtro"])>0){
+						$query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+								
+					
+					if(count($_SESSION["atrib_filtro"])>0 && count($_SESSION["sub_filtro"])==0 && count($_SESSION["sub_obter"])!=0){
+						$query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+				
+				$auxx=0;
+				if(count($_SESSION["sub_obter"])>0){
+					$query .= 'AND ( ';
+					$queryI .= '<br>AND ( ';
+					foreach($_SESSION["sub_obter"] as $chave=>$valor){				
+						$query .= 'subitem.id = ';
+						$queryI .= 'subitem.id = ';
+						$query .= ''.$chave.' ';
+						$queryI .= ''.$chave.' ';
+										
+						if(($auxx+1)<count($_SESSION["sub_obter"])){
+							$query .='OR ';
+							$queryI .='OR ';
+						}
+						else{
+							$query .= ') ';
+							$queryI .= ') ';
+						}
+						$auxx++;	
+					}
+				}
+				
+				$auxx=0;
+				if(count($_SESSION["sub_filtro"])>0){
+					foreach($_SESSION["sub_filtro"] as $chave=>$valor){	
+						
+						$query .= 'AND child.id in (SELECT child_id FROM value WHERE subitem_id = '.$chave.' AND value ';		
+						$queryI .= '<br>AND child.id in (SELECT child_id FROM value WHERE subitem_id = '.$chave.' AND value ';	
+
+						switch ($oper_sub[$auxx]) {
+							case "maior":
+							$query .= '> ';
+							$queryI .= '> ';
+							break;		
+							case "maiorOuIgual":
+							$query .= '>= ';
+							$queryI .= '>= ';
+							break;		
+							case "igual":
+							$query .= '= ';
+							$queryI .= '= ';
+							break;		
+							case "menor":
+							$query .= '< ';
+							$queryI .= '< ';
+							break;		
+							case "menorOuIgual":
+							$query .= '<= ';
+							$queryI .= '<= ';
+							break;		
+							case "diferente":
+							$query .= '!= ';
+							$queryI .= '!= ';
+							break;		
+							case "like":
+							$query .= 'LIKE ';
+							$queryI .= 'LIKE ';
+							break;		
+						}
+						
+						if(is_numeric ($val_atrib_filtrar[$auxx])){
+							$query .= ''.$val_sub_filtrar[$auxx].') ';
+							$queryI .= ''.$val_sub_filtrar[$auxx].') ';					
+						}
+						else{
+							$query .= '"'.$val_sub_filtrar[$auxx].'") ';
+							$queryI .= '"'.$val_sub_filtrar[$auxx].'") ';
+						}
+						
+						if(count($_SESSION["sub_obter"])==0){
+							$query .= 'AND subitem.id in (SELECT subitem_id FROM value WHERE subitem_id = '.$chave.' AND value ';		
+							$queryI .= '<br>AND subitem.id in (SELECT subitem_id FROM value WHERE subitem_id = '.$chave.' AND value ';
+
+							switch ($oper_sub[$auxx]) {
+								case "maior":
+								$query .= '> ';
+								$queryI .= '> ';
+								break;		
+								case "maiorOuIgual":
+								$query .= '>= ';
+								$queryI .= '>= ';
+								break;		
+								case "igual":
+								$query .= '= ';
+								$queryI .= '= ';
+								break;		
+								case "menor":
+								$query .= '< ';
+								$queryI .= '< ';
+								break;		
+								case "menorOuIgual":
+								$query .= '<= ';
+								$queryI .= '<= ';
+								break;		
+								case "diferente":
+								$query .= '!= ';
+								$queryI .= '!= ';
+								break;		
+								case "like":
+								$query .= 'LIKE ';
+								$queryI .= 'LIKE ';
+								break;	
+							}
+							
+							if(is_numeric ($val_atrib_filtrar[$auxx])){
+								$query .= ''.$val_sub_filtrar[$auxx].') ';
+								$queryI .= ''.$val_sub_filtrar[$auxx].') ';					
+							}
+							else{
+								$query .= '"'.$val_sub_filtrar[$auxx].'") ';
+								$queryI .= '"'.$val_sub_filtrar[$auxx].'") ';
+							}
+						}
+						$auxx++;	
+					}
 				}
 			}
 			
-			/*if(count($oper_atrib)!=0){
-				$query .= "WHERE ";
-				$aux=0;
-				foreach($_SESSION["atrib_filtro"] as $chave=>$valor){
-					$query .= 
-					
+
+
+			 
+			
+			echo "<strong><span class='textoValidar'>QUERY:</span></strong><br>";
+			echo $queryI;
+			
+			$result = mysqli_query($mySQL, $query);
+				
+			if ($result->num_rows > 0) 
+			{
+				echo "<table class='tabela'>
+					<tr class='row'>";
+
+				$field = $result->fetch_fields();
+				$fields = array();
+				$j = 0;
+				foreach ($field as $col)
+				{
+					echo "<th class='textoTabela cell'>".$col->name."</th>";
+					array_push($fields, array(++$j, $col->name));
 				}
+				echo "</tr>";
 
-				
-			}*/
-			
-			echo "<strong>QUERY:</strong><br>";
-			echo $query;
-			
-			/*$tabela = mysqli_query($mySQL, $query);
-				
-			while ($rowQuery = mysqli_fetch_assoc($tabela)){
-					
-			}*/
+				while($row = $result->fetch_array()) 
+				{
+					echo "<tr class='row'>";
+					for ($i=0 ; $i < sizeof($fields) ; $i++)
+					{
+						$fieldname = $fields[$i][1];
+						$filedvalue = $row[$fieldname];
 
-			/*foreach($val_sub_filtrar as $chave=>$valor){
-				echo $valor;
-				echo "<br>";
-				
-			}*/
-
-			/*echo "<table class='tabela'><tr class='row'>";
-			foreach($_SESSION["atrib_obter"] as $chave=>$valor){
-				echo "<th class='textoTabela cell'>".$valor."</th>";	
+						echo "<td class='textoTabela cell'>" . $filedvalue . "</td>";
+					}
+					echo "</tr>";
+				}
+				echo "</table>";
 			}
-			foreach($_SESSION["sub_obter"] as $chave=>$valor){
-				echo "<th class='textoTabela cell'>".$valor."</th>";	
-			}
-			echo "</tr>";*/
-
+			
+			//**
 		}
 		else{
 			
