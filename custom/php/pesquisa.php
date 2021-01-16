@@ -219,7 +219,8 @@ if (verificaCapability("search")) {
 			<p hidden><input type='hidden' value='execucao' name='estado'></p>
 			<input type='submit' value='Escolher filtros' class='submitButton textoLabels'>
 			</form>";
-        } elseif ($_REQUEST["estado"] == "execucao") {
+        } 
+		elseif ($_REQUEST["estado"] == "execucao") {
 
             $oper_atrib = $_REQUEST['oper_atrib'];
             $val_atrib_filtrar = $_REQUEST['val_atrib_filtrar'];
@@ -227,345 +228,375 @@ if (verificaCapability("search")) {
             $val_sub_filtrar = $_REQUEST['val_sub_filtrar'];
 
             //-------------------------------------------------------------------------------------------------------
-
-
-            //FALTA VERIFICAÇÃO DOS DADOS INSERIDOS
-
-
-            /*$num_total_a_preencher = (count($_SESSION["atrib_filtro"]) + count($_SESSION["sub_filtro"]))*2;*/
+            //VERIFICAÇÃO SE O UTILIZADOR PREENCHEU TODOS OS CAMPOS DO FORMULÁRIO
+			
+			$houveErros = false;
+			
+			foreach ($oper_atrib as $chave => $valor) {
+				if($valor=="selecione_tipo_op"){
+					$houveErros = true;
+				} 
+			}
+			foreach ($oper_sub as $chave => $valor) {
+				if($valor=="selecione_tipo_op"){
+					$houveErros = true;
+				} 
+			}
+			foreach ($val_atrib_filtrar as $chave => $valor) {
+				if(empty($valor)){
+					$houveErros = true;
+				}
+			}
+			$total_sub_preenchidos = 0;
+			foreach ($val_sub_filtrar as $chave => $valor) {
+				if(empty($valor)|| $valor=="empty"){
+					$houveErros = true;
+				}
+				$total_sub_preenchidos++;
+			}
+			$total_sub_filtro = count($_SESSION["sub_filtro"]);
+			if($total_sub_preenchidos < $total_sub_filtro){
+				$houveErros = true;
+			}
+            
             //--------------------------------------------------------------------------------------------------------
 
 
-            if (count($_SESSION["atrib_obter"]) != 0) {
-                $primeiro = true;
-                foreach ($_SESSION["atrib_obter"] as $chave => $valor) {
-                    if ($valor == "name") {
-                        $valor = 'child.name AS "Nome da criança"';
-                    }
-                    if ($valor == "id") {
-                        $valor = "child.id";
-                    }
-                    if ($primeiro == true) {
-                        $query = 'SELECT ' . $valor;
-                        $queryI = 'SELECT ' . $valor;
-                        $primeiro = false;
-                    } else {
-                        $query .= ', ' . $valor;
-                        $queryI .= ', ' . $valor;
-                    }
-                }
-            }
+			if ($houveErros) {
+				echo "<span class='warning'>Não preencheu todos os campos do formulário!</span><br>";
+				voltarAtras();
+			}
+			else{
+				if (count($_SESSION["atrib_obter"]) != 0) {
+					$primeiro = true;
+					foreach ($_SESSION["atrib_obter"] as $chave => $valor) {
+						if ($valor == "name") {
+							$valor = 'child.name AS "Nome da criança"';
+						}
+						if ($valor == "id") {
+							$valor = "child.id";
+						}
+						if ($primeiro == true) {
+							$query = 'SELECT ' . $valor;
+							$queryI = 'SELECT ' . $valor;
+							$primeiro = false;
+						} else {
+							$query .= ', ' . $valor;
+							$queryI .= ', ' . $valor;
+						}
+					}
+				}
 
 
-            if (count($_SESSION["sub_obter"]) != 0) {
-                if (count($_SESSION["atrib_obter"]) == 0) {
-                    $query = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                    $queryI = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
-                } else {
-                    $query .= ', subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                    $queryI .= ', subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
+				if (count($_SESSION["sub_obter"]) != 0) {
+					if (count($_SESSION["atrib_obter"]) == 0) {
+						$query = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
+						$queryI = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
+					} else {
+						$query .= ', subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
+						$queryI .= ', subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
 
-                }
-            } else {
-                
-                if (count($_SESSION["atrib_obter"]) != 0 && count($_SESSION["sub_filtro"]) >= 0) {
-                    $query .= ' FROM child ';
-                    $queryI .= '<br>FROM child ';
-                }
+					}
+				} else {
+					
+					if (count($_SESSION["atrib_obter"]) != 0 && count($_SESSION["sub_filtro"]) >= 0) {
+						$query .= ' FROM child ';
+						$queryI .= '<br>FROM child ';
+					}
 
-            }
+				}
 
-            //WHERE
+				//WHERE
 
-            if (count($_SESSION["atrib_obter"]) + count($_SESSION["sub_obter"]) != 0) {
+				if (count($_SESSION["atrib_obter"]) + count($_SESSION["sub_obter"]) != 0) {
 
 
-                if (count($_SESSION["atrib_filtro"]) > 0) {
-                    $query .= 'WHERE ';
-                    $queryI .= '<br>WHERE ';
+					if (count($_SESSION["atrib_filtro"]) > 0) {
+						$query .= 'WHERE ';
+						$queryI .= '<br>WHERE ';
 
-                    $auxx = 0;
-                    foreach ($_SESSION["atrib_filtro"] as $chave => $valor) {
-                        if ($valor == "name") {
-                            $valor = "child.name";
-                        }
-                        if ($valor == "id") {
-                            $valor = "child.id";
-                        }
-	
-                        $query .= '' . $valor . ' ';
-                        $queryI .= '' . $valor . ' ';
+						$auxx = 0;
+						foreach ($_SESSION["atrib_filtro"] as $chave => $valor) {
+							if ($valor == "name") {
+								$valor = "child.name";
+							}
+							if ($valor == "id") {
+								$valor = "child.id";
+							}
+		
+							$query .= '' . $valor . ' ';
+							$queryI .= '' . $valor . ' ';
 
-                        switch ($oper_atrib[$auxx]) {
-                            case "maior":
-                                $query .= '> ';
-                                $queryI .= '> ';						
-                                break;
-                            case "maiorOuIgual":
-                                $query .= '>= ';
-                                $queryI .= '>= ';
-                                break;
-                            case "igual":
-                                $query .= '= ';
-                                $queryI .= '= ';
-                                break;
-                            case "menor":
-                                $query .= '< ';
-                                $queryI .= '< ';
-                                break;
-                            case "menorOuIgual":
-                                $query .= '<= ';
-                                $queryI .= '<= ';
-                                break;
-                            case "diferente":
-                                $query .= '!= ';
-                                $queryI .= '!= ';
-                                break;
-                            case "like":
-                                $query .= 'LIKE ';
-                                $queryI .= 'LIKE ';
-                                break;
-                        }
-	
-						if (is_numeric($val_atrib_filtrar[$auxx])) {
-							$query .= '' . $val_atrib_filtrar[$auxx] . ' ';
-							$queryI .= '' . $val_atrib_filtrar[$auxx] . ' ';
-						} 
-						else {
-							if ($oper_atrib[$auxx] == "like") {
-								$query .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
-								$queryI .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
+							switch ($oper_atrib[$auxx]) {
+								case "maior":
+									$query .= '> ';
+									$queryI .= '> ';						
+									break;
+								case "maiorOuIgual":
+									$query .= '>= ';
+									$queryI .= '>= ';
+									break;
+								case "igual":
+									$query .= '= ';
+									$queryI .= '= ';
+									break;
+								case "menor":
+									$query .= '< ';
+									$queryI .= '< ';
+									break;
+								case "menorOuIgual":
+									$query .= '<= ';
+									$queryI .= '<= ';
+									break;
+								case "diferente":
+									$query .= '!= ';
+									$queryI .= '!= ';
+									break;
+								case "like":
+									$query .= 'LIKE ';
+									$queryI .= 'LIKE ';
+									break;
+							}
+		
+							if (is_numeric($val_atrib_filtrar[$auxx])) {
+								$query .= '' . $val_atrib_filtrar[$auxx] . ' ';
+								$queryI .= '' . $val_atrib_filtrar[$auxx] . ' ';
 							} 
 							else {
-								$query .= '"' . $val_atrib_filtrar[$auxx] . '" ';
-								$queryI .= '"' . $val_atrib_filtrar[$auxx] . '" ';
-							}
-						}
-						
-                        if (($auxx + 1) < count($_SESSION["atrib_filtro"])) {
-                            $query .= 'AND ';
-                            $queryI .= '<br>AND ';
-
-                        }
-                        $auxx++;
-                    }
-                }
-
-                if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0 && count($_SESSION["sub_obter"]) > 0) {
-                    $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                    $queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
-                }
-				if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0 && count($_SESSION["sub_obter"]) == 0) {
-                    $query .= 'WHERE ';
-                    $queryI .= '<br>WHERE ';
-                }
-			
-                if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) > 0  && count($_SESSION["sub_obter"]) != 0) {
-                    $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                    $queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
-                }
-                if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
-                    $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                    $queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
-                }
-				if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
-                    $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                    $queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
-                }
-
-                $auxx = 0;
-                if (count($_SESSION["sub_obter"]) > 0) {
-                    $query .= 'AND ( ';
-                    $queryI .= '<br>AND ( ';
-                    foreach ($_SESSION["sub_obter"] as $chave => $valor) {
-                        $query .= 'subitem.id = ';
-                        $queryI .= 'subitem.id = ';
-                        $query .= '' . $chave . ' ';
-                        $queryI .= '' . $chave . ' ';
-
-                        if (($auxx + 1) < count($_SESSION["sub_obter"])) {
-                            $query .= 'OR ';
-                            $queryI .= 'OR ';
-                        } else {
-                            $query .= ') ';
-                            $queryI .= ') ';
-                        }
-                        $auxx++;
-                    }
-                }
-
-                $auxx = 0;
-				$primeiro = true;
-                if (count($_SESSION["sub_filtro"]) > 0) {
-                    foreach ($_SESSION["sub_filtro"] as $chave => $valor) {
-						if(is_array($val_sub_filtrar[$auxx])){
-							if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro==true) {
-								$query .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-								$queryI .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-								$primeiro = false;
-							}
-							else{
-								$query .= 'AND ( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-								$queryI .= '<br>AND (child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-							}
-						}
-						else{
-							if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro==true) {
-								$query .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-								$queryI .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-								$primeiro = false;
-							}
-							else{
-								$query .= 'AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-								$queryI .= '<br>AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-							}
-						}
-
-                        switch ($oper_sub[$auxx]) {
-                            case "maior":
-                                $query .= '> ';
-                                $queryI .= '> ';
-								$aux_op_checkbox = '> ';
-                                break;
-                            case "maiorOuIgual":
-                                $query .= '>= ';
-                                $queryI .= '>= ';
-								$aux_op_checkbox = '>= ';
-                                break;
-                            case "igual":
-                                $query .= '= ';
-                                $queryI .= '= ';
-								$aux_op_checkbox = '= ';
-                                break;
-                            case "menor":
-                                $query .= '< ';
-                                $queryI .= '< ';
-								$aux_op_checkbox = '< ';
-                                break;
-                            case "menorOuIgual":
-                                $query .= '<= ';
-                                $queryI .= '<= ';
-								$aux_op_checkbox = '<= ';
-                                break;
-                            case "diferente":
-                                $query .= '!= ';
-                                $queryI .= '!= ';
-								$aux_op_checkbox = '!= ';
-                                break;
-                            case "like":
-                                $query .= 'LIKE ';
-                                $queryI .= 'LIKE ';
-								$aux_op_checkbox = 'LIKE ';
-                                break;
-                        }
-						
-						if(is_array($val_sub_filtrar[$auxx])){
-							$primeiroValor = true;
-							$auxxx = 0;
-							foreach ($val_sub_filtrar[$auxx] as $chave2 => $valor2) {
-								if ($primeiroValor == true){
-									if (is_numeric($val_sub_filtrar[$auxx][$auxxx])) {
-										$query .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
-										$queryI .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
-									} 
-									else {
-										if ($oper_atrib[$auxx] == "like") {
-											$query .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
-											$queryI .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
-										} 
-										else {
-											$query .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
-											$queryI .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
-										}
-									}
-									$primeiroValor = false;
-								}
-								else{
-									
-									$query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
-									$queryI .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
-									
-									if (is_numeric($val_sub_filtrar[$auxx][$auxxx])) {
-										$query .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
-										$queryI .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
-									} 
-									else {
-										if ($oper_atrib[$auxx] == "like") {
-											$query .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
-											$queryI .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
-										} 
-										else {
-											$query .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
-											$queryI .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
-										}
-									}
-	
-								}
-								$auxxx++;	
-							}
-							
-							$query .= ' ) ';
-							$queryI .= ' ) ';
-
-						}
-						
-						else{
-							if (is_numeric($val_sub_filtrar[$auxx])) {
-								$query .= '' . $val_sub_filtrar[$auxx] . ') ';
-								$queryI .= '' . $val_sub_filtrar[$auxx] . ') ';
-							} 
-							else {
-								if ($oper_sub[$auxx] == "like") {
-									$query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-									$queryI .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
+								if ($oper_atrib[$auxx] == "like") {
+									$query .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
+									$queryI .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
 								} 
 								else {
-									$query .= '"' . $val_sub_filtrar[$auxx] . '") ';
-									$queryI .= '"' . $val_sub_filtrar[$auxx] . '") ';
+									$query .= '"' . $val_atrib_filtrar[$auxx] . '" ';
+									$queryI .= '"' . $val_atrib_filtrar[$auxx] . '" ';
 								}
 							}
+							
+							if (($auxx + 1) < count($_SESSION["atrib_filtro"])) {
+								$query .= 'AND ';
+								$queryI .= '<br>AND ';
+
+							}
+							$auxx++;
 						}
-						
-						$auxx++;
 					}
-											
-                }
-            }
+
+					if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0 && count($_SESSION["sub_obter"]) > 0) {
+						$query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+					if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) > 0 && count($_SESSION["sub_obter"]) == 0) {
+						$query .= 'WHERE ';
+						$queryI .= '<br>WHERE ';
+					}
+				
+					if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) > 0  && count($_SESSION["sub_obter"]) != 0) {
+						$query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+					if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
+						$query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+					if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
+						$query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
+						$queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
+					}
+
+					$auxx = 0;
+					if (count($_SESSION["sub_obter"]) > 0) {
+						$query .= 'AND ( ';
+						$queryI .= '<br>AND ( ';
+						foreach ($_SESSION["sub_obter"] as $chave => $valor) {
+							$query .= 'subitem.id = ';
+							$queryI .= 'subitem.id = ';
+							$query .= '' . $chave . ' ';
+							$queryI .= '' . $chave . ' ';
+
+							if (($auxx + 1) < count($_SESSION["sub_obter"])) {
+								$query .= 'OR ';
+								$queryI .= 'OR ';
+							} else {
+								$query .= ') ';
+								$queryI .= ') ';
+							}
+							$auxx++;
+						}
+					}
+
+					$auxx = 0;
+					$primeiro = true;
+					if (count($_SESSION["sub_filtro"]) > 0) {
+						foreach ($_SESSION["sub_filtro"] as $chave => $valor) {
+							if(is_array($val_sub_filtrar[$auxx])){
+								if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro==true) {
+									$query .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+									$queryI .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+									$primeiro = false;
+								}
+								else{
+									$query .= 'AND ( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+									$queryI .= '<br>AND (child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								}
+							}
+							else{
+								if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro==true) {
+									$query .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+									$queryI .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+									$primeiro = false;
+								}
+								else{
+									$query .= 'AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+									$queryI .= '<br>AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+								}
+							}
+
+							switch ($oper_sub[$auxx]) {
+								case "maior":
+									$query .= '> ';
+									$queryI .= '> ';
+									$aux_op_checkbox = '> ';
+									break;
+								case "maiorOuIgual":
+									$query .= '>= ';
+									$queryI .= '>= ';
+									$aux_op_checkbox = '>= ';
+									break;
+								case "igual":
+									$query .= '= ';
+									$queryI .= '= ';
+									$aux_op_checkbox = '= ';
+									break;
+								case "menor":
+									$query .= '< ';
+									$queryI .= '< ';
+									$aux_op_checkbox = '< ';
+									break;
+								case "menorOuIgual":
+									$query .= '<= ';
+									$queryI .= '<= ';
+									$aux_op_checkbox = '<= ';
+									break;
+								case "diferente":
+									$query .= '!= ';
+									$queryI .= '!= ';
+									$aux_op_checkbox = '!= ';
+									break;
+								case "like":
+									$query .= 'LIKE ';
+									$queryI .= 'LIKE ';
+									$aux_op_checkbox = 'LIKE ';
+									break;
+							}
+							
+							if(is_array($val_sub_filtrar[$auxx])){
+								$primeiroValor = true;
+								$auxxx = 0;
+								foreach ($val_sub_filtrar[$auxx] as $chave2 => $valor2) {
+									if ($primeiroValor == true){
+										if (is_numeric($val_sub_filtrar[$auxx][$auxxx])) {
+											$query .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
+											$queryI .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
+										} 
+										else {
+											if ($oper_atrib[$auxx] == "like") {
+												$query .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
+												$queryI .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
+											} 
+											else {
+												$query .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
+												$queryI .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
+											}
+										}
+										$primeiroValor = false;
+									}
+									else{
+										
+										$query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
+										$queryI .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
+										
+										if (is_numeric($val_sub_filtrar[$auxx][$auxxx])) {
+											$query .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
+											$queryI .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
+										} 
+										else {
+											if ($oper_atrib[$auxx] == "like") {
+												$query .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
+												$queryI .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
+											} 
+											else {
+												$query .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
+												$queryI .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
+											}
+										}
+		
+									}
+									$auxxx++;	
+								}
+								
+								$query .= ' ) ';
+								$queryI .= ' ) ';
+
+							}
+							
+							else{
+								if (is_numeric($val_sub_filtrar[$auxx])) {
+									$query .= '' . $val_sub_filtrar[$auxx] . ') ';
+									$queryI .= '' . $val_sub_filtrar[$auxx] . ') ';
+								} 
+								else {
+									if ($oper_sub[$auxx] == "like") {
+										$query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
+										$queryI .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
+									} 
+									else {
+										$query .= '"' . $val_sub_filtrar[$auxx] . '") ';
+										$queryI .= '"' . $val_sub_filtrar[$auxx] . '") ';
+									}
+								}
+							}
+							
+							$auxx++;
+						}
+												
+					}
+				}
 
 
-            echo "<strong><span class='textoValidar'>QUERY:</span></strong><br>";
-            echo $queryI;
+				echo "<strong><span class='textoValidar'>QUERY:</span></strong><br>";
+				echo $queryI;
 
-            $result = mysqli_query($mySQL, $query);
+				$result = mysqli_query($mySQL, $query);
 
-            if ($result->num_rows > 0) {
-                echo "<table class='tabela'>
-					<tr class='row'>";
+				if ($result->num_rows > 0) {
+					echo "<table class='tabela'>
+						<tr class='row'>";
 
-                $field = $result->fetch_fields();
-                $fields = array();
-                $j = 0;
-                foreach ($field as $col) {
-                    echo "<th class='textoTabela cell'>" . $col->name . "</th>";
-                    array_push($fields, array(++$j, $col->name));
-                }
-                echo "</tr>";
+					$field = $result->fetch_fields();
+					$fields = array();
+					$j = 0;
+					foreach ($field as $col) {
+						echo "<th class='textoTabela cell'>" . $col->name . "</th>";
+						array_push($fields, array(++$j, $col->name));
+					}
+					echo "</tr>";
 
-                while ($row = $result->fetch_array()) {
-                    echo "<tr class='row'>";
-                    for ($i = 0; $i < sizeof($fields); $i++) {
-                        $fieldname = $fields[$i][1];
-                        $filedvalue = $row[$fieldname];
+					while ($row = $result->fetch_array()) {
+						echo "<tr class='row'>";
+						for ($i = 0; $i < sizeof($fields); $i++) {
+							$fieldname = $fields[$i][1];
+							$filedvalue = $row[$fieldname];
 
-                        echo "<td class='textoTabela cell'>" . $filedvalue . "</td>";
-                    }
-                    echo "</tr>";
-                }
-                echo "</table>";
-            }
-
-            
-        } else {
+							echo "<td class='textoTabela cell'>" . $filedvalue . "</td>";
+						}
+						echo "</tr>";
+					}
+					echo "</table>";
+				}			
+			}
+        } 
+		else {
 
             echo "<div class='caixaSubTitulo'><h3>Pesquisa - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
