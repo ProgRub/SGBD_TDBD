@@ -492,21 +492,20 @@ if (verificaCapability("search")) {
 							
 							if(is_array($val_sub_filtrar[$auxx])){
 								$primeiroValor = true;
-								$auxxx = 0;
 								foreach ($val_sub_filtrar[$auxx] as $chave2 => $valor2) {
 									if ($primeiroValor == true){
-										if (is_numeric($val_sub_filtrar[$auxx][$auxxx])) {
-											$query .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
-											$queryI .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
+										if (is_numeric($valor2)) {
+											$query .= '' . $valor2. ') ';
+											$queryI .= '' . $valor2 . ') ';
 										} 
 										else {
 											if ($oper_atrib[$auxx] == "like") {
-												$query .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
-												$queryI .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
+												$query .= '"%' . $valor2 . '%") ';
+												$queryI .= '"%' . $valor2 . '%") ';
 											} 
 											else {
-												$query .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
-												$queryI .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
+												$query .= '"' . $valor2 . '") ';
+												$queryI .= '"' . $valor2 . '") ';
 											}
 										}
 										$primeiroValor = false;
@@ -516,28 +515,25 @@ if (verificaCapability("search")) {
 										$query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
 										$queryI .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
 										
-										if (is_numeric($val_sub_filtrar[$auxx][$auxxx])) {
-											$query .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
-											$queryI .= '' . $val_sub_filtrar[$auxx][$auxxx] . ') ';
+										if (is_numeric($valor2)) {
+											$query .= '' . $valor2 . ') ';
+											$queryI .= '' . $valor2 . ') ';
 										} 
 										else {
 											if ($oper_atrib[$auxx] == "like") {
-												$query .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
-												$queryI .= '"%' . $val_sub_filtrar[$auxx][$auxxx] . '%") ';
+												$query .= '"%' . $valor2 . '%") ';
+												$queryI .= '"%' . $valor2 . '%") ';
 											} 
 											else {
-												$query .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
-												$queryI .= '"' . $val_sub_filtrar[$auxx][$auxxx] . '") ';
+												$query .= '"' . $valor2 . '") ';
+												$queryI .= '"' . $valor2 . '") ';
 											}
 										}
 		
 									}
-									$auxxx++;	
 								}
-								
 								$query .= ' ) ';
 								$queryI .= ' ) ';
-
 							}
 							
 							else{
@@ -601,16 +597,20 @@ if (verificaCapability("search")) {
             echo "<div class='caixaSubTitulo'><h3>Pesquisa - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
             echo "<ul>";
-            $queryTipoItem = "SELECT name,id FROM item_type ORDER BY id";
-            $tabelaTipoItem = mysqli_query($mySQL, $queryTipoItem);
-            while ($tipoItem = mysqli_fetch_assoc($tabelaTipoItem)) {
-                echo "<li>" . $tipoItem["name"] . "</li><ul>";
-                $queryItem = "SELECT name,id FROM item WHERE item_type_id=" . $tipoItem["id"];
-                $tabelaItem = mysqli_query($mySQL, $queryItem);
-                while ($item = mysqli_fetch_assoc($tabelaItem)) {
-                    echo "<li><a href='pesquisa?estado=escolha&item=" . $item["id"] . "'>[" . $item["name"] . "]</a></li>";
+            $query = "SELECT name,id FROM item_type ORDER BY id";
+            $tipoItens = mysqli_query($mySQL, $query);
+            while ($tipoItem = mysqli_fetch_assoc($tipoItens)) {
+                $query = "SELECT name,id FROM item WHERE item_type_id=" . $tipoItem["id"];
+                $itens = mysqli_query($mySQL, $query);
+                if (mysqli_num_rows($itens) > 0 && mysqli_num_rows(mysqli_query($mySQL, "SELECT id FROM subitem WHERE state='active' AND item_id IN (SELECT id FROM item WHERE item_type_id=" . $tipoItem["id"] . ")")) > 0) {
+                    echo "<li>" . $tipoItem["name"] . "</li><ul>";
+                    while ($item = mysqli_fetch_assoc($itens)) {
+                        if (mysqli_num_rows(mysqli_query($mySQL, "SELECT id FROM subitem WHERE state='active' AND item_id=" . $item["id"])) > 0) {
+                            echo "<li><a href='pesquisa?estado=escolha&item=" . $item["id"] . "'>[" . $item["name"] . "]</a></li>";
+                        }
+                    }
+                    echo "</ul>";
                 }
-                echo "</ul>";
             }
             echo "</ul>";
             echo "</div>";
