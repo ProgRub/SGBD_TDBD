@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "mudou4";
+//echo "mudou4";
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
