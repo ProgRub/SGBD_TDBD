@@ -54,7 +54,7 @@ if (verificaCapability("manage_unit_types")) {//VERIFICAR SE UTILIZADOR FEZ LOGI
             }
             //FORMULÁRIO
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
-                    <div class='caixaFormulario'>";
+                    <div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br>";
             $action=get_site_url().'/'.$current_page;
             echo "<form method ='post' action='$action'>";
             echo "<strong class='textoLabels'>Nome:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_unidade' id='nome_unidade' class='textInput'><br>

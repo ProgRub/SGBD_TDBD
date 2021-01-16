@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "mudou4";
+//echo "mudou4";
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -13,6 +13,10 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
         //SE ESCOLHEU EDITAR UM ITEM:
         if ($_REQUEST["tipo"] == "item") {
+            //VALIDAÇÃO CLIENT-SIDE:
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_itens.js', array('jquery'), 1.1, true);
+            }
             //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
             $_SESSION["tipo"] = $_REQUEST["tipo"];
             $_SESSION["id"] = $_REQUEST["id"];
@@ -30,14 +34,14 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             while ($linhaItem = mysqli_fetch_assoc(($tabelaItem))) { //APENAS 1 RESULTADO (REFERENTE AO ITEM ESCOLHIDO)
                 //FORMULÁRIO PARA A ESCOLHA DOS NOVOS VALORES:
                 $action=get_site_url().'/'.$current_page;
-                echo "<div class='caixaFormulario'><form method='post' action='$action'>";
+                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>";
 
                 //TEXTBOX COM O NOME ANTERIOR DO ITEM ESCOLHIDO:
-                echo "<strong>Nome: </strong><br>
+                echo "<strong>Nome<span class='warning'>*</span>:</strong><br>
                 <input type='text' class='textInput' name='nome_item' id='nome_item' value='" . $linhaItem["itemName"] . "' ><br><br>";
 
                 //ESCOLHA DO TIPO DE ITEM:
-                echo "<br><strong>Tipo: </strong></br>";
+                echo "<br><strong>Tipo<span class='warning'>*</span>:</strong></br>";
                 //QUERY DE TODOS OS TIPOS DE ITENS:
                 $queryTipos = "SELECT * FROM item_type";
                 //RESULTADO DA QUERY:
@@ -54,7 +58,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 }
 
                 //ESCOLHA DO ESTADO DO ITEM:
-                echo "<br><strong>Estado:</strong></br>";
+                echo "<br><strong>Estado<span class='warning'>*</span>:</strong></br>";
                 //SE O VALOR DO ESTADO DO ITEM ERA ATIVO, FICA CHECKED:
                 echo "<input type='radio' id='at' value='active' name='estado_item' " . ($linhaItem["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>";
                 //SE O VALOR DO ESTADO DO ITEM ERA INATIVO, FICA CHECKED:
@@ -67,6 +71,10 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             }
             //SE ESCOLHEU EDITAR UM VALOR PERMITIDO:
         } else if ($_REQUEST["tipo"] == "valorPermitido") {
+            //VALIDAÇÃO CLIENT-SIDE:
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_valores_permitidos.js', array('jquery'), 1.1, true);
+            }
             //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
             $_SESSION["tipo"] = $_REQUEST["tipo"];
             $_SESSION["id"] = $_REQUEST["id"];
@@ -86,12 +94,12 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //FORMULARIO PARA ESCOLHA DOS NOVOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO VALOR PERMITIDO ESCOLHIDO:
                 $action=get_site_url().'/'.$current_page;
-                echo "<div class='caixaFormulario'><form method='post' action='$action'>
-                <strong>Valor: </strong><br>
-                <input type='text' class='textInput' name='valor' id='valor' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
+                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>
+                <strong>Valor<span class='warning'>*</span>:</strong><br>
+                <input type='text' class='textInput' name='valor' id='valor_permitido' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
 
 
-                echo "<br><strong>Subitem: </strong></br>";
+                echo "<br><strong>Subitem<span class='warning'>*</span>:</strong></br>";
                 //QUERY DE TODOS OS SUBITENS:
                 $querySubitens = "SELECT * FROM subitem";
                 //RESULTADO DA QUERY:
@@ -106,7 +114,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
                 //ALTERAR O ESTADO DO VALOR PERMITIDO (O VALOR ANTERIOR FICA CHECKED):
-                echo "<br><strong>Estado:</strong><br>
+                echo "<br><strong>Estado<span class='warning'>*</span>:</strong><br>
                 <input type='radio' id='at' value='active' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>
                 <input type='radio' id='inat' value='inactive' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'inactive' ? 'checked' : '') . "><span for='inat' class='textoLabels'>inativo</span><br>
                 <input type='hidden' value='valorPermEditado' name='estado'>
@@ -115,6 +123,10 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //AO CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "valorPermEditado"
             }
         } else if ($_REQUEST["tipo"] == "subitem") {//SE FOR ESCOLHIDO EDITAR UM SUBITEM:
+            //VALIDAÇÃO CLIENT-SIDE:
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
+            }
             //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
             $_SESSION["tipo"] = $_REQUEST["tipo"];
             $_SESSION["id"] = $_REQUEST["id"];
@@ -139,12 +151,12 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //FORMULARIO PARA EDIÇÃO DOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO SUBITEM ESCOLHIDO:
                 $action=get_site_url().'/'.$current_page;
-                echo "<div class='caixaFormulario'><form method='post' action='$action'>
-                <strong>Nome: </strong><br>
+                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>
+                <strong>Nome<span class='warning'>*</span>:</strong><br>
                 <input type='text' class='textInput' name='nome_subitem' id='nome_subitem' value='" . $linhaSubitem["subitemName"] . "' ><br><br>";
 
                 //ESCOLHA DO TIPO DE VALOR:
-                echo "<strong>Tipo de valor: </strong><br>";
+                echo "<strong>Tipo de valor<span class='warning'>*</span>:</strong><br>";
                 //PERCORRE CADA TIPO:
                 foreach ($tipo_valores as $val_tip) {
                     //SE FOR O TIPO DE VALOR DO SUBITEM ESCOLHIDO, FICA CHECKED:
@@ -156,14 +168,14 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 }
 
                 //ESCOLHA DO TIPO DE ITEM:
-                echo "<br><strong>Item: </strong></br>";
+                echo "<br><strong>Item<span class='warning'>*</span>:</strong></br>";
                 //QUERY DE TODOS OS ITENS:
                 $queryItens = "SELECT * FROM item";
                 //RESULTADO DA QUERY:
                 $tabelaItens = mysqli_query($mySQL, $queryItens);
 
                 //SELECT PARA ESCOLHA DO TIPO DE SUBITEM:
-                echo "<select name='item_subitem' id='item_subitem'  class='textInput textoLabels'>";
+                echo "<select name='item_subitem' id='item'  class='textInput textoLabels'>";
                 //PERCORRE A TABELA RESULTADO DA QUERY:
                 while ($linhaItens = mysqli_fetch_assoc(($tabelaItens))) {
                     //SE FOR O ITEM DO SUBITEM ESCOLHIDO, FICA SELECTED
@@ -176,7 +188,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 echo '</select><br>';
 
                 //ESCOLHA DO TIPO DO CAMPO NO FORMULARIO:
-                echo "<strong>Tipo do campo no formulário: </strong><br>";
+                echo "<strong>Tipo do campo no formulário<span class='warning'>*</span>:</strong><br>";
                 //PERCORRE TODOS OS TIPOS DE CAMPO NO FORMULARIO:
                 foreach ($tipo_camp_form as $camp_form_tip) {
                     //SE FOR O VALOR DO TIPO DE CAMPO NO FORMULARIO DO SUBITEM ESCOLHIDO, FICA CHECKED:
@@ -188,7 +200,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 }
 
                 //ESCOLHA DO TIPO DE UNIDADE:
-                echo "<br><strong>Tipo de unidade: </strong></br>";
+                echo "<br><strong>Tipo de unidade:</strong></br>";
                 //QUERY DE TODOS OS TIPOS DE UNIDADES:
                 $queryTiposUnidades = "SELECT * FROM subitem_unit_type";
                 //RESULTADO DA QUERY:
@@ -210,11 +222,11 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 echo '</select><br>';
 
                 //TEXTBOX COM A ORDEM DO CAMPO NO FORMULARIO ANTERIOR PREENCHIDO:
-                echo "<strong>Ordem do campo no formulário: </strong><br>
-                <input type='text' class='textInput' name='ordem_campo' id='ordem_campo' value='" . $linhaSubitem["form_field_order"] . "' ><br><br>";
+                echo "<strong>Ordem do campo no formulário<span class='warning'>*</span>:</strong><br>
+                <input type='text' class='textInput' name='ordem_campo' id='ordem_campo_form' value='" . $linhaSubitem["form_field_order"] . "' ><br><br>";
 
                 //ESCOLHA DO VALOR DO MANDATORY (FICA CHECKED O VALOR ATUAL):
-                echo "<br><strong>Obrigatório:</strong><br>
+                echo "<br><strong>Obrigatório<span class='warning'>*</span>:</strong><br>
                 <input type='radio' id='obrig' value='1' name='obrigatorio' " . ($linhaSubitem["mandatory"] == '1' ? 'checked' : '') . "><span class='textoLabels' for='obrig'>sim</span><br>
                 <input type='radio' id='n_obrig' value='0' name='obrigatorio' " . ($linhaSubitem["mandatory"] == '0' ? 'checked' : '') . "><span for='n_obrig' class='textoLabels'>não</span><br>";
 
@@ -257,13 +269,16 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             echo "</div>";
 
         } else if ($_REQUEST["tipo"] == "valor") { //SE FOR ESCOLHIDO EDITAR UMA CRIANÇA:
+            if ($clientsideval) {
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/insercao_valores.js', array('jquery'), 1.1, true);
+            }
             //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
             $_SESSION["tipo"] = $_REQUEST["tipo"];
             $_SESSION["id"] = $_REQUEST["id"];
 
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Valor</h3></div>";
             $action=get_site_url().'/'.$current_page;
-            echo "<div class='caixaFormulario'><form method='post' action='$action'>";
+            echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>";
 
             $queryValor = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"] ." AND id =".$_REQUEST["id"];
             $tabelaValor = mysqli_query($mySQL, $queryValor);
@@ -274,8 +289,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $querySubitem = "SELECT * FROM subitem WHERE id=" .$valor["subitem_id"];
             $tabelaSubitem = mysqli_query($mySQL, $querySubitem);
             $subitem = mysqli_fetch_assoc($tabelaSubitem);
-
-            echo "<strong>Valor: </strong><br>";
+            $idInput=0;
+            echo "<strong>".$subitem["name"].($subitem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "").":</strong><br>";
             if($subitem["value_type"] == "enum" && $subitem["form_field_type"] != "text"){
                 $queryValoresSubitem = "SELECT * FROM subitem_allowed_value WHERE subitem_id=" . $subitem["id"];
                 $tabelaValoresSubitem = mysqli_query($mySQL, $queryValoresSubitem);
@@ -283,9 +298,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 if($subitem["form_field_type"] == "radio"){
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
                         if ($valorPermitido["value"] == $valor["value"]) {
-                            echo "<input type='radio' id='value' checked value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>".$valorPermitido["value"]. "</span><br>";
+                            echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." checked value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>".$valorPermitido["value"]. "</span><br>";
                         } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
-                            echo "<input type='radio' id='value' value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>" . $valorPermitido["value"] . "</span><br>";
+                            echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>" . $valorPermitido["value"] . "</span><br>";
                         }
                     }
                 }else if($subitem["form_field_type"] == "checkbox"){
@@ -299,9 +314,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     $numeroCheckbox = 0;
                     while ($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
                         if (in_array($valorPermitido["value"], $valoresCriança)) {
-                            echo "<input type='checkbox' id='value' checked value='" . $valorPermitido["value"] . "' name='value" . $numeroCheckbox . "'><label class='textoLabels'>" . $valorPermitido["value"] . "</label><br>";
+                            echo "<input type='checkbox'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." checked value='" . $valorPermitido["value"] . "' name='value" . $numeroCheckbox . "'><label class='textoLabels'>" . $valorPermitido["value"] . "</label><br>";
                         } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
-                            echo "<input type='checkbox' id='value' value='" . $valorPermitido["value"] . "' name='value" . $numeroCheckbox . "'><label class='textoLabels'>" . $valorPermitido["value"] . "</label><br>";
+                            echo "<input type='checkbox'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valorPermitido["value"] . "' name='value" . $numeroCheckbox . "'><label class='textoLabels'>" . $valorPermitido["value"] . "</label><br>";
                         }
                         $numeroCheckbox++;
                     }
@@ -321,12 +336,12 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 }
 
             }else if (($subitem["value_type"] == "int" || $subitem["value_type"] == "double" || $subitem["value_type"] == "text") && ($subitem["form_field_type"] == "text" || $subitem["form_field_type"] == "textbox")){
-               echo "<input type='text' class='textInput' name='value' id='value' value='" . $valor["value"] . "' ><br><br>";
+               echo "<input type='text' class='textInput' name='value'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valor["value"] . "' ><br><br>";
 
             }else if($subitem["value_type"] == "bool"){
 
-                echo "<input type='radio' id='value' value='1' name='value' " . ($valor["value"] == 'verdadeiro' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
-                <input type='radio' id='value' value='0' name='value' " . ($valor["value"] == 'falso' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
+                echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='1' name='value' " . ($valor["value"] == 'verdadeiro' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
+                <input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='0' name='value' " . ($valor["value"] == 'falso' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
 
             }
 
@@ -406,7 +421,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
             //NÃO ESCREVEU O NOME:
             if (empty($_REQUEST["nome_item"])) {
-                $campos .= "<li><br><strong>Nome</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (NOME)
+                $campos .= "<li><strong>Nome</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (NOME)
                 $faltaDado = true; //FALTA UM DADO (NOME)
             }
             //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
@@ -440,7 +455,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
             //NÃO ESCREVEU O VALOR:
             if (empty($_REQUEST["valor"])) {
-                $campos .= "<li><br><strong>Valor</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (VALOR)
+                $campos .= "<li><strong>Valor</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (VALOR)
                 $faltaDado = true; //FALTA UM DADO (VALOR)
             }
 
@@ -495,25 +510,40 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             echo "<div class='caixaFormulario'>";
 
             //CASO NÃO HOUVER PREENCHIDO O NOME DO SUBITEM, TIPO DE VALOR, TIPO DE CAMPO DO FORMULARIO OU ORDEM DO CAMPO DO FORMULARIO:
-            if (empty($nome_subitem) || empty($tipo_valor) || empty($tipo_camp_form) || $ordem_campo_form == "") {
-                //É INFORMADO QUE NÃO PREENCHEU TODOS OS CAMPOS OBRIGATORIOS:
-                echo "<span class='warning textoLabels'>Não preencheu todos os campos obrigatórios!<br></span>";
+            //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA NUMA LISTA
+            $campos = "";
+            if (empty($nome_subitem)) {
+                $campos .= "<li><strong>Nome do subitem</strong></li>";
+                $houveErros = true;
+            } else if (1 === preg_match('~[0-9]~', $nome_subitem) || 1 === preg_match('~[0-9]~', $nome_subitem)) {//Se o nome da criança ou do tutor conter números é apresentada a mensagem de erro e a variável $houveErros é colocada a true
+                $campos .= "<li><strong>O nome do subitem não pode conter números!</strong></li>";
+                $houveErros = true;
+            }
+            if (empty($tipo_valor)) {
+                $campos .= "<li><strong>Tipo de valor</strong></li>";
+                $houveErros = true;
+            }
+            if (empty($tipo_camp_form)) {
+                $campos .= "<li><strong>Tipo do campo do formulário</strong></li>";
+                $houveErros = true;
+            }
+            if (empty($ordem_campo_form)) {
+                $campos .= "<li><strong>Ordem do campo no formulário</strong></li>";
+                $houveErros = true;
+            } else if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) { //Se a ordem do campo do formulário não for um número ou for um número inferior ou igual a 0, é apresentada a mensagem de erro e a variável $houveErros é colocada a True
+                $campos .= "<li><strong>A ordem do campo no formulário tem que ser um número superior a 0!</strong></li>";
                 $houveErros = True;
             }
-            //CASO TENHA SIDO INSERIDO NÚMEROS NO NOME DO SUBITEM:
-            if (1 === preg_match('~[0-9]~', $nome_subitem)) {
-                echo "<span class='warning textoLabels'>O nome do subitem não pode conter números!<br></span>";
-                $houveErros = True;
-            }
-            //CASO A ORDEM DO CAMPO NO FORMULÁRIO NÃO FOR UM NUMERO SUPERIOR A 0:
-            if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) {
-                echo "<span class='warning textoLabels'>A ordem do campo no formulário tem que ser um número superior a 0!<br></span>";
-                $houveErros = True;
+            if (empty($obrigatorio)) {
+                $campos .= "<li><strong>Endereço de email inválido!</strong></li>";
+                $houveErros = true;
             }
 
             //CASO NÃO HOUVER DADOS INVÁLIDOS OU EM FALTA:
             if ($houveErros) {
                 //BOTÃO PARA VOLTAR ATRÁS:
+                //LISTA OS NOMES DOS CAMPOS EM FALTA
+                echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
                 voltarAtras();
             } else {
                 $insertQuery = "UPDATE subitem SET name='" . $nome_subitem . "', value_type='" . $tipo_valor . "', item_id='" . $_REQUEST["item_subitem"] . "', 
@@ -585,6 +615,11 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             }else{
                 $unchecked = true;
                 $semErros = true;
+                $query = "START TRANSACTION;";//INÍCIO DE TRANSAÇÃO
+                if (!mysqli_query($mySQL, $query)) {
+                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
+                    $semErros = false;
+                }
 
                 $valoresEscolhidos = array();
                 for ($i = $_SESSION["numeroCheckbox"]; $i >= 0; $i--) {
@@ -620,12 +655,23 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
 
-                if($semErros){
+                if ($semErros) {//SE NÃO HOUVE ERROS ANTERIORMENTE, COMMIT DA TRANSAÇÃO
+                    $query = "COMMIT;";
+                    if (!mysqli_query($mySQL, $query)) {
+                        echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
+                        $semErros = false;
+                    }
                     //O UTILIZADOR É INFORMADO SOBRE O SUCESSO DA EDIÇÃO:
                     echo "<span class='information'>Alterou os valores da criança com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 
                     //AO CLICAR NO BOTÃO, O UTILIZADOR VOLTA PARA A PAGINA INSERÇÃO DE VALORES
                     echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Continuar</button></a>";
+                } else {//CASO CONTRÁRIO, ROLLBACK DA TRANSAÇÃO
+                    $query = "ROLLBACK;";
+                    if (!mysqli_query($mySQL, $query)) {
+                        echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
+                        $semErros = false;
+                    }
                 }
             }
 

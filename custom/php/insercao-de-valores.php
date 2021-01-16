@@ -58,7 +58,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             echo "</div>";
         } elseif ($_REQUEST["estado"] == "introducao") {//SE ESTADO É INTRODUCAO UTILIZADOR VAI ESPECIFICAR VALORES A INTRODUZIR
             if ($clientsideval) {
-                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
+                wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/insercao_valores.js', array('jquery'), 1.1, true);
             }
             $_SESSION["item_id"] = $_REQUEST["item"];
             $query = "SELECT name,item_type_id from item WHERE id=" . $_SESSION["item_id"];//QUERY PARA GUARDAR NOME DO ITEM E ID DO TIPO DE ITEM EM VÁRIAVEL DE SESSÃO
@@ -249,7 +249,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                     array_push($insertQueries, $query);
                 }
             }
-            $query = "START TRANSACTION;\n";//INÍCIO DE TRANSAÇÃO
+            $query = "START TRANSACTION;";//INÍCIO DE TRANSAÇÃO
             $ocorreuErro = false;
             if (!mysqli_query($mySQL, $query)) {
                 echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
