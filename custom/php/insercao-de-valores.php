@@ -233,20 +233,14 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                 voltarAtras();
             }
             echo "</div>";
-        } elseif
-        ($_REQUEST["estado"] == "inserir") {//SE ESTADO É INSERIR VAMOS INSERIR OS VALORES NA BASE DE DADOS
+        } else if ($_REQUEST["estado"] == "inserir") {//SE ESTADO É INSERIR VAMOS INSERIR OS VALORES NA BASE DE DADOS
             echo "<div class='caixaSubTitulo'><h3>Inserção de valores - " . $_SESSION["item_name"] . " - inserção</h3></div>";
             echo "<div class='caixaFormulario'>";
             $insertQueries = array();//ARRAY ONDE SE VAI METER TODAS AS QUERIES DE INSERT GERADAS
             foreach ($_REQUEST as $key => $value) {//KEY É O NOME DO INPUT QUE VEM DESDE O ESTADO INTRODUCAO E VALUE O VALOR DO INPUT
-//                $nomeInput = $key;
-//                if (is_numeric($key[-1])) {//VERIFICAR SE O ÚLTIMO DÍGITO É NUMÉRICO, NESTE CASO INPUT ERA CHECKBOX POR ISSO TIRAMOS O IDENTIFICADOR ÚNICO QUE ESTAVA NO NOME DO INPUT PARA FICAR SÓ O NOME DO INPUT NA BD
-//                    $nomeInput = substr($key, 0, -2);
-//                }
-                $idSubItem = explode("-", $key)[1];//ID DO SUBITEM APARECE DEPOIS DE UM TRAÇO POR ISSO ESTARÁ NA POSIÇÃO 1 DO ARRAY OBTIDO PELO EXPLODE
-//                $query = "SELECT id from subitem WHERE form_field_name='$nomeInput' AND state='active'";//QUERY PARA OBTER ID DO SUBITEM
-//                $result = mysqli_query($mySQL, $query);mysqli_fetch_assoc($result)["id"]
-                if (mysqli_num_rows($result) > 0) {
+                $nomeFormularioSeparado = explode("-", $key);
+                if (count($nomeFormularioSeparado) == 3) {//VERIFICAR SE KEY RELACIONAVA-SE COM UM DOS INPUTS DO FORMULÁRIO
+                    $idSubItem = $nomeFormularioSeparado[1];//ID DO SUBITEM APARECE DEPOIS DE UM TRAÇO POR ISSO ESTARÁ NA POSIÇÃO 1 DO ARRAY OBTIDO PELO EXPLODE
                     $query = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL," . $_SESSION["child_id"] . "," . $idSubItem . ",'$value','" . date("Y-m-d") . "','" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
                     array_push($insertQueries, $query);
                 }
@@ -254,12 +248,12 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             $query = "START TRANSACTION;\n";//INÍCIO DE TRANSAÇÃO
             $ocorreuErro = false;
             if (!mysqli_query($mySQL, $query)) {
-                echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
                 $ocorreuErro = true;
             }
             foreach ($insertQueries as $insertQuery) {//EFETUAR AS QUERIES DE INSERT
                 if (!mysqli_query($mySQL, $insertQuery)) {
-                    echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                    echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span><br>";
                     $ocorreuErro = true;
                     break;
                 }
@@ -267,13 +261,13 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             if (!$ocorreuErro) {//SE NÃO HOUVE ERROS ANTERIORMENTE, COMMIT DA TRANSAÇÃO
                 $query = "COMMIT;";
                 if (!mysqli_query($mySQL, $query)) {
-                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
                     $ocorreuErro = true;
                 }
             } else {//CASO CONTRÁRIO, ROLLBACK DA TRANSAÇÃO
                 $query = "ROLLBACK;";
                 if (!mysqli_query($mySQL, $query)) {
-                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span>";
+                    echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
                     $ocorreuErro = true;
                 }
             }

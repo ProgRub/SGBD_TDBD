@@ -592,8 +592,8 @@ if (verificaCapability("search")) {
                 }
                 echo "</table>";
             }
+            echo "<a href='".get_site_url().'/'."download'><button class='continuarButton textoLabels'>Exportar Tabela para XLSX</button></a>";
 
-            
         } else {
 
             echo "<div class='caixaSubTitulo'><h3>Pesquisa - escolher item</h3></div>";

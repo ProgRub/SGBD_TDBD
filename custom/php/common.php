@@ -18,7 +18,7 @@ function testarInput($input)
 //Mostra ligação "Voltar atrás"
 function voltarAtras()
 {
-    echo "<input type='button' class='atrasButton textoLabels' value='Voltar atrás' onClick='history.back();'>";
+    echo "<input type='button' class='atrasButton textoLabels' value='Voltar atrás' onClick='history.back();'></input>";
 }
 
 
