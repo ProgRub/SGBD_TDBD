@@ -96,41 +96,43 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                         $inputFields .= "<input name='$nomeInput' type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
                         break;
                     case "enum":
-                        $isSelectBox = $subItem["form_field_type"] == "selectbox";//VER SE INPUT É DO TIPO SELECTBOX
-                        $index = 0;
-                        $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"] . " AND state='active'";//QUERY PARA ARRANJAR OS VALORES PERMITIDOS DO ENUM
-                        $valoresPermitidos = mysqli_query($mySQL, $query);
-                        if (mysqli_num_rows($valoresPermitidos) > 0) {
-                            $inputFields .= "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
-                            if ($isSelectBox) {//SE É DO TIPO SELECTBOX CRIAR O SELECT E INSERIR UMA OPÇÃO "PLACEHOLDER"
-                                $inputFields .= "<select name='$nomeInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " class='textInput textoLabels'>";
-                                $inputFields .= "<option value='empty'>Selecione um valor</option>";
-                            } else {//SE NÃO É SELECT BOX CRIAR INPUT
-                                $inputFields .= "<input name='$nomeInput";
-                                if ($subItem["form_field_type"] == "radio") {//SE É RADIO O PRIMEIRO FICA CHECKED
-                                    $inputFields .= "'";
-                                    $inputFields .= " checked ";
-                                } else {//SE NÃO É, É CHECKBOX, ACRESCENTA-SE _$INDEX PARA DISTINGUIR AS DIFERENTES CHECKBOXES DE MODO A INSERIR EM TUPLOS SEPARADOS MAIS À FRENTE
-                                    $inputFields .= "_$index'";
-                                }
-                            }
-                            while ($valor = mysqli_fetch_assoc($valoresPermitidos)) {
-                                if ($isSelectBox) {//SE É SELECTBOX, CADA VALOR FICA NUMA OPÇÃO DO SELECTBOX
-                                    $inputFields .= "<option value='" . $valor["value"] . "'>" . $valor["value"] . "</option>";
-                                } else {//CAS CONTRÁRIO, ESPECIFICAR TYPE DO INPUT E VALOR
-                                    $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
-                                }
-                                $index++;
-                                if ($index < mysqli_num_rows($valoresPermitidos) && !$isSelectBox) {//VERIFICAR, SE NÃO FOR SELECTBOX, SE DEVE-SE COMEÇAR OUTRO INPUT, ISTO É, NÃO SE CHEGOU AO FIM DOS VALORES PERMITIDOS
+                        if ($subItem["form_field_type"] == "checkbox" || $subItem["form_field_type"] == "selectbox" || $subItem["form_field_type"] == "radio") {
+                            $isSelectBox = $subItem["form_field_type"] == "selectbox";//VER SE INPUT É DO TIPO SELECTBOX
+                            $index = 0;
+                            $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"] . " AND state='active'";//QUERY PARA ARRANJAR OS VALORES PERMITIDOS DO ENUM
+                            $valoresPermitidos = mysqli_query($mySQL, $query);
+                            if (mysqli_num_rows($valoresPermitidos) > 0) {
+                                $inputFields .= "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
+                                if ($isSelectBox) {//SE É DO TIPO SELECTBOX CRIAR O SELECT E INSERIR UMA OPÇÃO "PLACEHOLDER"
+                                    $inputFields .= "<select name='$nomeInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . " class='textInput textoLabels'>";
+                                    $inputFields .= "<option value='empty'>Selecione um valor</option>";
+                                } else {//SE NÃO É SELECT BOX CRIAR INPUT
                                     $inputFields .= "<input name='$nomeInput";
-                                    if ($subItem["form_field_type"] == "checkbox") {
-                                        $inputFields .= "_$index";
+                                    if ($subItem["form_field_type"] == "radio") {//SE É RADIO O PRIMEIRO FICA CHECKED
+                                        $inputFields .= "'";
+                                        $inputFields .= " checked ";
+                                    } else {//SE NÃO É, É CHECKBOX, ACRESCENTA-SE _$INDEX PARA DISTINGUIR AS DIFERENTES CHECKBOXES DE MODO A INSERIR EM TUPLOS SEPARADOS MAIS À FRENTE
+                                        $inputFields .= "_$index'";
                                     }
-                                    $inputFields .= "'";
                                 }
-                            }
-                            if ($isSelectBox) {//SE INPUT É DO TIPO SELECTBOX, FECHAR A TAG HTML
-                                $inputFields .= "</select>";
+                                while ($valor = mysqli_fetch_assoc($valoresPermitidos)) {
+                                    if ($isSelectBox) {//SE É SELECTBOX, CADA VALOR FICA NUMA OPÇÃO DO SELECTBOX
+                                        $inputFields .= "<option value='" . $valor["value"] . "'>" . $valor["value"] . "</option>";
+                                    } else {//CAS CONTRÁRIO, ESPECIFICAR TYPE DO INPUT E VALOR
+                                        $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
+                                    }
+                                    $index++;
+                                    if ($index < mysqli_num_rows($valoresPermitidos) && !$isSelectBox) {//VERIFICAR, SE NÃO FOR SELECTBOX, SE DEVE-SE COMEÇAR OUTRO INPUT, ISTO É, NÃO SE CHEGOU AO FIM DOS VALORES PERMITIDOS
+                                        $inputFields .= "<input name='$nomeInput";
+                                        if ($subItem["form_field_type"] == "checkbox") {
+                                            $inputFields .= "_$index";
+                                        }
+                                        $inputFields .= "'";
+                                    }
+                                }
+                                if ($isSelectBox) {//SE INPUT É DO TIPO SELECTBOX, FECHAR A TAG HTML
+                                    $inputFields .= "</select>";
+                                }
                             }
                         }
                         break;
@@ -167,13 +169,13 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                         case "textbox":
                             $input = testarInput($_REQUEST[$subItem["form_field_name"]]);
                             if (empty($input)) {
-                                $campos .= "<li><strong>". $subItem["name"]."</strong></li>";
+                                $campos .= "<li><strong>" . $subItem["name"] . "</strong></li>";
                                 $error = true;
                             }
                             break;
                         case "selectbox":
                             if ($_REQUEST[$subItem["form_field_name"]] == "empty") {//SE O UTILIZADOR NÃO SELECIONOU OPÇÃO E DEIXOU NO "PLACEHOLDER"
-                                $campos .= "<li><strong>". $subItem["name"]."</strong></li>";
+                                $campos .= "<li><strong>" . $subItem["name"] . "</strong></li>";
                                 $error = true;
                             }
                             break;
@@ -187,7 +189,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                                 }
                             }
                             if (!$umaCheckBoxPreenchida) {
-                                $campos .= "<li><strong>". $subItem["name"]."</strong></li>";
+                                $campos .= "<li><strong>" . $subItem["name"] . "</strong></li>";
                                 $error = true;
                             }
                             break;
