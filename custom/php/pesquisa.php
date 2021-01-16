@@ -358,11 +358,13 @@ if (verificaCapability("search")) {
                     $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
                     $queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
                 }
-
-
                 if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                     $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
                     $queryI .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+                }
+				if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
+                    $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
+                    $queryI .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
                 }
 
                 $auxx = 0;
@@ -424,14 +426,16 @@ if (verificaCapability("search")) {
                                 break;
                         }
 
-                        if (is_numeric($val_atrib_filtrar[$auxx])) {
+                        if (is_numeric($val_sub_filtrar[$auxx])) {
                             $query .= '' . $val_sub_filtrar[$auxx] . ') ';
                             $queryI .= '' . $val_sub_filtrar[$auxx] . ') ';
-                        } else {
+                        } 
+						else {
                             if ($oper_sub[$auxx] == "like") {
                                 $query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
                                 $queryI .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-                            } else {
+                            } 
+							else {
                                 $query .= '"' . $val_sub_filtrar[$auxx] . '") ';
                                 $queryI .= '"' . $val_sub_filtrar[$auxx] . '") ';
                             }
@@ -472,7 +476,7 @@ if (verificaCapability("search")) {
                                     break;
                             }
 
-                            if (is_numeric($val_atrib_filtrar[$auxx])) {
+                            if (is_numeric($val_sub_filtrar[$auxx])) {
                                 $query .= '' . $val_sub_filtrar[$auxx] . ') ';
                                 $queryI .= '' . $val_sub_filtrar[$auxx] . ') ';
                             } else {
