@@ -282,9 +282,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 if($subitem["form_field_type"] == "radio"){
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
                         if ($valorPermitido["value"] == $valor["value"]) {
-                            echo "<input type='radio' id='value' checked value='" . $valorPermitido["value"] . "' name='valor'><span class='textoLabels'>".$valorPermitido["value"]. "</span><br>";
+                            echo "<input type='radio' id='value' checked value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>".$valorPermitido["value"]. "</span><br>";
                         } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
-                            echo "<input type='radio' id='value' value='" . $valorPermitido["value"] . "' name='valor'><span class='textoLabels'>" . $valorPermitido["value"] . "</span><br>";
+                            echo "<input type='radio' id='value' value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>" . $valorPermitido["value"] . "</span><br>";
                         }
                     }
                 }else if($subitem["form_field_type"] == "checkbox"){
