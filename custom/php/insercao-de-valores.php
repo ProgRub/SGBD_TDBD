@@ -75,6 +75,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             $subItens = mysqli_query($mySQL, $query);
             $id = 0;//INPUTS SÓ TEM ID SE FOREM OBRIGATÓRIOS, PURAMENTE PARA A VALIDAÇÃO CLIENT-SIDE
             while ($subItem = mysqli_fetch_assoc($subItens)) {
+                $acrescentarUnidade = $subItem["unit_type_id"] != null;
                 $nomeInput = $subItem["form_field_name"];//NOME DO INPUT
                 $inputFields = "";
                 switch ($subItem["value_type"]) {//DEFINIR O TIPO DE INPUT DE ACORDO COM O TIPO DE VALOR
@@ -85,18 +86,40 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                         } else {//SE NÃO, É TEXTBOX E FAZ-SE UMA TEXTAREA
                             $inputFields .= "<textarea class='textArea' name='$nomeInput' rows='5' cols='50'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "></textarea>";
                         }
+                        if ($acrescentarUnidade) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
+                            $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                            $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
+                            $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                        }
                         break;
                     case "bool":
                         $inputFields .= "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
-                        $inputFields .= "<input name='$nomeInput' type='radio' checked value='verdadeiro'><span class='textoLabels'>Verdadeiro</span><br><input name='$nomeInput' type='radio' value='falso'><span class='textoLabels'>Falso</span>";
+                        $inputFields .= "<input name='$nomeInput' type='radio' checked value='verdadeiro'><span class='textoLabels'>Verdadeiro</span>";
+                        if ($acrescentarUnidade) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
+                            $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                            $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
+                            $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                        }
+                        $inputFields .= "<br><input name='$nomeInput' type='radio' value='falso'><span class='textoLabels'>Falso</span>";
+                        if ($acrescentarUnidade) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
+                            $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                            $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
+                            $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                        }
                         break;
                     case "double":
                     case "int":
                         $inputFields .= "<span class='textoLabels'><strong>" . $subItem["name"] . "</strong></span>" . ($subItem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "") . "<br>";//criar a label
                         $inputFields .= "<input name='$nomeInput' type='text' class='textInput'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . ">";
+                        if ($acrescentarUnidade) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
+                            $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                            $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
+                            $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                        }
                         break;
                     case "enum":
-                        if ($subItem["form_field_type"] == "checkbox" || $subItem["form_field_type"] == "selectbox" || $subItem["form_field_type"] == "radio") {
+//                        if ($subItem["form_field_type"] == "checkbox" || $subItem["form_field_type"] == "selectbox" || $subItem["form_field_type"] == "radio") {
+//                            echo "HERE";
                             $isSelectBox = $subItem["form_field_type"] == "selectbox";//VER SE INPUT É DO TIPO SELECTBOX
                             $index = 0;
                             $query = "SELECT value from subitem_allowed_value WHERE subitem_id=" . $subItem["id"] . " AND state='active'";//QUERY PARA ARRANJAR OS VALORES PERMITIDOS DO ENUM
@@ -118,8 +141,14 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                                 while ($valor = mysqli_fetch_assoc($valoresPermitidos)) {
                                     if ($isSelectBox) {//SE É SELECTBOX, CADA VALOR FICA NUMA OPÇÃO DO SELECTBOX
                                         $inputFields .= "<option value='" . $valor["value"] . "'>" . $valor["value"] . "</option>";
-                                    } else {//CAS CONTRÁRIO, ESPECIFICAR TYPE DO INPUT E VALOR
-                                        $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span><br>";
+                                    } else {//CASO CONTRÁRIO, ESPECIFICAR TYPE DO INPUT E VALOR
+                                        $inputFields .= " type='" . $subItem["form_field_type"] . "' value='" . $valor["value"] . "'" . ($subItem["mandatory"] == 1 ? " id='$id'" : "") . "><span class='textoLabels'>" . $valor["value"] . "</span>";
+                                        if ($acrescentarUnidade) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
+                                            $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                                            $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
+                                            $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                                        }
+                                        $inputFields.="<br>";
                                     }
                                     $index++;
                                     if ($index < mysqli_num_rows($valoresPermitidos) && !$isSelectBox) {//VERIFICAR, SE NÃO FOR SELECTBOX, SE DEVE-SE COMEÇAR OUTRO INPUT, ISTO É, NÃO SE CHEGOU AO FIM DOS VALORES PERMITIDOS
@@ -132,15 +161,15 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                                 }
                                 if ($isSelectBox) {//SE INPUT É DO TIPO SELECTBOX, FECHAR A TAG HTML
                                     $inputFields .= "</select>";
+                                    if ($acrescentarUnidade) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
+                                        $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
+                                        $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
+                                        $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
+                                    }
                                 }
                             }
-                        }
+//                        }
                         break;
-                }
-                if ($subItem["unit_type_id"] != null) {//SE O SUBITEM TEM UMA UNIDADE ASSOCIADA, ACRESCENTÁ-LA AO LADO DO INPUT
-                    $query = "SELECT name from subitem_unit_type WHERE id=" . $subItem["unit_type_id"];
-                    $unidade = mysqli_fetch_assoc(mysqli_query($mySQL, $query));
-                    $inputFields .= "<span class='textoLabels'> " . $unidade["name"] . "</span>";
                 }
                 echo $inputFields . "<br>";
                 if ($subItem["mandatory"] == 1) {//SÓ SE AUMENTA O ID SE O SUBITEM ERA OBRIGATÓRIO

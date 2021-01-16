@@ -29,7 +29,7 @@ if (verificaCapability("manage_allowed_values")) {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
                 <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' action='$action'>
                 <strong class='textoLabels'>Valor<span class='warning'>*</span>: </strong><br>
-                <input type='text' class='textInput' id='valor_permitido' name='valor_permitido' ><br><br>";
+                <input type='text' class='textInput' id='valor_permitido' name='valor_permitido' ><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'>
             <input class='submitButton textoLabels' type='submit' value='Inserir valor permitido' name='submit'></form></div>";
             //AO SUBMETER, MUDA O ESTADO DE EXECUÇÃO PARA "inserir":
@@ -96,6 +96,8 @@ if (verificaCapability("manage_allowed_values")) {
                 $tabelaItensComSubitens = mysqli_query($mySQL, $queryItensComSubitens);
 
                 //PERCORRE TABELA RESULTADO COM OS ITENS DAQUELE SUBITEM:
+                $numeroItens = 0;
+                $numeroSubitens=0;
                 while ($linhaItemComSubitens = mysqli_fetch_assoc($tabelaItensComSubitens)) {
                     $newItem = true;
 
@@ -128,7 +130,6 @@ if (verificaCapability("manage_allowed_values")) {
                     mysqli_data_seek($tabelaSubitemEnum, 0);
 
                     //PERCORRE TABELA RESULTADO DE TODOS OS SUBITENS DO TIPO ENUM DAQUELE ITEM:
-                    $numeroItens = 0;
                     while ($linhaSubitemEnum = mysqli_fetch_assoc($tabelaSubitemEnum)) {
                         //PARA EVITAR CRIAR A CELULA DO SUBITEM VARIAS VEZES:
                         $newValorPermitido = true;
@@ -144,7 +145,7 @@ if (verificaCapability("manage_allowed_values")) {
                         if ($numeroValoresPermitidosSubitem == 0) {
                             //SE É UM ITEM DIFERENTE NA TABELA (CRIA APENAS UMA VEZ):
                             if ($newItem) {
-                                echo "<tr class='row'><td class='textoTabela cell " . ($numeroItens % 2 == 0 ? "par" : "impar") . "'' rowspan='$numeroValoresPermitidosItem'>" . $linhaItemComSubitens["name"] . "</td>";
+                                echo "<tr class='row'><td class='textoTabela cell " . ($numeroItens % 2 == 0 ? "par" : "impar") . "' rowspan='$numeroValoresPermitidosItem'>" . $linhaItemComSubitens["name"] . "</td>";
                                 $newItem = false;
                                 $numeroItens++;
                             } else {
@@ -152,13 +153,13 @@ if (verificaCapability("manage_allowed_values")) {
                             }
                             //SE É UM VALOR SUBITEM DIFERENTE (CRIAR APENAS UMA VEZ):
                             if ($newValorPermitido) {
-                                echo "<td class='textoTabela cell'>" . $linhaSubitemEnum["id"] . "</td>";
-                                echo "<td class='textoTabela cell'><a href='gestao-de-valores-permitidos?estado=introducao&subitem=" . $linhaSubitemEnum["id"] . "'>[" . $linhaSubitemEnum["name"] . "]</a></td>";
+                                echo "<td class='textoTabela cell " . ($numeroSubitens % 2 == 0 ? "par" : "impar") . "'>" . $linhaSubitemEnum["id"] . "</td>";
+                                echo "<td class='textoTabela cell " . ($numeroSubitens % 2 == 0 ? "par" : "impar") . "'><a href='gestao-de-valores-permitidos?estado=introducao&subitem=" . $linhaSubitemEnum["id"] . "'>[" . $linhaSubitemEnum["name"] . "]</a></td>";
                                 $newValorPermitido = false;
+                                $numeroSubitens++;
                             }
                             //AVISA QUE NÃO HÁ VALORES PERMITIDOS DEFINIDOS PARA AQUELE ITEM:
-                            echo "<td class='textoTabela cell' colspan='3'>Não há valores permitidos definidos</td>";
-                            echo "<td class='textoTabela cell'>[editar] [desativar]</td></tr>";
+                            echo "<td class='textoTabela cell' colspan='4'>Não há valores permitidos definidos</td>";
 
                             //SE AQUELE SUBITEM TEM VALORES PERMITIDOS:
                         } else {
@@ -166,17 +167,19 @@ if (verificaCapability("manage_allowed_values")) {
                             while ($linhaValoresPermitidos = mysqli_fetch_assoc($tabelaValoresPermitidosSubitem)) {
                                 //SE É UM ITEM DIFERENTE NA TABELA (CRIA APENAS UMA VEZ):
                                 if ($newItem) {
-                                    echo "<tr class='row'><td class='textoTabela cell' rowspan='$numeroValoresPermitidosItem'>" . $linhaItemComSubitens["name"] . "</td>";
+                                    echo "<tr class='row'><td class='textoTabela cell " . ($numeroItens % 2 == 0 ? "par" : "impar") . "' rowspan='$numeroValoresPermitidosItem'>" . $linhaItemComSubitens["name"] . "</td>";
                                     $newItem = false;
+                                    $numeroItens++;
                                 } else {
                                     echo "<tr class='row'>";
                                 }
                                 //SE É UM VALOR SUBITEM DIFERENTE (CRIAR APENAS UMA VEZ):
                                 if ($newValorPermitido) {
-                                    echo "<td class='textoTabela cell' rowspan='$numeroValoresPermitidosSubitem'>" . $linhaSubitemEnum["id"] . "</td>";
-                                    echo "<td class='textoTabela cell' rowspan='$numeroValoresPermitidosSubitem'>
+                                    echo "<td class='textoTabela cell " . ($numeroSubitens % 2 == 0 ? "par" : "impar") . "' rowspan='$numeroValoresPermitidosSubitem'>" . $linhaSubitemEnum["id"] . "</td>";
+                                    echo "<td class='textoTabela cell " . ($numeroSubitens % 2 == 0 ? "par" : "impar") . "' rowspan='$numeroValoresPermitidosSubitem'>
                                     <a href='gestao-de-valores-permitidos?estado=introducao&subitem=" . $linhaSubitemEnum["id"] . "'>[" . $linhaSubitemEnum["name"] . "]</a></td>";
                                     $newValorPermitido = false;
+                                    $numeroSubitens++;
                                 }
                                 //PREENCHE LINHA DA TABELA COM DADOS DAQUELE VALOR PERMITIDO:
                                 echo "<td class='textoTabela cell'>" . $linhaValoresPermitidos["id"] . "</td>";

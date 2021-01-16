@@ -194,7 +194,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 			<form method='post' action='$action'>
 			<span class='warning'>* Campos obrigatórios</span><br><br>
 			<strong>Nome do subitem: </strong><span class='warning textoLabels'> * </span><br>
-			<input type='text' class='textInput' id='nome_subitem' name='nome_subitem' ><br><br>
+			<input type='text' class='textInput' id='nome_subitem' name='nome_subitem' ><br>
 			<br><strong>Tipo de valor: </strong><span class='warning textoLabels'> * </span></br>";
             $primeiro = true;
             foreach ($tipo_valores as $val_tip) { //Escrever cada tipo de valor em um "radio" diferente
@@ -247,7 +247,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             }
             echo "<br>
 			<strong>Ordem do campo no formulário: </strong><span class='warning textoLabels'> * </span><br>
-			<input type='text' class='textInput' id='ordem_campo_form' name='ordem_campo_form' ><br><br>
+			<input type='text' class='textInput' id='ordem_campo_form' name='ordem_campo_form' ><br>
 			
 			<br><strong>Obrigatório: </strong><span class='warning textoLabels'> * </span><br>
 			<input  type='radio' name='obrigatorio' checked value=sim><span class='textoLabels' >Sim</span><br>
