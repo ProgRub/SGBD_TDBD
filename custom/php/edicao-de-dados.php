@@ -1,6 +1,6 @@
 <?php
 require_once("custom/php/common.php");
-echo "MUDO4333";
+
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -106,7 +106,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
                 //ALTERAR O ESTADO DO VALOR PERMITIDO (O VALOR ANTERIOR FICA CHECKED):
-                echo "<br><strong>Estado:</strong>
+                echo "<br><strong>Estado:</strong><br>
                 <input type='radio' id='at' value='active' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>
                 <input type='radio' id='inat' value='inactive' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'inactive' ? 'checked' : '') . "><span for='inat' class='textoLabels'>inativo</span><br>
                 <input type='hidden' value='valorPermEditado' name='estado'>
@@ -262,7 +262,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $_SESSION["id"] = $_REQUEST["id"];
 
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Valor</h3></div>";
-            echo "<div class='caixaFormulario'><form>";
+            $action=get_site_url().'/'.$current_page;
+            echo "<div class='caixaFormulario'><form method='post' action='$action'>";
 
             $queryValor = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"] ." AND id =".$_REQUEST["id"];
             $tabelaValor = mysqli_query($mySQL, $queryValor);
@@ -322,8 +323,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
             }else if($subitem["value_type"] == "bool"){
 
-                echo "<input type='radio' id='value' value='1' name='value' " . ($valor["value"] == '1' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
-                <input type='radio' id='value' value='0' name='value' " . ($valor["value"] == '0' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
+                echo "<input type='radio' id='value' value='1' name='value' " . ($valor["value"] == 'verdadeiro' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
+                <input type='radio' id='value' value='0' name='value' " . ($valor["value"] == 'falso' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
 
             }
 
@@ -558,7 +559,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
                 if (!$faltaDado) {
 
-                    $insertQuery = "UPDATE value SET value='" . testarInput($_REQUEST["value"]) . "', date='".date("Y-m-d")."', time='".date("H:i:s")."', producer='".wp_get_current_user()->user_login."' WHERE value.id ='" . $_SESSION["id"] . "'";
+                    $insertQuery = "UPDATE value SET value='" . testarInput($_REQUEST["value"]) . "', date='".date("Y-m-d")."', time='".date("H:i:s")."', producer='".wp_get_current_user()->user_login."' WHERE id ='" . $_SESSION["id"] . "'";
                     if (!mysqli_query($mySQL, $insertQuery)) {
                         //MOSTRA ERRO NO CÓDIGO SQL:
                         echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
