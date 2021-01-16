@@ -29,7 +29,7 @@ if (verificaCapability("manage_allowed_values")) {
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de valores permitidos - introdução</strong></h3></div>
                 <div class='caixaFormulario'><span class='warning'>Campos obrigatórios*</span><br><form method='post' action='$action'>
                 <strong class='textoLabels'>Valor<span class='warning'>*</span>: </strong><br>
-                <input type='text' class='textInput' id='valor_permitido' name='valor_permitido' ><br><br>";
+                <input type='text' class='textInput' id='valor_permitido' name='valor_permitido' ><br>";
             echo "<br><input type='hidden' value='inserir' name='estado'>
             <input class='submitButton textoLabels' type='submit' value='Inserir valor permitido' name='submit'></form></div>";
             //AO SUBMETER, MUDA O ESTADO DE EXECUÇÃO PARA "inserir":
@@ -157,8 +157,7 @@ if (verificaCapability("manage_allowed_values")) {
                                 $newValorPermitido = false;
                             }
                             //AVISA QUE NÃO HÁ VALORES PERMITIDOS DEFINIDOS PARA AQUELE ITEM:
-                            echo "<td class='textoTabela cell' colspan='3'>Não há valores permitidos definidos</td>";
-                            echo "<td class='textoTabela cell'>[editar] [desativar]</td></tr>";
+                            echo "<td class='textoTabela cell' colspan='4'>Não há valores permitidos definidos</td>";
 
                             //SE AQUELE SUBITEM TEM VALORES PERMITIDOS:
                         } else {
