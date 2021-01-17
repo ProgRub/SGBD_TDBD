@@ -722,11 +722,11 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                 // $keys are for the header row.  If they are supplied we start writing at row 2
                 if ($keys) {
-                    $offset = substr_count($queryApresentada,"<br>")+2;
+                    $offset = substr_count($queryApresentada,"<br>")+3;
                 } else {
-                    $offset = substr_count($queryApresentada,"<br>")+1;
+                    $offset = substr_count($queryApresentada,"<br>")+2;
                 }
-                echo $offset."<br>";
+//                echo $offset."HERE<br>";
 
                 // write the rows
                 $i = 0;
@@ -751,19 +751,19 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                 // if $keys, freeze the header row and make it bold
                 if ($keys) {
-                    $spreadsheet->getActiveSheet()->freezePane('A2');
-                    $spreadsheet->getActiveSheet()->getStyle('A2:' . $last_column . '1')->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->freezePane('A'.($offset-1));
+                    $spreadsheet->getActiveSheet()->getStyle('A'.($offset-1).':' . $last_column . ($offset-1))->getFont()->setBold(true);
                 }
 
                 // format all columns as text
                 $spreadsheet->getActiveSheet()->getStyle('A2:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
-                $spreadsheet->getActiveSheet()->mergeCells("A1:".$last_column."1");
+                $spreadsheet->getActiveSheet()->mergeCells("A1:"."Q".($offset-2));
                 $spreadsheet->getActiveSheet()->setCellValue("A1",str_replace("<br>","\n",$queryApresentada));
                 $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
                 $writer = new Xlsx($spreadsheet);
                 $writer->save($filename);
                 if (file_exists(realpath($filename))) {
-                    echo "<br><a href='".get_site_url() ."/".  $filename . "' download='resultado.xlsx'><button class='continuarButton textoLabels'>Exportar1</button></a>";
+                    echo "<br><a href='".get_site_url() ."/".  $filename . "' download='resultado.xlsx'><button class='continuarButton textoLabels'>Exportar</button></a>";
                 }
             }
         } else { //Estado inicial
