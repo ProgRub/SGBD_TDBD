@@ -768,10 +768,10 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                     $spreadsheet->getActiveSheet()->getStyle('A' . ($offset - 1) . ':' . $last_column . ($offset - 1))->getFont()->setBold(true);
 
                     // Formatar todas as colunas como texto
-                    $spreadsheet->getActiveSheet()->getStyle('A1:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+                    $spreadsheet->getActiveSheet()->getStyle('A2:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
 
                     //Apresentar frase descritiva da query antes da tabela e juntar ("merge") as células necessárias
-                    $spreadsheet->getActiveSheet()->mergeCells("A1:" . "Q" . ($offset - 2));
+                    $spreadsheet->getActiveSheet()->mergeCells("A1:Q" . ($offset - 2));
                     $spreadsheet->getActiveSheet()->setCellValue("A1", str_replace("<br>", "\n", $descricaoQuery));
                     $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
                     $writer = new Xlsx($spreadsheet);
