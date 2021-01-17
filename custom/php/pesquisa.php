@@ -341,7 +341,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                 }
             }
             foreach ($val_atrib_filtrar as $chave => $valor) {
-                if (empty($valor)) {
+                if ($valor=="") {
                     $houveErros = true;
                 }
             }
@@ -376,51 +376,54 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                 //              INÍCIO DA QUERY: SELECT ... FROM ...
                 //-----------------------------------------------------------
 
-                $descricaoQuery = 'Seleciona-se';
+                
                 if (count($_SESSION["atrib_obter"]) != 0) {  //Se existirem atributos para obter
                     $primeiro = true;
                     foreach ($_SESSION["atrib_obter"] as $chave => $valor) {
                         if ($valor == "name") {
                             $valor = 'child.name AS "Nome da criança"';
-                            $descricaoQuery .= ' o nome da criança';
+                            $aux_descricaoQuery = ' o nome da criança';
                         }
                         if ($valor == "id") {
                             $valor = 'child.id AS "ID da criança"';
-                            $descricaoQuery .= ' o ID da criança';
+                            $aux_descricaoQuery = ' o ID da criança';
                         }
                         if ($valor == "birth_date") {
                             $valor = 'child.birth_date AS "Data de nascimento da criança"';
-                            $descricaoQuery .= ' a data de nascimento da criança';
+                            $aux_descricaoQuery = ' a data de nascimento da criança';
                         }
                         if ($valor == "tutor_name") {
                             $valor = 'child.tutor_name AS "Nome do Encarregado de Educação"';
-                            $descricaoQuery .= ' o nome do Encarregado de Educação';
+                            $aux_descricaoQuery = ' o nome do Encarregado de Educação';
                         }
                         if ($valor == "tutor_phone") {
                             $valor = 'child.tutor_phone AS "Telefone do Encarregado de Educação"';
-                            $descricaoQuery .= ' o telefone do Encarregado de Educação';
+                            $aux_descricaoQuery = ' o telefone do Encarregado de Educação';
                         }
                         if ($valor == "tutor_email") {
                             $valor = 'child.tutor_email AS "E-mail do Encarregado de Educação"';
-                            $descricaoQuery .= ' o e-mail do Encarregado de Educação';
+                            $aux_descricaoQuery = ' o e-mail do Encarregado de Educação';
                         }
                         if ($primeiro == true) {
                             $query = 'SELECT ' . $valor;
+							$descricaoQuery = 'Seleciona-se'. $aux_descricaoQuery;
                             $primeiro = false;
-                        } else {
+                        } 
+						else {
                             $query .= ', ' . $valor;
+							$descricaoQuery .= ', ' . $aux_descricaoQuery;
+							
                         }
-                        $descricaoQuery .= ',';
+                        
                     }
                 }
-                $descricaoQuery = substr($descricaoQuery, 0, -1);
                 if (count($_SESSION["sub_obter"]) != 0) { //Se existirem subitens para obter
                     if (count($_SESSION["atrib_obter"]) == 0) { //Se existirem subitens para obter e não existitem atributos para obter
                         $query = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                        $descricaoQuery = 'Seleciona-se o nome do subitem e seu valor';
+                        $descricaoQuery = 'Seleciona-se os nomes dos subitens e seus valores ';
                     } else {//Se existirem subitens para obter e existitem atributos para obter
                         $query .= ', subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                        $descricaoQuery .= ', nome do subitem e seu valor';
+                        $descricaoQuery .= ', os nomes dos subitens e seus valores ';
 
                     }
                 } else { //Se não existirem subitens para obter
@@ -439,32 +442,33 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                     if (count($_SESSION["atrib_filtro"]) > 0) {
                         $query .= 'WHERE ';
-                        $descricaoQuery .= 'Onde ';
+                        $descricaoQuery .= '<br>Onde ';
 
                         $auxx = 0;
                         foreach ($_SESSION["atrib_filtro"] as $chave => $valor) {
                             if ($valor == "name") {
                                 $valor = "child.name";
-                                $descricaoQuery .= 'o nome da criança ';
+                                $aux_descricaoQuery = 'o nome da criança ';
                             }
                             if ($valor == "id") {
                                 $valor = "child.id";
-                                $descricaoQuery .= 'o ID da criança ';
+                                $aux_descricaoQuery = 'o ID da criança ';
                             }
                             if ($valor == "birth_date") {
-                                $descricaoQuery .= 'a data de nascimento da criança ';
+                                $aux_descricaoQuery = 'a data de nascimento da criança ';
                             }
                             if ($valor == "tutor_name") {
-                                $descricaoQuery .= 'o nome do Encarregado de Educação ';
+                                $aux_descricaoQuery = 'o nome do Encarregado de Educação ';
                             }
                             if ($valor == "tutor_phone") {
-                                $descricaoQuery .= 'o telefone do Encarregado de Educação ';
+                                $aux_descricaoQuery = 'o telefone do Encarregado de Educação ';
                             }
                             if ($valor == "tutor_email") {
-                                $descricaoQuery .= 'o e-mail do Encarregado de Educação ';
+                                $aux_descricaoQuery = 'o e-mail do Encarregado de Educação ';
                             }
 
                             $query .= '' . $valor . ' ';
+							$descricaoQuery .= '' . $aux_descricaoQuery . ' ';
 
                             switch ($oper_atrib[$auxx]) {
                                 case "maior":
@@ -493,6 +497,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                     break;
                                 case "like":
                                     $query .= 'LIKE ';
+									$descricaoQuery .= 'contém ';
                                     break;
                             }
 
@@ -502,7 +507,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             } else {
                                 if ($oper_atrib[$auxx] == "like") {
                                     $query .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
-                                    $descricaoQuery .= 'contém "' . $val_atrib_filtrar[$auxx] . '" ';
+                                    $descricaoQuery .= '"' . $val_atrib_filtrar[$auxx] . '" ';
                                 } else {
                                     $query .= '"' . $val_atrib_filtrar[$auxx] . '" ';
                                     $descricaoQuery .= '"' . $val_atrib_filtrar[$auxx] . '" ';
@@ -525,7 +530,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitens selecionados ';
                     }
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) == 0) {
                         $query .= 'WHERE ';
@@ -533,15 +538,15 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                     }
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitens selecionados ';
                     }
                     if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
+                        $descricaoQuery .= '<br>E o valor está associado à criança e subitens selecionados ';
                     }
                     if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
+                        $descricaoQuery .= '<br>E o valor está associado à criança e subitens selecionados ';
                     }
 
 
@@ -562,8 +567,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                 $query .= 'OR ';
                                 $descricaoQuery .= 'ou ';
                             } else {
-                                $query .= ') ';
-                                $descricaoQuery .= 'e ';
+                                $query .= ') ';                          
                             }
                             $auxx++;
                         }
@@ -580,64 +584,67 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             if (is_array($val_sub_filtrar[$auxx])) { //Para o caso do subitem a filtrar ter como campo de formulário uma checkbox
                                 if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro == true) { //Se existirem atributos para filtrar e subitens para obter e ser o 1º valor a ser filtrado
                                     $query .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $descricaoQuery .= 'a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
+                                    $descricaoQuery .= ' a criança tem um valor para o subitem com ID igual a ' . $chave . ', e o valor ';
                                     $primeiro = false;
                                 } else {
                                     $query .= 'AND ( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $descricaoQuery .= 'e a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
+                                    $descricaoQuery .= '<br>E a criança tem um valor para o subitem com ID igual a ' . $chave . ', e o valor ';
                                 }
                             } else { //Quando o input só tem um valor
                                 if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro == true) { //Se existirem atributos para filtrar e subitens para obter e ser o 1º valor a ser filtrado
                                     $query .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $descricaoQuery .= 'a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
+                                    $descricaoQuery .= 'a criança tem um valor para o subitem com ID igual a ' . $chave . ', e o valor ';
                                     $primeiro = false;
                                 } else {
                                     $query .= 'AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $descricaoQuery .= 'e a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
+                                    $descricaoQuery .= '<br>E a criança tem um valor para o subitem com ID igual a ' . $chave . ', e o valor ';
                                 }
                             }
 
                             switch ($oper_sub[$auxx]) {
-                                case "maior":
+								case "maior":
                                     $query .= '> ';
-                                    $auxQuery = '> ';
-                                    $descricaoQuery .= 'maior que ';
-                                    $aux_op_checkbox = 'maior que ';
+                                    $descricaoQuery .= 'é maior que ';
+									$aux_descricaoQuery .= 'é maior que ';
+                                    $aux_op_checkbox = '> ';
                                     break;
                                 case "maiorOuIgual":
                                     $query .= '>= ';
-                                    $auxQuery = '>= ';
-                                    $descricaoQuery .= 'maior ou igual que ';
-                                    $aux_op_checkbox = 'maior ou igual que ';
+                                    $descricaoQuery .= 'é maior ou igual que ';
+									$aux_descricaoQuery = 'é maior ou igual que ';
+                                    $aux_op_checkbox = '>= ';
                                     break;
                                 case "igual":
                                     $query .= '= ';
-                                    $auxQuery = '= ';
-                                    $descricaoQuery .= 'igual a ';
-                                    $aux_op_checkbox = 'igual a ';
+                                    $descricaoQuery .= 'é igual a ';
+									$aux_descricaoQuery = 'é igual a ';
+                                    $aux_op_checkbox = '= ';
                                     break;
                                 case "menor":
                                     $query .= '< ';
-                                    $auxQuery = '< ';
-                                    $descricaoQuery .= 'menor que ';
-                                    $aux_op_checkbox = 'menor que ';
+                                    $descricaoQuery .= 'é menor que ';
+									$aux_descricaoQuery = 'é menor que ';
+                                    $aux_op_checkbox = '< ';
                                     break;
                                 case "menorOuIgual":
                                     $query .= '<= ';
-                                    $auxQuery = '<= ';
-                                    $descricaoQuery .= 'menor ou igual que ';
-                                    $aux_op_checkbox = 'menor ou igual que ';
+                                    $descricaoQuery .= 'é menor ou igual que ';
+									$aux_descricaoQuery = 'é menor ou igual que ';
+                                    $aux_op_checkbox = '<= ';
                                     break;
                                 case "diferente":
                                     $query .= '!= ';
-                                    $auxQuery = '!= ';
-                                    $descricaoQuery .= 'diferente de ';
-                                    $aux_op_checkbox = 'diferente de ';
+                                    $descricaoQuery .= 'é diferente de ';
+									$aux_descricaoQuery = 'é diferente de ';
+                                    $aux_op_checkbox = '!= ';
                                     break;
                                 case "like":
                                     $query .= 'LIKE ';
-                                    $auxQuery = 'LIKE ';
-                                    break;
+                                    $queryApresentada = 'LIKE ';
+									$descricaoQuery .= 'contém ';
+									$aux_descricaoQuery .= 'contém ';
+                                    $aux_op_checkbox = 'LIKE ';
+                                    break;																																
                             }
 
                             if (is_array($val_sub_filtrar[$auxx])) { //Para o caso do subitem a filtrar ter como campo de formulário uma checkbox
@@ -650,25 +657,27 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                         } else {
                                             if ($oper_atrib[$auxx] == "like") {
                                                 $query .= '"%' . $valor2 . '%") ';
-                                                $descricaoQuery .= 'contém "' . $valor2 . '" ';
+                                                $descricaoQuery .= '"' . $valor2 . '" ';
                                             } else {
                                                 $query .= '"' . $valor2 . '") ';
                                                 $descricaoQuery .= '"' . $valor2 . '" ';
                                             }
                                         }
                                         $primeiroValor = false;
-                                    } else {
+                                    } 
+									else {
 
-                                        $query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $auxQuery . '';
-                                        $descricaoQuery .= 'ou a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ' . $aux_op_checkbox . '';
+                                        $query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
+                                        $descricaoQuery .= 'ou a criança tem um valor para o subitem com ID igual a ' . $chave . ', e o valor ' . $aux_descricaoQuery . '';
 
                                         if (is_numeric($valor2)) {
                                             $query .= '' . $valor2 . ') ';
                                             $descricaoQuery .= '' . $valor2 . ' ';
-                                        } else {
+                                        } 
+										else {
                                             if ($oper_atrib[$auxx] == "like") {
                                                 $query .= '"%' . $valor2 . '%") ';
-                                                $descricaoQuery .= 'contém "' . $valor2 . '" ';
+                                                $descricaoQuery .= '"' . $valor2 . '" ';
                                             } else {
                                                 $query .= '"' . $valor2 . '") ';
                                                 $descricaoQuery .= '"' . $valor2 . '" ';
@@ -684,19 +693,17 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                 } else {
                                     if ($oper_sub[$auxx] == "like") {
                                         $query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-                                        $descricaoQuery .= 'contém "' . $val_sub_filtrar[$auxx] . '" ';
+                                        $descricaoQuery .= '"' . $val_sub_filtrar[$auxx] . '" ';
                                     } else {
                                         $query .= '"' . $val_sub_filtrar[$auxx] . '") ';
                                         $descricaoQuery .= '"' . $val_sub_filtrar[$auxx] . '" ';
                                     }
                                 }
                             }
-                            $descricaoQuery.="e ";
                             $auxx++;
                         }
                     }
                 }
-                $descricaoQuery = substr($descricaoQuery, 0, -2);
 
                 //          ********* Query **********
 
@@ -733,6 +740,8 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                     }
                     echo "</table>";
                 }
+				
+				echo "<br><a href='pesquisa'><button class='continuarButton textoLabels'>Continuar</button></a>";
 
                 //---------------------------------------------------
 
@@ -812,6 +821,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
             echo "</div>";
         }
     }
-} else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
+} 
+else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
     echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
