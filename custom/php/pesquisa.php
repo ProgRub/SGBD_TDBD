@@ -601,31 +601,37 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             switch ($oper_sub[$auxx]) {
                                 case "maior":
                                     $query .= '> ';
+                                    $auxQuery .= '> ';
                                     $descricaoQuery .= 'maior que ';
                                     $aux_op_checkbox .= 'maior que ';
                                     break;
                                 case "maiorOuIgual":
                                     $query .= '>= ';
+                                    $auxQuery .= '>= ';
                                     $descricaoQuery .= 'maior ou igual que ';
                                     $aux_op_checkbox .= 'maior ou igual que ';
                                     break;
                                 case "igual":
                                     $query .= '= ';
+                                    $auxQuery .= '= ';
                                     $descricaoQuery .= 'igual a ';
                                     $aux_op_checkbox .= 'igual a ';
                                     break;
                                 case "menor":
                                     $query .= '< ';
+                                    $auxQuery .= '< ';
                                     $descricaoQuery .= 'menor que ';
                                     $aux_op_checkbox .= 'menor que ';
                                     break;
                                 case "menorOuIgual":
                                     $query .= '<= ';
+                                    $auxQuery .= '<= ';
                                     $descricaoQuery .= 'menor ou igual que ';
                                     $aux_op_checkbox .= 'menor ou igual que ';
                                     break;
                                 case "diferente":
                                     $query .= '!= ';
+                                    $auxQuery .= '!= ';
                                     $descricaoQuery .= 'diferente de ';
                                     $aux_op_checkbox .= 'diferente de ';
                                     break;
@@ -653,7 +659,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                         $primeiroValor = false;
                                     } else {
 
-                                        $query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
+                                        $query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $auxQuery . '';
                                         $descricaoQuery .= 'ou a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ' . $aux_op_checkbox . '';
 
                                         if (is_numeric($valor2)) {
@@ -671,7 +677,6 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                     }
                                 }
                                 $query .= ' ) ';
-                                $descricaoQuery .= ' ) ';
                             } else { //Quando o input só tem um valor
                                 if (is_numeric($val_sub_filtrar[$auxx])) {
                                     $query .= '' . $val_sub_filtrar[$auxx] . ') ';
