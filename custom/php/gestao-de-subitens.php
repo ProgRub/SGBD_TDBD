@@ -19,7 +19,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             $obrigatorio = testarInput($_REQUEST["obrigatorio"]);
             //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA NUMA LISTA
             $campos = "";
-            if (empty($nome_subitem)) {
+            if (estaVazio($nome_subitem)) {
                 $campos .= "<li><strong>Nome do subitem</strong></li>";
                 $houveErros = true;
             } 
@@ -27,7 +27,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                 $campos .= "<li><strong>O nome do subitem não pode conter números!</strong></li>";
                 $houveErros = true;
             }
-            if (empty($tipo_valor)) {
+            if (estaVazio($tipo_valor)) {
                 $campos .= "<li><strong>Tipo de valor</strong></li>";
                 $houveErros = true;
             }
@@ -35,11 +35,11 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                 $campos .= "<li><strong>Item</strong></li>";
                 $houveErros = true;
             }
-            if (empty($tipo_camp_form)) {
+            if (estaVazio($tipo_camp_form)) {
                 $campos .= "<li><strong>Tipo do campo do formulário</strong></li>";
                 $houveErros = true;
             }
-            if (empty($ordem_campo_form)) {
+            if (estaVazio($ordem_campo_form)) {
                 $campos .= "<li><strong>Ordem do campo no formulário</strong></li>";
                 $houveErros = true;
             } 
@@ -170,7 +170,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                                 <td class='textoTabela cell'>" . $rowSubitem["value_type"] . "</td>
                                 <td class='textoTabela cell'>" . $rowSubitem["form_field_name"] . "</td>
                                 <td class='textoTabela cell'>" . $rowSubitem["form_field_type"] . "</td>
-                                <td class='textoTabela cell'>" . (empty($rowUnidade["name"]) ? "-" : $rowUnidade["name"]) . "</td>
+                                <td class='textoTabela cell'>" . (estaVazio($rowUnidade["name"]) ? "-" : $rowUnidade["name"]) . "</td>
                                 <td class='textoTabela cell'>" . $rowSubitem["form_field_order"] . "</td>
                                 <td class='textoTabela cell'>" . ($rowSubitem["mandatory"] == '1' ? 'sim' : 'não') . "</td>
                                 <td class='textoTabela cell'>" . ($rowSubitem["state"] == 'active' ? 'ativo' : 'inativo') . "</td>

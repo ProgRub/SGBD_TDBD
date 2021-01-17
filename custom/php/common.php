@@ -7,6 +7,10 @@ function verificaCapability($capability)
     return is_user_logged_in() && current_user_can($capability);
 }
 
+function estaVazio($value) {
+    return empty($value) && !is_numeric($value);
+}
+
 function testarInput($input)
 {
     $input = trim($input);//ELIMINA ESPAÇOS NO INICIO E NO FINAL
@@ -48,4 +52,4 @@ function ligacaoBD()
     return $ligacao;
 }
 
-$clientsideval= true; //Usada para a validação clientside
+$clientsideval= true; //true se é para ser utilizada validação client-side, false para validação server-side

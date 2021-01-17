@@ -20,7 +20,7 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA PARA DEPOIS LISTA-LOS:
             $campos = "";
 
-            if (empty($child_name)) {
+            if (estaVazio($child_name)) {
                 $campos .= "<li><strong>Nome completo</strong></li>";
                 $houveErros = true;
             } 
@@ -28,7 +28,7 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
                 $campos .= "<li><strong>Nomes não podem conter números!</strong></li>";
                 $houveErros = true;
             }
-            if (empty($birth_date)) {
+            if (estaVazio($birth_date)) {
                 $campos .= "<li><strong>Data de nascimento</strong></li>";
                 $houveErros = true;
             } 
@@ -44,11 +44,11 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
                     $houveErros = true;
                 }
             }
-            if (empty($tutor_name)) {
+            if (estaVazio($tutor_name)) {
                 $campos .= "<li><strong>Nome completo do encarregado de educação</strong></li>";
                 $houveErros = true;
             }
-            if (empty($tutor_phone)) {
+            if (estaVazio($tutor_phone)) {
                 $campos .= "<li><strong>Telefone do encarregado de educação</strong></li>";
                 $houveErros = true;
             } 
@@ -56,7 +56,7 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
                 $campos .=  "<li><strong>Número de telefone do tutor tem que ter 9 algarismos!</strong></li>";
                 $houveErros = true;
             }
-            if (!empty($tutor_email) && !filter_var($tutor_email, FILTER_VALIDATE_EMAIL)) {//Se o email do tutor for preenchido e o email inserido não é válido é apresentada a mensagem de erro e a variável $houveErros é colocada a true
+            if (!estaVazio($tutor_email) && !filter_var($tutor_email, FILTER_VALIDATE_EMAIL)) {//Se o email do tutor for preenchido e o email inserido não é válido é apresentada a mensagem de erro e a variável $houveErros é colocada a true
                 $campos .=  "<li><strong>Endereço de email inválido!</strong></li>";
                 $houveErros = true;
             }
@@ -124,7 +124,7 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             //Apresentação do formulário para inserir os dados da criança:
             echo "<div class='caixaFormulario'>";
             echo "<span class='information'><strong>Introduza os dados pessoais básicos da criança:</strong></span><br>
-			<span class='warning'>* Campos obrigatórios</span><br>";
+			<span class='warning'>* Campos obrigatórios</span><br><br>";
             $action = get_site_url() . '/' . $current_page;
             echo "<form method='post' action='$action'>
 				<strong class='textoLabels'> Nome completo:</strong><span class='warning textoLabels'> * </span><br>

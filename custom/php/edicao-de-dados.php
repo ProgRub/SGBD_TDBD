@@ -35,7 +35,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             while ($linhaItem = mysqli_fetch_assoc(($tabelaItem))) { //APENAS 1 RESULTADO (REFERENTE AO ITEM ESCOLHIDO)
                 //FORMULÁRIO PARA A ESCOLHA DOS NOVOS VALORES:
                 $action = get_site_url() . '/' . $current_page;
-                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>";
+                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><br><form method='post' action='$action'>";
 
                 //TEXTBOX COM O NOME ANTERIOR DO ITEM ESCOLHIDO:
                 echo "<strong>Nome<span class='warning'>*</span>:</strong><br>
@@ -94,7 +94,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //FORMULARIO PARA ESCOLHA DOS NOVOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO VALOR PERMITIDO ESCOLHIDO:
                 $action = get_site_url() . '/' . $current_page;
-                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>
+                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><br><form method='post' action='$action'>
                 <strong>Valor<span class='warning'>*</span>:</strong><br>
                 <input type='text' class='textInput' name='valor' id='valor_permitido' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
 
@@ -132,7 +132,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //FORMULARIO PARA EDIÇÃO DOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO SUBITEM ESCOLHIDO:
                 $action = get_site_url() . '/' . $current_page;
-                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>
+                echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><br><form method='post' action='$action'>
                 <strong>Nome<span class='warning'>*</span>:</strong><br>
                 <input type='text' class='textInput' name='nome_subitem' id='nome_subitem' value='" . $linhaSubitem["subitemName"] . "' ><br><br>";
 
@@ -279,7 +279,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Valor</h3></div>";
 
             $action = get_site_url() . '/' . $current_page;
-            echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>";
+            echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><br><form method='post' action='$action'>";
 
             //QUERY PARA OBTER O VALOR QUE SE PRETENDE EDITAR:
             $queryValor = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"] . " AND id =" . $_REQUEST["id"];
@@ -479,7 +479,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $campos = ""; //VAI JUNTANDO OS CAMPOS OBRIGATORIOS EM FALTA E LISTA-OS AO FINAL
 
             //NÃO ESCREVEU O NOME:
-            if (empty($_REQUEST["nome_item"])) {
+            if (estaVazio($_REQUEST["nome_item"])) {
                 $campos .= "<li><strong>Nome</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (NOME)
                 $faltaDado = true; //FALTA UM DADO (NOME)
             }
@@ -513,7 +513,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             $campos = ""; //VAI JUNTANDO OS CAMPOS OBRIGATORIOS EM FALTA E LISTA-OS AO FINAL
 
             //NÃO ESCREVEU O VALOR:
-            if (empty($_REQUEST["valor"])) {
+            if (estaVazio($_REQUEST["valor"])) {
                 $campos .= "<li><strong>Valor</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (VALOR)
                 $faltaDado = true; //FALTA UM DADO (VALOR)
             }
@@ -583,7 +583,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             //CASO NÃO HOUVER PREENCHIDO O NOME DO SUBITEM, TIPO DE VALOR, TIPO DE CAMPO DO FORMULARIO OU ORDEM DO CAMPO DO FORMULARIO:
             //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA NUMA LISTA
             $campos = "";
-            if (empty($nome_subitem)) {
+            if (estaVazio($nome_subitem)) {
                 $campos .= "<li><strong>Nome do subitem</strong></li>";
                 $houveErros = true;
 
@@ -593,17 +593,17 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 $houveErros = true;
             }
             //SE O TIPO DE VALOR NÃO FOI PREENCHIDO:
-            if (empty($tipo_valor)) {
+            if (estaVazio($tipo_valor)) {
                 $campos .= "<li><strong>Tipo de valor</strong></li>";
                 $houveErros = true;
             }
             //SE O TIPO DO CAMPO DO FORMULARIO NÃO FOI PREENCHIDO:
-            if (empty($tipo_camp_form)) {
+            if (estaVazio($tipo_camp_form)) {
                 $campos .= "<li><strong>Tipo do campo do formulário</strong></li>";
                 $houveErros = true;
             }
             //SE A ORDEM DO CAMPO DO FORMULARIO NÃO FOI PREENCHIDA:
-            if (empty($ordem_campo_form)) {
+            if (estaVazio($ordem_campo_form)) {
                 $campos .= "<li><strong>Ordem do campo no formulário</strong></li>";
                 $houveErros = true;
                 //SE A ORDEM DO CAMPO DO FORMULARIO NÃO FOR UM NÚMERO OU FOR UM NUMERO MAS INFERIOR OU IGUAL A 0:
@@ -698,9 +698,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
             //SE O "form_field_type" NÃO É "checkbox":
             echo $_REQUEST["checkbox"] . "<br>";
-            if (empty($_REQUEST["checkbox"])) {
+            if (estaVazio($_REQUEST["checkbox"])) {
                 //SE NÃO PREENCHEU O VALOR:
-                if (empty($_REQUEST["value"])) {
+                if (estaVazio($_REQUEST["value"])) {
                     //JUNTA O NOME DO CAMPO EM FALTA (Valor):
                     $campos .= "<li><strong>Valor</strong></li>";
                     $faltaDado = true;
@@ -750,7 +750,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //PERCORRE TODOS OS VALORES LISTADOS COMO OPÇÃO:
                 for ($i = $_SESSION["numeroCheckbox"]; $i >= 0; $i--) {
                     //SE O VALOR NA POSIÇÃO $i DO ARRAY $_REQUEST NÃO É VAZIO, ENTÃO FOI ESCOLHIDO -> (OS VALORES QUE NÃO FORAM ESCOLHIDO FICAM VAZIOS):
-                    if (!empty($_REQUEST["value" . $i])) {
+                    if (!estaVazio($_REQUEST["value" . $i])) {
                         //INSERE NO ARRAY O VALOR ESCOLHIDO (MARCADO COMO CHECKED):
                         array_push($valoresEscolhidos, $_REQUEST["value" . $i]);
                     }

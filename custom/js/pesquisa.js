@@ -30,7 +30,7 @@ for (let index = 0; index < allInputs.length; index++) {
 formArray.forEach((input) => {
   if (input.getAttribute("type") == "text") {
     input.addEventListener("click", function () {
-      this.className = "textInput";
+      this.className = "textInput2";
       this.placeholder = "";
     });
   } else if (input.tagName == "TEXTAREA") {
@@ -49,7 +49,7 @@ document
       // console.log(index);
       if (input.getAttribute("type") == "text") {
         if (input.value === "") {
-          input.className = "textInputWrong";
+          input.className = "textInput2Wrong";
           input.placeholder = "Este campo é obrigatório.";
           event.preventDefault();
         }

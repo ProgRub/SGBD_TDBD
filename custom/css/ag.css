@@ -125,6 +125,18 @@ h3 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
 }
 
+.textInput2Wrong {
+  width: 60% !important;
+  padding: 1px 1px !important;
+  margin: 8px 0 !important;
+  font-size: 14px !important;
+  box-sizing: border-box !important;
+  border: 1px solid rgb(123, 2, 2) !important;
+  border-radius: 5px !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19) !important;
+  background-color: #fd7070 !important;
+}
+
 select {
   width: 60% !important;
   padding: 1px 1px !important;

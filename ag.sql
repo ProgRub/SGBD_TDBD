@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 17, 2021 at 08:34 PM
+-- Generation Time: Jan 17, 2021 at 09:12 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.12
 
@@ -129,8 +129,7 @@ INSERT INTO `subitem` (`id`, `name`, `item_id`, `value_type`, `form_field_name`,
 (5, 'tipo de fio', 4, 'enum', 'cab-5-tipo_de_fio', 'checkbox', NULL, 2, 1, 'active'),
 (6, 'densidade', 4, 'int', 'cab-6-densidade', 'text', 8, 3, 0, 'active'),
 (7, 'grau', 5, 'enum', 'aut-7-grau', 'radio', NULL, 1, 1, 'active'),
-(8, 'estereotipia', 5, 'enum', 'aut-8-estereotipia', 'radio', NULL, 2, 0, 'active'),
-(11, 'tem', 6, 'bool', 'sin-11-tem', 'text', NULL, 1, 1, 'inactive');
+(8, 'estereotipia', 5, 'enum', 'aut-8-estereotipia', 'radio', NULL, 2, 0, 'active');
 
 -- --------------------------------------------------------
 
@@ -211,8 +210,7 @@ CREATE TABLE `value` (
 INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES
 (23, 8, 4, 'castanho', '2021-01-17', '19:51:28', 'user'),
 (30, 6, 7, 'moderado', '2021-01-16', '16:31:20', 'user'),
-(31, 6, 8, 'marcha', '2021-01-16', '16:31:20', 'user'),
-(35, 4, 11, 'falso', '2021-01-17', '19:37:01', 'user');
+(31, 6, 8, 'marcha', '2021-01-16', '16:31:20', 'user');
 
 --
 -- Indexes for dumped tables

@@ -23,17 +23,17 @@ if (verificaCapability("manage_items")) {
             $campos = "";
 
             //SE NÃO PREENCHEU O NOME:
-            if (empty($_REQUEST["nome_item"])) {
+            if (estaVazio($_REQUEST["nome_item"])) {
                 $campos .= "<li><strong>Nome</strong></li>";
                 $faltaDado = true;
             }
             //SE NÃO PREENCHEU O TIPO:
-            if (empty($_REQUEST["tipo_item"])) {
+            if (estaVazio($_REQUEST["tipo_item"])) {
                 $campos .= "<li><strong>Tipo</strong></li>";
                 $faltaDado = true;
             }
             //SE NÃO ESCOLHEU O ESTADO:
-            if (empty($_REQUEST["estado_item"])) {
+            if (estaVazio($_REQUEST["estado_item"])) {
                $campos .= "<li><strong>Estado</strong></li>";
                $faltaDado = true;
             }
@@ -141,7 +141,7 @@ if (verificaCapability("manage_items")) {
             //SUBTITULO DA PAGINA E INICIO DO FORMULÁRIO:
             $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de itens - introdução</strong></h3></div>
-            <div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'> <strong>Nome<span class='warning'>*</span>:</strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br><br>"; //TEXTBOX PARA ESCREVER O NOME DO ITEM A INSERIR:
+            <div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><br><form method='post' action='$action'> <strong>Nome<span class='warning'>*</span>:</strong><br><input type='text' class='textInput' name='nome_item' id='nome_item' ><br>"; //TEXTBOX PARA ESCREVER O NOME DO ITEM A INSERIR:
             echo "<br><strong>Tipo<span class='warning'>*</span>:</strong></br>";
 
             //PARA MARCAR CHECKED NO PRIMEIRO ITEM APRESENTADO:
@@ -174,7 +174,7 @@ if (verificaCapability("manage_items")) {
             //OPÇÕES RADIO COM OS VALORES "ATIVO" E "INATIVO" PARA O ESTADO DO ITEM A INSERIR E BOTÃO DE SUBMIT:
             echo "
             <br><strong>Estado<span class='warning'>*</span>:</strong></br><input type='radio' id='at' value='active' name='estado_item' checked><span class='textoLabels' for='at'>ativo</span><br>
-            <input type='radio' id='inat' value='inactive' name='estado_item'><span for='inat' class='textoLabels' >inativo</span><br>
+            <input type='radio' id='inat' value='inactive' name='estado_item'><span for='inat' class='textoLabels' >inativo</span><br><br>
             <input type='hidden' value='inserir' name='estado'>
             <input class='submitButton textoLabels' type='submit' value='Inserir item' name='submit'>
             </form></div>";

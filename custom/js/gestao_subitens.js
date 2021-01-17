@@ -31,7 +31,6 @@ document
       event.preventDefault();
     }
     input = document.getElementById("ordem_campo_form");
-      console.log(parseInt(input.value));
     if (input.value === "") {
       input.className = "textInputWrong";
       input.placeholder = "Ordem do campo no formulário é obrigatório.";

@@ -15,7 +15,7 @@ if (verificaCapability("manage_unit_types")) {//VERIFICAR SE UTILIZADOR FEZ LOGI
             //JUNTA OS NOMES DE TODOS OS CAMPOS EM FALTA NUMA LISTA
             $campos = "";
 
-            if (empty($nomeUnidade)) {
+            if (estaVazio($nomeUnidade)) {
                 $campos .= "<li><strong>Nome</strong></li>";
                 $faltaDado = true;
             } else if (1 === preg_match('~[0-9]~', $nomeUnidade)) {
@@ -57,7 +57,7 @@ if (verificaCapability("manage_unit_types")) {//VERIFICAR SE UTILIZADOR FEZ LOGI
             }
             //FORMULÁRIO
             echo "<div class='caixaSubTitulo'><h3>Gestão de unidades - introdução</h3></div>
-                    <div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br>";
+                    <div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><br>";
             $action = get_site_url() . '/' . $current_page;
             echo "<form method ='post' action='$action'>";
             echo "<strong class='textoLabels'>Nome:</strong><span class='warning textoLabels'> * </span><br><input type='text' name='nome_unidade' id='nome_unidade' class='textInput'><br>

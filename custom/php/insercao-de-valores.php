@@ -11,7 +11,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             $nomeCrianca = testarInput($_REQUEST["nome_crianca"]);
             $dataNascimento = testarInput($_REQUEST["data_nascimento"]);
             $query = "SELECT name,birth_date,id FROM child WHERE name LIKE '%$nomeCrianca%'";//INÍCIO DA QUERY
-            if (!empty($dataNascimento)) {//SE FOI ESPECIFICADA DATA DE NASCIMENTO ACRESCENTA-SE À QUERY
+            if (!estaVazio($dataNascimento)) {//SE FOI ESPECIFICADA DATA DE NASCIMENTO ACRESCENTA-SE À QUERY
                 $query .= "AND birth_date='$dataNascimento'";
             }
             $criancas = mysqli_query($mySQL, $query);
@@ -197,13 +197,19 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
                         case "text":
                         case "textbox":
                             $input = testarInput($_REQUEST[$subItem["form_field_name"]]);
-                            if (empty($input)) {
+                            if (estaVazio($input)) {
                                 $campos .= "<li><strong>" . $subItem["name"] . "</strong></li>";
                                 $error = true;
                             }
                             break;
                         case "selectbox":
                             if ($_REQUEST[$subItem["form_field_name"]] == "empty") {//SE O UTILIZADOR NÃO SELECIONOU OPÇÃO E DEIXOU NO "PLACEHOLDER"
+                                $campos .= "<li><strong>" . $subItem["name"] . "</strong></li>";
+                                $error = true;
+                            }
+                            break;
+                        case "radio":
+                            if (estaVazio($_REQUEST[$subItem["form_field_name"]])) {//SE O UTILIZADOR NÃO SELECIONOU OPÇÃO
                                 $campos .= "<li><strong>" . $subItem["name"] . "</strong></li>";
                                 $error = true;
                             }
@@ -320,7 +326,7 @@ if (verificaCapability("insert_values")) {//VERIFICAR SE UTILIZADOR FEZ LOGIN E 
             echo "<div class='caixaFormulario'><span class='information'>Introduza um dos nomes da criança a encontrar e/ou a data de nascimento dela</span>
                 <form method='post' action='$action'>
                 <strong class='textoLabels'>Nome: </strong><br><input type='text' class='textInput' name='nome_crianca' class='textoLabels'><br>
-                <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' class='textInput' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br>                
+                <strong class='textoLabels'>Data de Nascimento: </strong><br><input type='text' class='textInput' placeholder='AAAA-MM-DD' name='data_nascimento' class='textoLabels'><br><br>                
                 <input type='hidden' name='estado' value='escolher_crianca'>
                 <input type='submit' class='submitButton' value='Submeter'>
                 </form></div>";
