@@ -220,7 +220,7 @@ if (verificaCapability("manage_allowed_values")) {
                 }
                 echo "</table>";
 
-                
+
             //SE NÃO HOUVEREM SUBITENS CUJO TIPO DE VALOR SEJA ENUM:
             } else {
                 echo "<span class='information'>Não há subitems especificados cujo tipo de valor seja enum. Especificar primeiro novo(s) iten(s) e depois voltar a esta opção.</span><br>";

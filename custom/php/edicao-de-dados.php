@@ -756,8 +756,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
 
+                $subitemID = $_SESSION["subitemId"];
                 //CODIGO SQL PARA OBTER TODOS OS VALORES DA CRIANÇA:
-                $queryValores = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"];
+                $queryValores = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"] ." AND subitem_id=".$subitemID;
                 //RESULTADO DA EXECUÇÃO DO CODIGO SQL:
                 $tabelaValores = mysqli_query($mySQL, $queryValores);
 
@@ -787,7 +788,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //PERCORRE ARRAY COM OS VALORES ESCOLHIDOS (MARCADOS COMO CHECKED) E DIFERENTES DOS VALORES QUE JÁ ESTAVAM MARCADOS:
                 foreach ($valoresEscolhidos as $inserir) {
                     //CODIGO SQL PARA INSERÇÃO DOS TUPLOS COM OS NOVOS VALORES MARCADOS COMO "CHECKED":
-                    $insertQuery = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL,'" . $_SESSION["idCrianca"] . "','" . $_SESSION["subitemId"] . "', '" . $inserir . "', '" . date("Y-m-d") . "', '" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
+                    $insertQuery = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL,'" . $_SESSION["idCrianca"] . "','" . $subitemID . "', '" . $inserir . "', '" . date("Y-m-d") . "', '" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
 
                     //EXECUTA CODIGO SQL (SE OCORREU UM ERRO, DEVOLVE FALSE):
                     if (!mysqli_query($mySQL, $insertQuery)) {
