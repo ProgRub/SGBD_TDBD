@@ -25,7 +25,7 @@ for (let index = 0; index < allInputs.length; index++) {
   }
 }
 
-// console.log(formArray);
+console.log(formArray);
 
 formArray.forEach((input) => {
   if (input.getAttribute("type") == "text") {
