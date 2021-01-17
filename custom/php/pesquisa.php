@@ -417,16 +417,15 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                 if (count($_SESSION["sub_obter"]) != 0) { //Se existirem subitens para obter
                     if (count($_SESSION["atrib_obter"]) == 0) { //Se existirem subitens para obter e não existitem atributos para obter
                         $query = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                        $descricaoQuery = 'Seleciona-se o nome do subitem e seu valor<br>';
+                        $descricaoQuery = 'Seleciona-se o nome do subitem e seu valor';
                     } else {//Se existirem subitens para obter e existitem atributos para obter
                         $query .= ', subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                        $descricaoQuery .= ', nome do subitem e seu valor<br>';
+                        $descricaoQuery .= ', nome do subitem e seu valor';
 
                     }
                 } else { //Se não existirem subitens para obter
                     if (count($_SESSION["atrib_obter"]) != 0) { //Se não existirem subitens para obter e existitem atributos para obter
                         $query .= ' FROM child ';
-                        $descricaoQuery .= '<br>';
                     }
                 }
 
@@ -601,43 +600,43 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             switch ($oper_sub[$auxx]) {
                                 case "maior":
                                     $query .= '> ';
-                                    $auxQuery .= '> ';
+                                    $auxQuery = '> ';
                                     $descricaoQuery .= 'maior que ';
-                                    $aux_op_checkbox .= 'maior que ';
+                                    $aux_op_checkbox = 'maior que ';
                                     break;
                                 case "maiorOuIgual":
                                     $query .= '>= ';
-                                    $auxQuery .= '>= ';
+                                    $auxQuery = '>= ';
                                     $descricaoQuery .= 'maior ou igual que ';
-                                    $aux_op_checkbox .= 'maior ou igual que ';
+                                    $aux_op_checkbox = 'maior ou igual que ';
                                     break;
                                 case "igual":
                                     $query .= '= ';
-                                    $auxQuery .= '= ';
+                                    $auxQuery = '= ';
                                     $descricaoQuery .= 'igual a ';
-                                    $aux_op_checkbox .= 'igual a ';
+                                    $aux_op_checkbox = 'igual a ';
                                     break;
                                 case "menor":
                                     $query .= '< ';
-                                    $auxQuery .= '< ';
+                                    $auxQuery = '< ';
                                     $descricaoQuery .= 'menor que ';
-                                    $aux_op_checkbox .= 'menor que ';
+                                    $aux_op_checkbox = 'menor que ';
                                     break;
                                 case "menorOuIgual":
                                     $query .= '<= ';
-                                    $auxQuery .= '<= ';
+                                    $auxQuery = '<= ';
                                     $descricaoQuery .= 'menor ou igual que ';
-                                    $aux_op_checkbox .= 'menor ou igual que ';
+                                    $aux_op_checkbox = 'menor ou igual que ';
                                     break;
                                 case "diferente":
                                     $query .= '!= ';
-                                    $auxQuery .= '!= ';
+                                    $auxQuery = '!= ';
                                     $descricaoQuery .= 'diferente de ';
-                                    $aux_op_checkbox .= 'diferente de ';
+                                    $aux_op_checkbox = 'diferente de ';
                                     break;
                                 case "like":
                                     $query .= 'LIKE ';
-                                    $auxQuery .= 'LIKE ';
+                                    $auxQuery = 'LIKE ';
                                     break;
                             }
 
