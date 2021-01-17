@@ -637,6 +637,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                     break;
                                 case "like":
                                     $query .= 'LIKE ';
+                                    $auxQuery .= 'LIKE ';
                                     break;
                             }
 
