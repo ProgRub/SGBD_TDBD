@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 10, 2021 at 09:34 PM
+-- Generation Time: Jan 17, 2021 at 08:34 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.12
 
@@ -72,7 +72,7 @@ INSERT INTO `item` (`id`, `name`, `item_type_id`, `state`) VALUES
 (4, 'cabelo', 1, 'active'),
 (5, 'autismo', 2, 'active'),
 (6, 'síndrome de asperger', 2, 'active'),
-(7, 'poliomelite', 2, 'inactive');
+(7, 'poliomelite', 2, 'active');
 
 -- --------------------------------------------------------
 
@@ -129,7 +129,8 @@ INSERT INTO `subitem` (`id`, `name`, `item_id`, `value_type`, `form_field_name`,
 (5, 'tipo de fio', 4, 'enum', 'cab-5-tipo_de_fio', 'checkbox', NULL, 2, 1, 'active'),
 (6, 'densidade', 4, 'int', 'cab-6-densidade', 'text', 8, 3, 0, 'active'),
 (7, 'grau', 5, 'enum', 'aut-7-grau', 'radio', NULL, 1, 1, 'active'),
-(8, 'estereotipia', 5, 'enum', 'aut-8-estereotipia', 'radio', NULL, 2, 0, 'active');
+(8, 'estereotipia', 5, 'enum', 'aut-8-estereotipia', 'radio', NULL, 2, 0, 'active'),
+(11, 'tem', 6, 'bool', 'sin-11-tem', 'text', NULL, 1, 1, 'inactive');
 
 -- --------------------------------------------------------
 
@@ -150,15 +151,15 @@ CREATE TABLE `subitem_allowed_value` (
 --
 
 INSERT INTO `subitem_allowed_value` (`id`, `subitem_id`, `value`, `state`) VALUES
-(1, 5, 'liso', 'active'),
-(2, 5, 'ondulado', 'active'),
-(3, 5, 'encaracolado', 'active'),
 (4, 7, 'ligeiro', 'active'),
 (5, 7, 'moderado', 'active'),
 (6, 7, 'grave', 'active'),
-(7, 8, 'marcha', 'active'),
-(8, 8, 'movimento do tronco', 'active'),
-(9, 8, 'cruzamento das pernas', 'active');
+(16, 5, 'liso', 'active'),
+(17, 5, 'encaracolado', 'active'),
+(18, 5, 'ondulado', 'active'),
+(19, 8, 'marcha', 'active'),
+(20, 8, 'movimento do tronco', 'active'),
+(21, 8, 'cruzamento das pernas', 'active');
 
 -- --------------------------------------------------------
 
@@ -208,8 +209,10 @@ CREATE TABLE `value` (
 --
 
 INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES
-(1, 6, 7, 'ligeiro', '2021-01-03', '21:04:13', 'user'),
-(2, 6, 8, 'marcha', '2021-01-03', '21:04:13', 'user');
+(23, 8, 4, 'castanho', '2021-01-17', '19:51:28', 'user'),
+(30, 6, 7, 'moderado', '2021-01-16', '16:31:20', 'user'),
+(31, 6, 8, 'marcha', '2021-01-16', '16:31:20', 'user'),
+(35, 4, 11, 'falso', '2021-01-17', '19:37:01', 'user');
 
 --
 -- Indexes for dumped tables
@@ -289,13 +292,13 @@ ALTER TABLE `item_type`
 -- AUTO_INCREMENT for table `subitem`
 --
 ALTER TABLE `subitem`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `subitem_allowed_value`
 --
 ALTER TABLE `subitem_allowed_value`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `subitem_unit_type`
@@ -307,7 +310,7 @@ ALTER TABLE `subitem_unit_type`
 -- AUTO_INCREMENT for table `value`
 --
 ALTER TABLE `value`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Constraints for dumped tables
