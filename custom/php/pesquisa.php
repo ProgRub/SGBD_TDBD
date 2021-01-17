@@ -525,7 +525,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
                     }
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) == 0) {
                         $query .= 'WHERE ';
@@ -533,15 +533,15 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                     }
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
                     }
                     if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
                     }
                     if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionados ';
                     }
 
 
