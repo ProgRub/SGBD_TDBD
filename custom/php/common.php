@@ -52,4 +52,4 @@ function ligacaoBD()
     return $ligacao;
 }
 
-$clientsideval= true; //true se é para ser utilizada validação client-side, false para validação server-side
+$clientsideval= false; //true se é para ser utilizada validação client-side, false para validação server-side

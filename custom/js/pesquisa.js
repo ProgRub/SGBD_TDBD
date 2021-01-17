@@ -58,7 +58,7 @@ document
         input.placeholder = "Este campo é obrigatório.";
         event.preventDefault();
       } else if (input.tagName == "SELECT") {
-        if (input.value === "empty") {
+        if (input.value === "empty" || input.value === "selecione_tipo_op") {
           event.preventDefault();
         }
       } else {
