@@ -4,6 +4,7 @@ require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 if (verificaCapability("search")) { //Verifica se o utilizador está autenticado e tem a capability "search"
     $mySQL = ligacaoBD(); //Efetua a ligação com a base de dados
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) { //Se não for possível selecionar a base de dados "bitnami_wordpress" é apresentado o erro ocorrido
@@ -367,57 +368,63 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                 // ******** Construção dinâmica da query SQL que irá executar a pesquisa configurada nos estados anteriores **********
 
                 //	$query -> query para executar
-                //  $queryApresentada -> query para apresentar antes da tabela com o resultado da query
+                //  $descricaoQuery -> query para apresentar antes da tabela com o resultado da query
 
                 //-----------------------------------------------------------
                 //              INÍCIO DA QUERY: SELECT ... FROM ...
                 //-----------------------------------------------------------
 
+                $descricaoQuery = 'Seleciona-se';
                 if (count($_SESSION["atrib_obter"]) != 0) {  //Se existirem atributos para obter
                     $primeiro = true;
                     foreach ($_SESSION["atrib_obter"] as $chave => $valor) {
                         if ($valor == "name") {
                             $valor = 'child.name AS "Nome da criança"';
+                            $descricaoQuery .= ' o nome da criança';
                         }
                         if ($valor == "id") {
                             $valor = 'child.id AS "ID da criança"';
+                            $descricaoQuery .= ' o ID da criança';
                         }
                         if ($valor == "birth_date") {
                             $valor = 'child.birth_date AS "Data de nascimento da criança"';
+                            $descricaoQuery .= ' a data de nascimento da criança';
                         }
                         if ($valor == "tutor_name") {
                             $valor = 'child.tutor_name AS "Nome do Encarregado de Educação"';
+                            $descricaoQuery .= ' o nome do Encarregado de Educação';
                         }
                         if ($valor == "tutor_phone") {
                             $valor = 'child.tutor_phone AS "Telefone do Encarregado de Educação"';
+                            $descricaoQuery .= ' o telefone do Encarregado de Educação';
                         }
                         if ($valor == "tutor_email") {
                             $valor = 'child.tutor_email AS "E-mail do Encarregado de Educação"';
+                            $descricaoQuery .= ' o e-mail do Encarregado de Educação';
                         }
                         if ($primeiro == true) {
                             $query = 'SELECT ' . $valor;
-                            $queryApresentada = 'SELECT ' . $valor;
                             $primeiro = false;
                         } else {
                             $query .= ', ' . $valor;
-                            $queryApresentada .= ', ' . $valor;
+                            $descricaoQuery .= ',';
                         }
                     }
                 }
-
+                $descricaoQuery = substr($descricaoQuery, 0, -1);
                 if (count($_SESSION["sub_obter"]) != 0) { //Se existirem subitens para obter
                     if (count($_SESSION["atrib_obter"]) == 0) { //Se existirem subitens para obter e não existitem atributos para obter
                         $query = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                        $queryApresentada = 'SELECT subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
+                        $descricaoQuery = 'Seleciona-se o nome do subitem e seu valor<br>';
                     } else {//Se existirem subitens para obter e existitem atributos para obter
                         $query .= ', subitem.name AS "Nome do subitem", value AS "Valor" FROM child, subitem, value ';
-                        $queryApresentada .= ', subitem.name AS "Nome do subitem", value AS "Valor" <br>FROM child, subitem, value ';
+                        $descricaoQuery .= ', nome do subitem e seu valor<br>';
 
                     }
                 } else { //Se não existirem subitens para obter
                     if (count($_SESSION["atrib_obter"]) != 0) { //Se não existirem subitens para obter e existitem atributos para obter
                         $query .= ' FROM child ';
-                        $queryApresentada .= '<br>FROM child ';
+                        $descricaoQuery .= '<br>';
                     }
                 }
 
@@ -431,67 +438,79 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                     if (count($_SESSION["atrib_filtro"]) > 0) {
                         $query .= 'WHERE ';
-                        $queryApresentada .= '<br>WHERE ';
+                        $descricaoQuery .= 'Onde ';
 
                         $auxx = 0;
                         foreach ($_SESSION["atrib_filtro"] as $chave => $valor) {
                             if ($valor == "name") {
                                 $valor = "child.name";
+                                $descricaoQuery .= 'o nome da criança ';
                             }
                             if ($valor == "id") {
                                 $valor = "child.id";
+                                $descricaoQuery .= 'o ID da criança ';
+                            }
+                            if ($valor == "birth_date") {
+                                $descricaoQuery .= 'a data de nascimento da criança ';
+                            }
+                            if ($valor == "tutor_name") {
+                                $descricaoQuery .= 'o nome do Encarregado de Educação ';
+                            }
+                            if ($valor == "tutor_phone") {
+                                $descricaoQuery .= 'o telefone do Encarregado de Educação ';
+                            }
+                            if ($valor == "tutor_email") {
+                                $descricaoQuery .= 'o e-mail do Encarregado de Educação ';
                             }
 
                             $query .= '' . $valor . ' ';
-                            $queryApresentada .= '' . $valor . ' ';
 
                             switch ($oper_atrib[$auxx]) {
                                 case "maior":
                                     $query .= '> ';
-                                    $queryApresentada .= '> ';
+                                    $descricaoQuery .= 'é maior que ';
                                     break;
                                 case "maiorOuIgual":
                                     $query .= '>= ';
-                                    $queryApresentada .= '>= ';
+                                    $descricaoQuery .= 'é maior ou igual que ';
                                     break;
                                 case "igual":
                                     $query .= '= ';
-                                    $queryApresentada .= '= ';
+                                    $descricaoQuery .= 'é igual a ';
                                     break;
                                 case "menor":
                                     $query .= '< ';
-                                    $queryApresentada .= '< ';
+                                    $descricaoQuery .= 'é menor que ';
                                     break;
                                 case "menorOuIgual":
                                     $query .= '<= ';
-                                    $queryApresentada .= '<= ';
+                                    $descricaoQuery .= 'é menor ou igual que ';
                                     break;
                                 case "diferente":
                                     $query .= '!= ';
-                                    $queryApresentada .= '!= ';
+                                    $descricaoQuery .= 'é diferente de ';
                                     break;
                                 case "like":
                                     $query .= 'LIKE ';
-                                    $queryApresentada .= 'LIKE ';
                                     break;
                             }
 
                             if (is_numeric($val_atrib_filtrar[$auxx])) {
                                 $query .= '' . $val_atrib_filtrar[$auxx] . ' ';
-                                $queryApresentada .= '' . $val_atrib_filtrar[$auxx] . ' ';
+                                $descricaoQuery .= '' . $val_atrib_filtrar[$auxx] . ' ';
                             } else {
                                 if ($oper_atrib[$auxx] == "like") {
                                     $query .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
-                                    $queryApresentada .= '"%' . $val_atrib_filtrar[$auxx] . '%" ';
+                                    $descricaoQuery .= 'contém "' . $val_atrib_filtrar[$auxx] . '" ';
                                 } else {
                                     $query .= '"' . $val_atrib_filtrar[$auxx] . '" ';
-                                    $queryApresentada .= '"' . $val_atrib_filtrar[$auxx] . '" ';
+                                    $descricaoQuery .= '"' . $val_atrib_filtrar[$auxx] . '" ';
                                 }
                             }
 
                             if (($auxx + 1) < count($_SESSION["atrib_filtro"])) {
                                 $query .= 'AND ';
-                                $queryApresentada .= '<br>AND ';
+                                $descricaoQuery .= '<br>E ';
 
                             }
                             $auxx++;
@@ -505,23 +524,23 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                        $queryApresentada .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
                     }
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) == 0) {
                         $query .= 'WHERE ';
-                        $queryApresentada .= '<br>WHERE ';
+                        $descricaoQuery .= '<br>Onde ';
                     }
                     if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'WHERE subitem.id = subitem_id AND child.id = child_id ';
-                        $queryApresentada .= '<br>WHERE subitem.id = subitem_id <br>AND child.id = child_id ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
                     }
                     if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) != 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                        $queryApresentada .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
                     }
                     if (count($_SESSION["atrib_filtro"]) > 0 && count($_SESSION["sub_filtro"]) == 0 && count($_SESSION["sub_obter"]) != 0) {
                         $query .= 'AND subitem.id = subitem_id AND child.id = child_id ';
-                        $queryApresentada .= '<br>AND subitem.id = subitem_id <br>AND child.id = child_id ';
+                        $descricaoQuery .= '<br>Onde o valor está associado à criança e subitem selecionado ';
                     }
 
 
@@ -531,19 +550,19 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                         // ******** Obter no resultado o/s valor/es desse subitem: **********
 
                         $query .= 'AND ( ';
-                        $queryApresentada .= '<br>AND ( ';
+                        $descricaoQuery .= '<br>E ( ';
                         foreach ($_SESSION["sub_obter"] as $chave => $valor) {
                             $query .= 'subitem.id = ';
-                            $queryApresentada .= 'subitem.id = ';
+                            $descricaoQuery .= 'o ID do subitem é igual a ';
                             $query .= '' . $chave . ' ';
-                            $queryApresentada .= '' . $chave . ' ';
+                            $descricaoQuery .= '' . $chave . ' ';
 
                             if (($auxx + 1) < count($_SESSION["sub_obter"])) {
                                 $query .= 'OR ';
-                                $queryApresentada .= 'OR ';
+                                $descricaoQuery .= 'ou ';
                             } else {
                                 $query .= ') ';
-                                $queryApresentada .= ') ';
+                                $descricaoQuery .= ') ';
                             }
                             $auxx++;
                         }
@@ -560,58 +579,56 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             if (is_array($val_sub_filtrar[$auxx])) { //Para o caso do subitem a filtrar ter como campo de formulário uma checkbox
                                 if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro == true) { //Se existirem atributos para filtrar e subitens para obter e ser o 1º valor a ser filtrado
                                     $query .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $queryApresentada .= '( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+                                    $descricaoQuery .= '( a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
                                     $primeiro = false;
                                 } else {
                                     $query .= 'AND ( child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $queryApresentada .= '<br>AND (child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+                                    $descricaoQuery .= '<br>a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
                                 }
                             } else { //Quando o input só tem um valor
                                 if (count($_SESSION["atrib_filtro"]) == 0 && count($_SESSION["sub_obter"]) == 0 && $primeiro == true) { //Se existirem atributos para filtrar e subitens para obter e ser o 1º valor a ser filtrado
                                     $query .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $queryApresentada .= 'child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+                                    $descricaoQuery .= 'a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
                                     $primeiro = false;
                                 } else {
                                     $query .= 'AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
-                                    $queryApresentada .= '<br>AND child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ';
+                                    $descricaoQuery .= '<br>E a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ';
                                 }
                             }
 
                             switch ($oper_sub[$auxx]) {
                                 case "maior":
                                     $query .= '> ';
-                                    $queryApresentada .= '> ';
-                                    $aux_op_checkbox = '> ';
+                                    $descricaoQuery .= 'maior que ';
+                                    $aux_op_checkbox .= 'maior que ';
                                     break;
                                 case "maiorOuIgual":
                                     $query .= '>= ';
-                                    $queryApresentada .= '>= ';
-                                    $aux_op_checkbox = '>= ';
+                                    $descricaoQuery .= 'maior ou igual que ';
+                                    $aux_op_checkbox .= 'maior ou igual que ';
                                     break;
                                 case "igual":
                                     $query .= '= ';
-                                    $queryApresentada .= '= ';
-                                    $aux_op_checkbox = '= ';
+                                    $descricaoQuery .= 'igual a ';
+                                    $aux_op_checkbox .= 'igual a ';
                                     break;
                                 case "menor":
                                     $query .= '< ';
-                                    $queryApresentada .= '< ';
-                                    $aux_op_checkbox = '< ';
+                                    $descricaoQuery .= 'menor que ';
+                                    $aux_op_checkbox .= 'menor que ';
                                     break;
                                 case "menorOuIgual":
                                     $query .= '<= ';
-                                    $queryApresentada .= '<= ';
-                                    $aux_op_checkbox = '<= ';
+                                    $descricaoQuery .= 'menor ou igual que ';
+                                    $aux_op_checkbox .= 'menor ou igual que ';
                                     break;
                                 case "diferente":
                                     $query .= '!= ';
-                                    $queryApresentada .= '!= ';
-                                    $aux_op_checkbox = '!= ';
+                                    $descricaoQuery .= 'diferente de ';
+                                    $aux_op_checkbox .= 'diferente de ';
                                     break;
                                 case "like":
                                     $query .= 'LIKE ';
-                                    $queryApresentada .= 'LIKE ';
-                                    $aux_op_checkbox = 'LIKE ';
                                     break;
                             }
 
@@ -621,49 +638,49 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                     if ($primeiroValor == true) {
                                         if (is_numeric($valor2)) {
                                             $query .= '' . $valor2 . ') ';
-                                            $queryApresentada .= '' . $valor2 . ') ';
+                                            $descricaoQuery .= '' . $valor2 . ') ';
                                         } else {
                                             if ($oper_atrib[$auxx] == "like") {
                                                 $query .= '"%' . $valor2 . '%") ';
-                                                $queryApresentada .= '"%' . $valor2 . '%") ';
+                                                $descricaoQuery .= 'contém "' . $valor2 . '") ';
                                             } else {
                                                 $query .= '"' . $valor2 . '") ';
-                                                $queryApresentada .= '"' . $valor2 . '") ';
+                                                $descricaoQuery .= '"' . $valor2 . '") ';
                                             }
                                         }
                                         $primeiroValor = false;
                                     } else {
 
                                         $query .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
-                                        $queryApresentada .= 'OR child.id IN (SELECT child_id FROM value WHERE subitem_id = ' . $chave . ' AND value ' . $aux_op_checkbox . '';
+                                        $descricaoQuery .= 'ou a criança tem um valor para o subitem com ID igual a ' . $chave . ' e o valor é ' . $aux_op_checkbox . '';
 
                                         if (is_numeric($valor2)) {
                                             $query .= '' . $valor2 . ') ';
-                                            $queryApresentada .= '' . $valor2 . ') ';
+                                            $descricaoQuery .= '' . $valor2 . ') ';
                                         } else {
                                             if ($oper_atrib[$auxx] == "like") {
                                                 $query .= '"%' . $valor2 . '%") ';
-                                                $queryApresentada .= '"%' . $valor2 . '%") ';
+                                                $descricaoQuery .= 'contém "' . $valor2 . '") ';
                                             } else {
                                                 $query .= '"' . $valor2 . '") ';
-                                                $queryApresentada .= '"' . $valor2 . '") ';
+                                                $descricaoQuery .= '"' . $valor2 . '") ';
                                             }
                                         }
                                     }
                                 }
                                 $query .= ' ) ';
-                                $queryApresentada .= ' ) ';
+                                $descricaoQuery .= ' ) ';
                             } else { //Quando o input só tem um valor
                                 if (is_numeric($val_sub_filtrar[$auxx])) {
                                     $query .= '' . $val_sub_filtrar[$auxx] . ') ';
-                                    $queryApresentada .= '' . $val_sub_filtrar[$auxx] . ') ';
+                                    $descricaoQuery .= '' . $val_sub_filtrar[$auxx] . ') ';
                                 } else {
                                     if ($oper_sub[$auxx] == "like") {
                                         $query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-                                        $queryApresentada .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
+                                        $descricaoQuery .= 'contém "' . $val_sub_filtrar[$auxx] . '") ';
                                     } else {
                                         $query .= '"' . $val_sub_filtrar[$auxx] . '") ';
-                                        $queryApresentada .= '"' . $val_sub_filtrar[$auxx] . '") ';
+                                        $descricaoQuery .= '"' . $val_sub_filtrar[$auxx] . '") ';
                                     }
                                 }
                             }
@@ -675,15 +692,15 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                 //          ********* Query **********
 
-                echo "<strong><span class='textoValidar'>QUERY:</span></strong><br>";
-                echo $queryApresentada;
+                echo "<strong><span class='textoValidar'>DESCRIÇÃO DA QUERY:</span></strong><br>";
+                echo $descricaoQuery;
 
                 //******** Tabela com o resultado da query ******
 
                 $resultado = mysqli_query($mySQL, $query);
-                $tabelaGerada=mysqli_fetch_all($resultado);
+                $tabelaGerada = mysqli_fetch_all($resultado);
                 $resultado = mysqli_query($mySQL, $query);
-                $keys=array();
+                $keys = array();
                 if ($resultado->num_rows > 0) {
                     echo "<table class='tabela'>
 						<tr class='row'>";
@@ -716,54 +733,56 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 //                echo "BREAK<br>";
 //                echo '<pre>'; print_r($keys); echo '</pre>';
 
-                $filename = "resultado.xlsx";
-                $spreadsheet = new Spreadsheet();
-                $sheet = $spreadsheet->getActiveSheet();
+                if (count($tabelaGerada) > 0) {
+                    $filename = "resultado.xlsx";
+                    $spreadsheet = new Spreadsheet();
+                    $sheet = $spreadsheet->getActiveSheet();
 
-                // $keys are for the header row.  If they are supplied we start writing at row 2
-                if ($keys) {
-                    $offset = substr_count($queryApresentada,"<br>")+3;
-                } else {
-                    $offset = substr_count($queryApresentada,"<br>")+2;
-                }
+                    // $keys are for the header row.  If they are supplied we start writing at row 2
+                    if ($keys) {
+                        $offset = substr_count($descricaoQuery, "<br>") + 3;
+                    } else {
+                        $offset = substr_count($descricaoQuery, "<br>") + 2;
+                    }
 //                echo $offset."HERE<br>";
 
-                // write the rows
-                $i = 0;
-                foreach($tabelaGerada as $row) {
-                    $spreadsheet->getActiveSheet()->fromArray($row, null, 'A' . ($i++ + $offset));
-                }
+                    // write the rows
+                    $i = 0;
+                    foreach ($tabelaGerada as $row) {
+                        $spreadsheet->getActiveSheet()->fromArray($row, null, 'A' . ($i++ + $offset));
+                    }
 
-                // write the header row from the $keys
-                if ($keys) {
-                    $spreadsheet->setActiveSheetIndex(0);
-                    $spreadsheet->getActiveSheet()->fromArray($keys, null, 'A'.($offset-1));
-                }
+                    // write the header row from the $keys
+                    if ($keys) {
+                        $spreadsheet->setActiveSheetIndex(0);
+                        $spreadsheet->getActiveSheet()->fromArray($keys, null, 'A' . ($offset - 1));
+                    }
 
-                // get last row and column for formatting
-                $last_column = $spreadsheet->getActiveSheet()->getHighestColumn();
-                $last_row = $spreadsheet->getActiveSheet()->getHighestRow();
+                    // get last row and column for formatting
+                    $last_column = $spreadsheet->getActiveSheet()->getHighestColumn();
+                    $last_row = $spreadsheet->getActiveSheet()->getHighestRow();
 
-                // autosize all columns to content width
-                for ($i = 'A'; $i <= $last_column; $i++) {
-                    $spreadsheet->getActiveSheet()->getColumnDimension($i)->setAutoSize(TRUE);
-                }
+                    // autosize all columns to content width
+                    for ($i = 'A'; $i <= $last_column; $i++) {
+                        $spreadsheet->getActiveSheet()->getColumnDimension($i)->setAutoSize(TRUE);
+                    }
 
-                // if $keys, freeze the header row and make it bold
-                if ($keys) {
-                    $spreadsheet->getActiveSheet()->freezePane('A'.($offset-1));
-                    $spreadsheet->getActiveSheet()->getStyle('A'.($offset-1).':' . $last_column . ($offset-1))->getFont()->setBold(true);
-                }
+                    // if $keys, freeze the header row and make it bold
+                    if ($keys) {
+                        $spreadsheet->getActiveSheet()->freezePane('A' . ($offset - 1));
+                        $spreadsheet->getActiveSheet()->getStyle('A' . ($offset - 1) . ':' . $last_column . ($offset - 1))->getFont()->setBold(true);
+                    }
 
-                // format all columns as text
-                $spreadsheet->getActiveSheet()->getStyle('A2:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
-                $spreadsheet->getActiveSheet()->mergeCells("A1:"."Q".($offset-2));
-                $spreadsheet->getActiveSheet()->setCellValue("A1",str_replace("<br>","\n",$queryApresentada));
-                $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
-                $writer = new Xlsx($spreadsheet);
-                $writer->save($filename);
-                if (file_exists(realpath($filename))) {
-                    echo "<br><a href='".get_site_url() ."/".  $filename . "' download='resultado.xlsx'><button class='continuarButton textoLabels'>Exportar</button></a>";
+                    // format all columns as text
+                    $spreadsheet->getActiveSheet()->getStyle('A2:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+                    $spreadsheet->getActiveSheet()->mergeCells("A1:" . "Q" . ($offset - 2));
+                    $spreadsheet->getActiveSheet()->setCellValue("A1", str_replace("<br>", "\n", $descricaoQuery));
+                    $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
+                    $writer = new Xlsx($spreadsheet);
+                    $writer->save($filename);
+                    if (file_exists(realpath($filename))) {
+                        echo "<br><a href='" . get_site_url() . "/" . $filename . "' download='Tabela.xlsx'><button class='continuarButton textoLabels'>Exportar</button></a>";
+                    }
                 }
             }
         } else { //Estado inicial
