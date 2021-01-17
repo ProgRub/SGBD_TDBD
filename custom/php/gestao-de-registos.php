@@ -22,23 +22,25 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             if (empty($child_name)) {
                 $campos .= "<li><strong>Nome completo</strong></li>";
                 $houveErros = true;
-            } else if (1 === preg_match('~[0-9]~', $child_name) || 1 === preg_match('~[0-9]~', $tutor_name)) {//Se o nome da criança ou do tutor conter números é apresentada a mensagem de erro e a variável $houveErros é colocada a true
+            } 
+			else if (1 === preg_match('~[0-9]~', $child_name) || 1 === preg_match('~[0-9]~', $tutor_name)) {//Se o nome da criança ou do tutor conter números é apresentada a mensagem de erro e a variável $houveErros é colocada a true
                 $campos .= "<li><strong>Nomes não podem conter números!</strong></li>";
                 $houveErros = true;
             }
             if (empty($birth_date)) {
                 $campos .= "<li><strong>Data de nascimento</strong></li>";
                 $houveErros = true;
-            } else if (!preg_match('/^\d{4}$/', $dateList[0]) || !preg_match('/^\d{2}$/', $dateList[1]) || !preg_match('/^\d{2}$/', $dateList[2]) || !checkdate($dateList[1], $dateList[2], $dateList[0])) {//Verifica-se se algum campo da data não tem caracteres não numéricos, e o comprimento do dia e mês é 2 caracteres e do ano 4 caracteres, e verifica a data usando a função checkdate( int $month , int $day , int $year):
+            } 
+			else if (!preg_match('/^\d{4}$/', $dateList[0]) || !preg_match('/^\d{2}$/', $dateList[1]) || !preg_match('/^\d{2}$/', $dateList[2]) || !checkdate($dateList[1], $dateList[2], $dateList[0])) {//Verifica-se se algum campo da data não tem caracteres não numéricos, e o comprimento do dia e mês é 2 caracteres e do ano 4 caracteres, e verifica a data usando a função checkdate( int $month , int $day , int $year):
                 $campos .=  "<li><strong>Data tem que estar no formato AAAA-MM-DD e ser válida!</strong></li>";
                 $houveErros = true;
-                $dataNoFormatoCorreto = false;
-                if ($dataNoFormatoCorreto) { //Apenas se a data inserida estiver no formato correto e ser válida é que será verificada se a data inserida é maior que a data atual
-                    $data_atual = date("Y-m-d");
-                    if ($birth_date > $data_atual) {
-                        $campos .= "<li><strong>A data inserida é maior que a data atual!</strong></li>";
-                        $houveErros = true;
-                    }
+                $dataNoFormatoCorreto = false; 
+            }
+			else if ($dataNoFormatoCorreto) { //Apenas se a data inserida estiver no formato correto e ser válida é que será verificada se a data inserida é maior que a data atual
+                $data_atual = date("Y-m-d");
+                if ($birth_date > $data_atual) {
+                    $campos .= "<li><strong>A data inserida é maior que a data atual!</strong></li>";
+                    $houveErros = true;
                 }
             }
             if (empty($tutor_name)) {
@@ -48,7 +50,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             if (empty($tutor_phone)) {
                 $campos .= "<li><strong>Telefone do encarregado de educação</strong></li>";
                 $houveErros = true;
-            } else if (!preg_match('/^\d{9}$/', $tutor_phone)) {//Se o nº de telefone não tem 9 caracteres numéricos é apresentada a mensagem de erro e a variável $houveErros é colocada a true
+            } 
+			else if (!preg_match('/^\d{9}$/', $tutor_phone)) {//Se o nº de telefone não tem 9 caracteres numéricos é apresentada a mensagem de erro e a variável $houveErros é colocada a true
                 $campos .=  "<li><strong>Número de telefone do tutor tem que ter 9 algarismos!</strong></li>";
                 $houveErros = true;
             }
@@ -62,7 +65,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
                 echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong> e/ou estão no <strong>formato errado</strong></span>:<ul>" . $campos . "</ul>";
                 //BOTÃO PARA VOLTAR ATRÁS
                 voltarAtras();
-            } else { // Se os campos do formulário foram todos preenchidos corretamente:
+            } 
+			else { // Se os campos do formulário foram todos preenchidos corretamente:
                 echo "<strong><span class='information'>Estamos prestes a inserir os dados abaixo na base de dados. Confirma que os dados estão corretos e pretende submeter os mesmos?</span><br><br>";
                 //Lista dos dados inseridos pelo utilizador: 
                 echo "<ol>
