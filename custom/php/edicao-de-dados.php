@@ -399,8 +399,8 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             //SE O TIPO DE VALOR É "BOOL":
             }else if($subitem["value_type"] == "bool"){
                 //SÃO APRESENTADAS DUAS OPÇÕES RADIO (A OPÇÃO CORRESPONDENTE AO VALOR DO "mandatory" FICA CHECKED):
-                echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='1' name='value' " . ($valor["value"] == 'verdadeiro' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
-                <input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='0' name='value' " . ($valor["value"] == 'falso' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
+                echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='verdadeiro' name='value' " . ($valor["value"] == 'verdadeiro' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
+                <input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='falso' name='value' " . ($valor["value"] == 'falso' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
 
             }
             echo "<input type='hidden' value='valorEditado' name='estado'>";
