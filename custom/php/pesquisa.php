@@ -825,3 +825,4 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
     echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
+?>
