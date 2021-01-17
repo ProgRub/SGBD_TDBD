@@ -25,7 +25,7 @@ for (let index = 0; index < allInputs.length; index++) {
   }
 }
 
-// console.log(formArray);
+console.log(formArray);
 
 formArray.forEach((input) => {
   if (input.getAttribute("type") == "text") {
@@ -46,7 +46,7 @@ document
   .addEventListener("submit", function (event) {
     for (let index = 0; index < formArray.length; index++) {
       let input = formArray[index];
-      console.log(index);
+      // console.log(index);
       if (input.getAttribute("type") == "text") {
         if (input.value === "") {
           input.className = "textInputWrong";
@@ -69,12 +69,12 @@ document
         while (indexSecond < formArray.length && whileCondition) {
           if (formArray[indexSecond].getAttribute("type") == inputType) {
             inputsSameType.push(formArray[indexSecond]);
+            indexSecond++;
+            index++;
           } else {
             index = indexSecond - 1;
             whileCondition = false;
           }
-          indexSecond++;
-          index++;
         }
         let checked = false;
         // console.log(inputsSameType);
