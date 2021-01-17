@@ -9,6 +9,7 @@ document
     let input = document.getElementById("valor_permitido");
     if (input.value === "") {
       input.className = "textInputWrong";
+      input.value="";
       input.placeholder = "Valor é obrigatório.";
       event.preventDefault();
     }

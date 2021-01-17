@@ -7,9 +7,10 @@ document
   .getElementsByTagName("form")[1]
   .addEventListener("submit", function (event) {
     let input = document.getElementById("nome_item");
-    if (input.value === "") {
+    if (input.value === "" || /\d/.test(input.value)) {
       input.className = "textInputWrong";
-      input.placeholder = "Nome é obrigatório.";
+      input.value = "";
+      input.placeholder = "Nome é obrigatório e não deve ter dígitos.";
       event.preventDefault();
     }
   });
