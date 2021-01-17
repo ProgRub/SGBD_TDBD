@@ -123,7 +123,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 			<ul>";
 
             // Listar e apresentar formulário primeiro para os atributos para filtrar:
-
+            $idClientSide=0;
             foreach ($_SESSION["atrib_filtro"] as $chave => $valor) {
                 echo "<tr>
 				<td class='cell2'><li>$valor</li></td>";
@@ -131,7 +131,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                 if ($valor == "id" || $valor == "birth_date" || $valor == "tutor_phone") {
                     echo '<td class="cell2">
 					<span class="textoLabels"><strong>Operador</strong></span><span class="warning">*</span><br>
-					<select name="oper_atrib[]">
+					<select name="oper_atrib[]" id="'.$idClientSide.'">
 					<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 					<option value="maior"> > </option>
 					<option value="maiorOuIgual"> >= </option>
@@ -140,25 +140,30 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 					<option value="menorOuIgual"> <= </option>
 					<option value="diferente"> != </option>
 					</select></td>';
+                    $idClientSide++;
                 } else {
                     echo '<td class="cell2">
 					<span class="textoLabels"><strong>Operador</strong></span><span class="warning">*</span><br>
-					<select name="oper_atrib[]">
+					<select name="oper_atrib[]" id="'.$idClientSide.'">
 					<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 					<option value="igual"> = </option>
 					<option value="diferente"> != </option>
 					<option value="like"> LIKE </option>
 					</select></td>';
+                    $idClientSide++;
                 }
                 echo "<td class='cell2'>
 				<span class='textoLabels'><strong>$valor</strong></span><span class='warning'>*</span><br>";
 
                 if ($valor == "birth_date") {
-                    echo "<input type='text' class='textInput2' id=" . $valor . " name=val_atrib_filtrar[] placeholder='AAAA-MM-DD'>";
+                    echo "<input type='text' class='textInput2' id='$idClientSide' name=val_atrib_filtrar[] placeholder='AAAA-MM-DD'>";
+                    $idClientSide++;
                 } elseif ($valor == "tutor_email") {
-                    echo "<input type='text' class='textInput2' id=" . $valor . " name=val_atrib_filtrar[] placeholder='email@example.com'>";
+                    echo "<input type='text' class='textInput2' id='$idClientSide' name=val_atrib_filtrar[] placeholder='email@example.com'>";
+                    $idClientSide++;
                 } else {
-                    echo "<input type='text' class='textInput2' id=" . $valor . " name=val_atrib_filtrar[]>";
+                    echo "<input type='text' class='textInput2' id='$idClientSide' name=val_atrib_filtrar[]>";
+                    $idClientSide++;
 
                 }
                 echo "</td></tr>";
@@ -198,10 +203,10 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                 echo "<tr>
 				<td class='cell2'><li>$valor</li></td>";
 
-                $querySubitens = "SELECT * FROM subitem WHERE id='$chave'"; //Query para obter os valores do subitem 
+                $querySubitens = "SELECT * FROM subitem WHERE id='$chave'"; //Query para obter os valores do subitem
                 $tabelaSubitens = mysqli_query($mySQL, $querySubitens);
 
-                while ($rowSubitem = mysqli_fetch_assoc($tabelaSubitens)) { //Para esse subitem (este while apenas será executado uma vez)           
+                while ($rowSubitem = mysqli_fetch_assoc($tabelaSubitens)) { //Para esse subitem (este while apenas será executado uma vez)
                     $inputFields = "<span class='textoLabels'><strong>$valor</strong></span><span class='warning'>*</span><br>";
                     $inputFields .= "<input name=val_sub_filtrar[]";
                     switch ($rowSubitem["value_type"]) { //Dependendo do tipo de valor do subitem, será apresentada uma selectbox e um tipo de campo de formulário adequado
@@ -209,14 +214,15 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                         case "text": //tipo de campo de formulário pode ser: text ou textbox
                             echo '<td class="cell2">
 							<span class="textoLabels"><strong>Operador</strong></span><span class="warning">*</span><br>
-							<select name="oper_sub[]">
+							<select name="oper_sub[]" id="'.$idClientSide.'">
 							<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 							<option value="igual"> = </option>
 							<option value="diferente"> != </option>
 							<option value="like"> LIKE </option>
 							</select></td>';
-
-                            $inputFields .= " type='" . $rowSubitem["form_field_type"] . "' class='textInput2' '>";
+                            $idClientSide++;
+                            $inputFields .= " type='" . $rowSubitem["form_field_type"] . "' class='textInput2' id='$idClientSide' '>";
+                            $idClientSide++;
                             echo "<td class='cell2'> $inputFields </td></tr>";
                             $n_chave++;
                             break;
@@ -224,14 +230,15 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                         case "bool": //tipo de campo de formulário é radio (verdadeiro ou falso)
                             echo '<td class="cell2">
 							<span class="textoLabels"><strong>Operador</strong></span><span class="warning">*</span><br>
-							<select name="oper_sub[]">
+							<select name="oper_sub[]" id="'.$idClientSide.'">
 							<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 							<option value="igual"> = </option>
 							<option value="diferente"> != </option>
 							</select></td>';
-
-                            $inputFields .= " type='radio' value='verdadeiro'>verdadeiro<br>
-							<input name=val_sub_filtrar[] type='radio' value='falso'>falso";
+                            $idClientSide++;
+                            $inputFields .= " type='radio' id='$idClientSide' value='verdadeiro'>verdadeiro<br>
+							<input name=val_sub_filtrar[] type='radio' id='$idClientSide' value='falso'>falso";
+                            $idClientSide++;
                             echo "<td class='cell2'> $inputFields </td></tr>";
                             $n_chave++;
                             break;
@@ -240,7 +247,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                         case "int":
                             echo '<td class="cell2">
 							<span class="textoLabels"><strong>Operador</strong></span><span class="warning">*</span><br>
-							<select name="oper_sub[]">
+							<select name="oper_sub[]" id="'.$idClientSide.'">
 							<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 							<option value="maior"> > </option>
 							<option value="maiorOuIgual"> >= </option>
@@ -249,8 +256,9 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 							<option value="menorOuIgual"> <= </option>
 							<option value="diferente"> != </option>
 							</select></td>';
-
-                            $inputFields .= " type='text' class='textInput2'>";
+                            $idClientSide++;
+                            $inputFields .= " type='text' id='$idClientSide' class='textInput2'>";
+                            $idClientSide++;
                             echo "<td class='cell2'> $inputFields </td></tr>";
                             $n_chave++;
                             break;
@@ -258,17 +266,18 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                         case "enum": //tipo de campo de formulário pode ser: selectbox, radio ou checkbox
                             echo '<td class="cell2">
 							<span class="textoLabels"><strong>Operador</strong></span><span class="warning">*</span><br>
-							<select name="oper_sub[]">
+							<select name="oper_sub[]"  id="'.$idClientSide.'">
 							<option value="selecione_tipo_op">Selecione um dos operadores:</option>
 							<option value="igual">=</option>
 							<option value="diferente">!=</option>
 							</select></td>';
-
+                            $idClientSide++;
                             $isSelectBox = $rowSubitem["form_field_type"] == "selectbox";
 
                             if ($isSelectBox) {
                                 $inputFields = "<span class='textoLabels'><strong>$valor</strong></span><span class='warning'>*</span><br>";
-                                $inputFields .= "<select name=val_sub_filtrar[]>";
+                                $inputFields .= "<select name=val_sub_filtrar[]  id='$idClientSide'>";
+                                $idClientSide++;
                                 $inputFields .= "<option value='empty'>Selecione um valor</option>";
                             } else {
                                 $inputFields = "<span class='textoLabels'><strong>$valor</strong></span><span class='warning'>*</span><br>";
@@ -282,10 +291,12 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                 }
                                 if ($rowSubitem["form_field_type"] == "checkbox") {
                                     $inputFields .= "<input name=val_sub_filtrar[" . $n_chave . "][]";
-                                    $inputFields .= " type=checkbox value=" . $val["value"] . "><span class='textoLabels'>" . $val["value"] . "</span><br>";
+                                    $inputFields .= " id='$idClientSide' type=checkbox value=" . $val["value"] . "><span class='textoLabels'>" . $val["value"] . "</span><br>";
+                                    $idClientSide++;
                                 }
                                 if ($rowSubitem["form_field_type"] == "radio") {
-                                    $inputFields .= "<input name=val_sub_filtrar[] type='radio' value=" . $val["value"] . "><span class='textoLabels'>" . $val["value"] . "</span><br>";
+                                    $inputFields .= "<input name=val_sub_filtrar[] id='$idClientSide' type='radio' value=" . $val["value"] . "><span class='textoLabels'>" . $val["value"] . "</span><br>";
+                                    $idClientSide++;
                                 }
                             }
                             if ($isSelectBox) {
