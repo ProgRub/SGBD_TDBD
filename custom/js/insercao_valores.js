@@ -2,21 +2,23 @@ let formArray = [];
 let allInputs = document.getElementsByTagName("input");
 for (let index = 0; index < allInputs.length; index++) {
   // console.log(allInputs[index].id);
-  if (allInputs[index].id.length == 1) {
+  if (allInputs[index].id.length <= 3 && allInputs[index].id.length >= 1) {
     formArray.push(allInputs[index]);
   }
 }
+// console.log(document.getElementById("0"));
 allInputs = document.getElementsByTagName("textarea");
+// console.log(allInputs);
 for (let index = 0; index < allInputs.length; index++) {
   // console.log(allInputs[index].id);
-  if (allInputs[index].id.length == 1) {
+  if (allInputs[index].id.length <= 3 && allInputs[index].id.length >= 1) {
     formArray.push(allInputs[index]);
   }
 }
 allInputs = document.getElementsByTagName("select");
 for (let index = 0; index < allInputs.length; index++) {
   // console.log(allInputs[index].id);
-  if (allInputs[index].id.length == 1) {
+  if (allInputs[index].id.length <= 3 && allInputs[index].id.length >= 1) {
     formArray.push(allInputs[index]);
   }
 }
@@ -29,10 +31,11 @@ formArray.forEach((input) => {
       this.className = "textInput";
       this.placeholder = "";
     });
-  }else if (input.tagName == "TEXTAREA"){input.addEventListener("click", function () {
-    this.className = "textArea";
-    this.placeholder = "";
-  });
+  } else if (input.tagName == "TEXTAREA") {
+    input.addEventListener("click", function () {
+      this.className = "textArea";
+      this.placeholder = "";
+    });
   }
 });
 
@@ -41,19 +44,17 @@ document
   .addEventListener("submit", function (event) {
     for (let index = 0; index < formArray.length; index++) {
       let input = formArray[index];
-      console.log(input.tagName);
-      if (
-        input.getAttribute("type") == "text"
-      ) {
+      // console.log(index.tagName);
+      if (input.getAttribute("type") == "text") {
         if (input.value === "") {
           input.className = "textInputWrong";
           input.placeholder = "Este campo é obrigatório.";
           event.preventDefault();
         }
-      }else if (input.tagName == "TEXTAREA") {
-          input.className = "textAreaWrong";
-          input.placeholder = "Este campo é obrigatório.";
-          event.preventDefault();
+      } else if (input.tagName == "TEXTAREA") {
+        input.className = "textAreaWrong";
+        input.placeholder = "Este campo é obrigatório.";
+        event.preventDefault();
       } else if (input.tagName == "SELECT") {
         if (input.value === "empty") {
           event.preventDefault();
@@ -71,9 +72,9 @@ document
           }
           indexSecond++;
         }
-        index = indexSecond;
+        index = indexSecond-2;
         let checked = false;
-        console.log(inputsSameType);
+        // console.log(inputsSameType);
         inputsSameType.forEach((button) => {
           if (button.checked) {
             checked = true;
