@@ -18,6 +18,11 @@ document.getElementById("tutor_phone").addEventListener("click", function () {
   this.placeholder = "";
 });
 
+document.getElementById("tutor_email").addEventListener("click", function () {
+  this.className = "textInput";
+  this.placeholder = "";
+});
+
 document
   .getElementsByTagName("form")[1]
   .addEventListener("submit", function (event) {
@@ -45,7 +50,7 @@ document
         input.value = "";
         input.className = "textInputWrong";
         input.placeholder = "Formato: AAAA-MM-DD.";
-      event.preventDefault();
+        event.preventDefault();
       } else {
         let maximoMes = -1;
         if (parseInt(listDate[1], 10) === 2) {
@@ -77,9 +82,8 @@ document
           input.value = "";
           input.className = "textInputWrong";
           input.placeholder = "Data tem de ser válida, formato: AAAA-MM-DD.";
-      event.preventDefault();
-        }
-        else if (
+          event.preventDefault();
+        } else if (
           new Date(
             parseInt(listDate[0], 10),
             parseInt(listDate[1], 10),
@@ -89,7 +93,7 @@ document
           input.value = "";
           input.className = "textInputWrong";
           input.placeholder = "Data não pode ser futura.";
-      event.preventDefault();
+          event.preventDefault();
         }
       }
     }
@@ -116,7 +120,12 @@ document
       event.preventDefault();
     }
     input = document.getElementById("tutor_email");
-    if(!(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(input.value))){
+    if (
+      !(input.value === "") &&
+      !/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(
+        input.value
+      )
+    ) {
       input.value = "";
       input.className = "textInputWrong";
       input.placeholder = "E-mail deve ser válido.";
