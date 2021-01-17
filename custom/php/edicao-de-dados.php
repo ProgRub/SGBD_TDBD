@@ -1,6 +1,5 @@
 <?php
 require_once("custom/php/common.php");
-
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
@@ -93,6 +92,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
 
             //PERCORRE TABELA RESULTADO DA QUERY:
             while ($linhaValorPermitido = mysqli_fetch_assoc(($tabelaValorPermitido))) {
+                //VARIAVEL DE SESSÃO COM O ID DO SUBITEM:
+                $_SESSION["subitemId"] = $linhaValorPermitido["subitemId"];
+
                 //FORMULARIO PARA ESCOLHA DOS NOVOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO VALOR PERMITIDO ESCOLHIDO:
                 $action=get_site_url().'/'.$current_page;
@@ -101,20 +103,6 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 <input type='text' class='textInput' name='valor' id='valor_permitido' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
 
 
-                echo "<br><strong>Subitem<span class='warning'>*</span>:</strong></br>";
-                //QUERY DE TODOS OS SUBITENS:
-                $querySubitens = "SELECT * FROM subitem";
-                //RESULTADO DA QUERY:
-                $tabelaSubitens = mysqli_query($mySQL, $querySubitens);
-                //PERCORRE A TABELA RESULTADO DA QUERY:
-                while ($linhaSubitens = mysqli_fetch_assoc(($tabelaSubitens))) {
-                    //SE FOR O SUBITEM DO VALOR PERMITIDO ESCOLHIDO, FICA CHECKED:
-                    if ($linhaSubitens["id"] == $linhaValorPermitido["subitemId"]) {
-                        echo '<input  type="radio" name="subitem_valor"  checked value=' . $linhaSubitens["id"] . '><span class="textoLabels" >' . $linhaValorPermitido["subitemName"] . '</span><br>';
-                    } else { //COLOCA COMO OPÇÃO OS RESTANTES SUBITENS:
-                        echo '<input  type="radio" name="subitem_valor" value=' . $linhaSubitens["id"] . '><span class="textoLabels" >' . $linhaSubitens["name"] . '</span><br>';
-                    }
-                }
                 //ALTERAR O ESTADO DO VALOR PERMITIDO (O VALOR ANTERIOR FICA CHECKED):
                 echo "<br><strong>Estado<span class='warning'>*</span>:</strong><br>
                 <input type='radio' id='at' value='active' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>
@@ -541,7 +529,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
             if (!$faltaDado) {
                 //ALTERAÇÃO DOS VALORES DO VALOR PERMITIDO ESCOLHIDO (ATUALIZAÇÃO COM OS VALORES ESCOLHIDOS ANTERIORMENTE)
-                $insertQuery = "UPDATE subitem_allowed_value SET value='" . testarInput($_REQUEST["valor"]) . "', subitem_id='" . testarInput($_REQUEST["subitem_valor"]) . "', state='" . testarInput($_REQUEST["estado_valorper"]) . "' WHERE id ='" . $_SESSION["id"] . "'";
+                $insertQuery = "UPDATE subitem_allowed_value SET value='" . testarInput($_REQUEST["valor"]) . "', subitem_id='" . $_SESSION["subitemId"] . "', state='" . testarInput($_REQUEST["estado_valorper"]) . "' WHERE id ='" . $_SESSION["id"] . "'";
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     //MOSTRA ERRO NO CÓDIGO SQL:
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
