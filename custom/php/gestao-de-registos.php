@@ -4,7 +4,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
     $mySQL = ligacaoBD(); //Efetua a ligação com a base de dados
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) { //Se não for possível selecionar a base de dados "bitnami_wordpress" é apresentado o erro ocorrido
         die("Connection failed: " . mysqli_connect_error());
-    } else {
+    } 
+	else {
         if ($_REQUEST["estado"] == "validar") { //Validar dados recebidos
             $houveErros = false;
             $dataNoFormatoCorreto = true;
@@ -96,7 +97,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
                 //voltarAtras();
             }
             echo "</div>";
-        } elseif ($_REQUEST["estado"] == "inserir") { //Inserção dos dados na tabela "child"
+        } 
+		elseif ($_REQUEST["estado"] == "inserir") { //Inserção dos dados na tabela "child"
             echo "<div class='caixaSubTitulo'><h3>Dados de registo - inserção</h3></div>";
             echo "<div class='caixaFormulario'>";
             $child_name = testarInput($_REQUEST['child_name']);
@@ -113,7 +115,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
             }
             echo "</div>";
 
-        } else {//Estado inicial:
+        } 
+		else {//Estado inicial:
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_registos.js', array('jquery'), 1.1, true);
             }
@@ -139,6 +142,8 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
 				</form></div>";
         }
     }
-} else { //Se o utilizador não está autenticado ou não tem a capability "manage_records" não pode aceder à página
+} 
+else { //Se o utilizador não está autenticado ou não tem a capability "manage_records" não pode aceder à página
     echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
+?>

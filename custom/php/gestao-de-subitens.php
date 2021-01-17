@@ -42,7 +42,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             if (empty($ordem_campo_form)) {
                 $campos .= "<li><strong>Ordem do campo no formulário</strong></li>";
                 $houveErros = true;
-            } else if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) { //Se a ordem do campo do formulário não for um número ou for um número inferior ou igual a 0, é apresentada a mensagem de erro e a variável $houveErros é colocada a True
+            } 
+			else if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) { //Se a ordem do campo do formulário não for um número ou for um número inferior ou igual a 0, é apresentada a mensagem de erro e a variável $houveErros é colocada a True
                 $campos .= "<li><strong>A ordem do campo no formulário tem que ser um número superior a 0!</strong></li>";
                 $houveErros = True;
             }
@@ -155,7 +156,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 									<td class='textoTabela cell " . ($numeroItens % 2 == 0 ? "par" : "impar") . "' rowspan='$numeroSubitens'>" . $rowItem["name"] . "</td>";
                                     $numeroItens++;
                                     $newSubitem = false;
-                                } else {
+                                } 
+								else {
                                     //Caso haja mais do que um subitem associado ao item, o nome do item já não é necessário escrever nessas linhas
                                     echo "<tr class='row'>";
                                 }
@@ -271,3 +273,4 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
     echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }
+?>
