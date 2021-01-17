@@ -95,6 +95,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 //VARIAVEL DE SESSÃO COM O ID DO SUBITEM:
                 $_SESSION["subitemId"] = $linhaValorPermitido["subitemId"];
 
+                //VARIAVEL DE SESSÃO COM O ESTADO DO VALOR PERMITIDO:
+                $_SESSION["state"] = $linhaValorPermitido["state"];
+
                 //FORMULARIO PARA ESCOLHA DOS NOVOS VALORES:
                 //TEXTBOX COM O NOME ANTERIOR DO VALOR PERMITIDO ESCOLHIDO:
                 $action=get_site_url().'/'.$current_page;
@@ -102,12 +105,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 <strong>Valor<span class='warning'>*</span>:</strong><br>
                 <input type='text' class='textInput' name='valor' id='valor_permitido' value='" . $linhaValorPermitido["valorName"] . "' ><br><br>";
 
-
-                //ALTERAR O ESTADO DO VALOR PERMITIDO (O VALOR ANTERIOR FICA CHECKED):
-                echo "<br><strong>Estado<span class='warning'>*</span>:</strong><br>
-                <input type='radio' id='at' value='active' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'active' ? 'checked' : '') . "><span class='textoLabels' for='at'>ativo</span><br>
-                <input type='radio' id='inat' value='inactive' name='estado_valorper' " . ($linhaValorPermitido["state"] == 'inactive' ? 'checked' : '') . "><span for='inat' class='textoLabels'>inativo</span><br>
-                <input type='hidden' value='valorPermEditado' name='estado'>
+                echo "<input type='hidden' value='valorPermEditado' name='estado'>
                 <input class='submitButton textoLabels' type='submit' value='Editar Valor Permitido' name='submit'>
                 </form></div>";
                 //AO CLICAR NO BOTÃO, O ESTADO DE EXECUÇÃO MUDA PARA "valorPermEditado"
@@ -529,7 +527,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
             if (!$faltaDado) {
                 //ALTERAÇÃO DOS VALORES DO VALOR PERMITIDO ESCOLHIDO (ATUALIZAÇÃO COM OS VALORES ESCOLHIDOS ANTERIORMENTE)
-                $insertQuery = "UPDATE subitem_allowed_value SET value='" . testarInput($_REQUEST["valor"]) . "', subitem_id='" . $_SESSION["subitemId"] . "', state='" . testarInput($_REQUEST["estado_valorper"]) . "' WHERE id ='" . $_SESSION["id"] . "'";
+                $insertQuery = "UPDATE subitem_allowed_value SET value='" . testarInput($_REQUEST["valor"]) . "', subitem_id='" . $_SESSION["subitemId"] . "', state='" . $_SESSION["state"] . "' WHERE id ='" . $_SESSION["id"] . "'";
                 if (!mysqli_query($mySQL, $insertQuery)) {
                     //MOSTRA ERRO NO CÓDIGO SQL:
                     echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
