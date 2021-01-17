@@ -46,7 +46,7 @@ document
   .addEventListener("submit", function (event) {
     for (let index = 0; index < formArray.length; index++) {
       let input = formArray[index];
-      // console.log(index);
+      console.log(index);
       if (input.getAttribute("type") == "text") {
         if (input.value === "") {
           input.className = "textInputWrong";
