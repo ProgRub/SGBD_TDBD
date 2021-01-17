@@ -1,21 +1,21 @@
 document.getElementById("child_name").addEventListener("click", function () {
   this.className = "textInput";
-      this.placeholder = "";
+  this.placeholder = "";
 });
 
 document.getElementById("birth_date").addEventListener("click", function () {
   this.className = "textInput";
-      this.placeholder = "";
+  this.placeholder = "";
 });
 
 document.getElementById("tutor_name").addEventListener("click", function () {
   this.className = "textInput";
-      this.placeholder = "";
+  this.placeholder = "";
 });
 
 document.getElementById("tutor_phone").addEventListener("click", function () {
   this.className = "textInput";
-      this.placeholder = "";
+  this.placeholder = "";
 });
 
 document
@@ -23,7 +23,7 @@ document
   .addEventListener("submit", function (event) {
     let input = document.getElementById("child_name");
     if (input.value === "" || /\d/.test(input.value)) {
-		  input.value = "";
+      input.value = "";
       input.className = "textInputWrong";
       input.placeholder =
         "Nome da criança é obrigatório e não deve ter dígitos.";
@@ -31,8 +31,8 @@ document
     }
     input = document.getElementById("birth_date");
     if (input.value === "") {
-        input.className = "textInputWrong";
-        input.placeholder = "Data é obrigatória, formato: AAAA-MM-DD.";
+      input.className = "textInputWrong";
+      input.placeholder = "Data é obrigatória, formato: AAAA-MM-DD.";
       event.preventDefault();
     } else {
       let listDate = input.value.split("-");
@@ -42,9 +42,10 @@ document
         listDate[1].length !== 2 ||
         listDate[2].length !== 2
       ) {
-		  input.value = "";
+        input.value = "";
         input.className = "textInputWrong";
         input.placeholder = "Formato: AAAA-MM-DD.";
+      event.preventDefault();
       } else {
         let maximoMes = -1;
         if (parseInt(listDate[1], 10) === 2) {
@@ -73,33 +74,52 @@ document
           maximoMes = 31;
         }
         if (parseInt(listDate[2], 10) > maximoMes) {
-		  input.value = "";
+          input.value = "";
           input.className = "textInputWrong";
           input.placeholder = "Data tem de ser válida, formato: AAAA-MM-DD.";
+      event.preventDefault();
+        }
+        else if (
+          new Date(
+            parseInt(listDate[0], 10),
+            parseInt(listDate[1], 10),
+            parseInt(listDate[2], 10)
+          ) > new Date()
+        ) {
+          input.value = "";
+          input.className = "textInputWrong";
+          input.placeholder = "Data não pode ser futura.";
+      event.preventDefault();
         }
       }
     }
     input = document.getElementById("tutor_name");
     if (input.value === "" || /\d/.test(input.value)) {
-		  input.value = "";
+      input.value = "";
       input.className = "textInputWrong";
       input.placeholder = "Nome do tutor é obrigatório e não deve ter dígitos.";
       event.preventDefault();
     }
     input = document.getElementById("tutor_phone");
-    if (
-      input.value === ""
-      ) {
+    if (input.value === "") {
       input.className = "textInputWrong";
       input.placeholder = "Telefone do tutor é obrigatório.";
       event.preventDefault();
-	}
-	else if(input.value.length !== 9 ||
+    } else if (
+      input.value.length !== 9 ||
       isNaN(input.value) ||
-      isNaN(parseFloat(input.value))){
-		  input.value="";
+      isNaN(parseFloat(input.value))
+    ) {
+      input.value = "";
       input.className = "textInputWrong";
       input.placeholder = "Telefone do tutor deve ter 9 dígitos.";
       event.preventDefault();
-	  }
+    }
+    input = document.getElementById("tutor_email");
+    if(!(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(input.value))){
+      input.value = "";
+      input.className = "textInputWrong";
+      input.placeholder = "E-mail deve ser válido.";
+      event.preventDefault();
+    }
   });

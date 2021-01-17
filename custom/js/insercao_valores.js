@@ -29,6 +29,10 @@ formArray.forEach((input) => {
       this.className = "textInput";
       this.placeholder = "";
     });
+  }else if (input.tagName == "TEXTAREA"){input.addEventListener("click", function () {
+    this.className = "textArea";
+    this.placeholder = "";
+  });
   }
 });
 
