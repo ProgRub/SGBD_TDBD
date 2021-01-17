@@ -360,6 +360,8 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
             //-----------
 
 
+            echo "<div class='caixaSubTitulo'><h3>Pesquisa - resultado</h3></div>";
+            echo "<div class='caixaFormulario'>";
             if ($houveErros) { //Se os campos não foram todos preenchidos, é apresentada uma mensagem de erro e um botão para voltar atrás
                 echo "<span class='warning'>Não preencheu todos os campos do formulário!</span><br>";
                 voltarAtras();
@@ -407,8 +409,8 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             $primeiro = false;
                         } else {
                             $query .= ', ' . $valor;
-                            $descricaoQuery .= ',';
                         }
+                        $descricaoQuery .= ',';
                     }
                 }
                 $descricaoQuery = substr($descricaoQuery, 0, -1);
@@ -562,7 +564,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                 $descricaoQuery .= 'ou ';
                             } else {
                                 $query .= ') ';
-                                $descricaoQuery .= ') ';
+                                $descricaoQuery .= ' e ';
                             }
                             $auxx++;
                         }
@@ -638,14 +640,14 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                                     if ($primeiroValor == true) {
                                         if (is_numeric($valor2)) {
                                             $query .= '' . $valor2 . ') ';
-                                            $descricaoQuery .= '' . $valor2 . ') ';
+                                            $descricaoQuery .= '' . $valor2 . ' e ';
                                         } else {
                                             if ($oper_atrib[$auxx] == "like") {
                                                 $query .= '"%' . $valor2 . '%") ';
-                                                $descricaoQuery .= 'contém "' . $valor2 . '") ';
+                                                $descricaoQuery .= 'contém "' . $valor2 . '" e ';
                                             } else {
                                                 $query .= '"' . $valor2 . '") ';
-                                                $descricaoQuery .= '"' . $valor2 . '") ';
+                                                $descricaoQuery .= '"' . $valor2 . '" e ';
                                             }
                                         }
                                         $primeiroValor = false;
@@ -656,14 +658,14 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                                         if (is_numeric($valor2)) {
                                             $query .= '' . $valor2 . ') ';
-                                            $descricaoQuery .= '' . $valor2 . ') ';
+                                            $descricaoQuery .= '' . $valor2 . ' e ';
                                         } else {
                                             if ($oper_atrib[$auxx] == "like") {
                                                 $query .= '"%' . $valor2 . '%") ';
-                                                $descricaoQuery .= 'contém "' . $valor2 . '") ';
+                                                $descricaoQuery .= 'contém "' . $valor2 . '" e ';
                                             } else {
                                                 $query .= '"' . $valor2 . '") ';
-                                                $descricaoQuery .= '"' . $valor2 . '") ';
+                                                $descricaoQuery .= '"' . $valor2 . '" e ';
                                             }
                                         }
                                     }
@@ -673,14 +675,14 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                             } else { //Quando o input só tem um valor
                                 if (is_numeric($val_sub_filtrar[$auxx])) {
                                     $query .= '' . $val_sub_filtrar[$auxx] . ') ';
-                                    $descricaoQuery .= '' . $val_sub_filtrar[$auxx] . ') ';
+                                    $descricaoQuery .= '' . $val_sub_filtrar[$auxx] . ' e ';
                                 } else {
                                     if ($oper_sub[$auxx] == "like") {
                                         $query .= '"%' . $val_sub_filtrar[$auxx] . '%") ';
-                                        $descricaoQuery .= 'contém "' . $val_sub_filtrar[$auxx] . '") ';
+                                        $descricaoQuery .= 'contém "' . $val_sub_filtrar[$auxx] . '" e ';
                                     } else {
                                         $query .= '"' . $val_sub_filtrar[$auxx] . '") ';
-                                        $descricaoQuery .= '"' . $val_sub_filtrar[$auxx] . '") ';
+                                        $descricaoQuery .= '"' . $val_sub_filtrar[$auxx] . '" e ';
                                     }
                                 }
                             }
@@ -728,53 +730,42 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
 
                 //---------------------------------------------------
 
-                //Botão para exportar ficheiro XLSX (ligação para fazer download do ficheiro)
-//                echo '<pre>'; print_r($tabelaGerada); echo '</pre>';
-//                echo "BREAK<br>";
-//                echo '<pre>'; print_r($keys); echo '</pre>';
+                //Geração de ficheiro Xlsx e botão para fazer download
 
                 if (count($tabelaGerada) > 0) {
                     $filename = "resultado.xlsx";
                     $spreadsheet = new Spreadsheet();
                     $sheet = $spreadsheet->getActiveSheet();
 
-                    // $keys are for the header row.  If they are supplied we start writing at row 2
-                    if ($keys) {
-                        $offset = substr_count($descricaoQuery, "<br>") + 3;
-                    } else {
-                        $offset = substr_count($descricaoQuery, "<br>") + 2;
-                    }
-//                echo $offset."HERE<br>";
+                    $offset = substr_count($descricaoQuery, "<br>") + 3;//conta-se o número de <br> conseguir apresentar a frase inteira e abaixo apresentar a tabela
 
-                    // write the rows
+                    // Escrever as linhas da tabela
                     $i = 0;
                     foreach ($tabelaGerada as $row) {
                         $spreadsheet->getActiveSheet()->fromArray($row, null, 'A' . ($i++ + $offset));
                     }
 
-                    // write the header row from the $keys
-                    if ($keys) {
-                        $spreadsheet->setActiveSheetIndex(0);
-                        $spreadsheet->getActiveSheet()->fromArray($keys, null, 'A' . ($offset - 1));
-                    }
+                    // Escrever o cabeçalho da tabela
+                    $spreadsheet->setActiveSheetIndex(0);
+                    $spreadsheet->getActiveSheet()->fromArray($keys, null, 'A' . ($offset - 1));
 
-                    // get last row and column for formatting
+                    // Obter última coluna e última coluna para questões de formatação
                     $last_column = $spreadsheet->getActiveSheet()->getHighestColumn();
                     $last_row = $spreadsheet->getActiveSheet()->getHighestRow();
 
-                    // autosize all columns to content width
+                    // Expandir largura das colunas para caber o conteúdo
                     for ($i = 'A'; $i <= $last_column; $i++) {
                         $spreadsheet->getActiveSheet()->getColumnDimension($i)->setAutoSize(TRUE);
                     }
 
-                    // if $keys, freeze the header row and make it bold
-                    if ($keys) {
-                        $spreadsheet->getActiveSheet()->freezePane('A' . ($offset - 1));
-                        $spreadsheet->getActiveSheet()->getStyle('A' . ($offset - 1) . ':' . $last_column . ($offset - 1))->getFont()->setBold(true);
-                    }
+                    // Pôr o cabeçalho a negrito
+                    $spreadsheet->getActiveSheet()->freezePane('A' . ($offset - 1));
+                    $spreadsheet->getActiveSheet()->getStyle('A' . ($offset - 1) . ':' . $last_column . ($offset - 1))->getFont()->setBold(true);
 
-                    // format all columns as text
-                    $spreadsheet->getActiveSheet()->getStyle('A2:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+                    // Formatar todas as colunas como texto
+                    $spreadsheet->getActiveSheet()->getStyle('A1:' . $last_column . $last_row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+
+                    //Apresentar frase descritiva da query antes da tabela e juntar ("merge") as células necessárias
                     $spreadsheet->getActiveSheet()->mergeCells("A1:" . "Q" . ($offset - 2));
                     $spreadsheet->getActiveSheet()->setCellValue("A1", str_replace("<br>", "\n", $descricaoQuery));
                     $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
@@ -785,6 +776,7 @@ if (verificaCapability("search")) { //Verifica se o utilizador está autenticado
                     }
                 }
             }
+            echo "</div>";
         } else { //Estado inicial
             echo "<div class='caixaSubTitulo'><h3>Pesquisa - escolher item</h3></div>";
             echo "<div class='caixaFormulario'>";
