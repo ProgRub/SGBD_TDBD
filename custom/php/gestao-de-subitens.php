@@ -4,7 +4,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
     $mySQL = ligacaoBD(); //Efetua a ligação com a base de dados
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) { //Se não for possível selecionar a base de dados "bitnami_wordpress" é apresentado o erro ocorrido
         die("Connection failed: " . mysqli_connect_error());
-    } else {
+    } 
+	else {
         if ($_REQUEST["estado"] == "inserir") {
             $houveErros = false;
             echo "<div class='caixaSubTitulo'><h3><strong>Gestão de subitens - inserção</strong></h3></div>";
@@ -21,7 +22,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
             if (empty($nome_subitem)) {
                 $campos .= "<li><strong>Nome do subitem</strong></li>";
                 $houveErros = true;
-            } else if (1 === preg_match('~[0-9]~', $nome_subitem) || 1 === preg_match('~[0-9]~', $nome_subitem)) {//Se o nome da criança ou do tutor conter números é apresentada a mensagem de erro e a variável $houveErros é colocada a true
+            } 
+			else if (1 === preg_match('~[0-9]~', $nome_subitem) || 1 === preg_match('~[0-9]~', $nome_subitem)) {//Se o nome da criança ou do tutor conter números é apresentada a mensagem de erro e a variável $houveErros é colocada a true
                 $campos .= "<li><strong>O nome do subitem não pode conter números!</strong></li>";
                 $houveErros = true;
             }
@@ -52,7 +54,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                 //LISTA OS NOMES DOS CAMPOS EM FALTA
                 echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
                 voltarAtras();
-            } else {// Se os campos do formulário foram todos preenchidos corretamente:
+            } 
+			else {// Se os campos do formulário foram todos preenchidos corretamente:
 
                 $nome_item = str_replace("_", " ", $nome_item); //Voltar a colocar o nome do item com espaços (em vez de underscores)
                 $tipo_unidade = str_replace("_", " ", $tipo_unidade); //Voltar a colocar o tipo de unidade com espaços (em vez de underscores)
@@ -94,7 +97,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     if (!mysqli_query($mySQL, $query)) {
                         $ocorreuErro = true;
                     }
-                } else {
+                } 
+				else {
                     $query = "ROLLBACK;";
                     if (!mysqli_query($mySQL, $query)) {
                         $ocorreuErro = true;
@@ -103,12 +107,14 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                 if (!$ocorreuErro) {//Se não houver nenhum erro ao executar a query os dados são inseridos na tabela "subitem" e é apresentado um botão "Continuar" com uma ligação para esta mesma página
                     echo "<span class='information'>Inseriu os dados de novo subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.</span><br>";
                     echo "<a href='gestao-de-subitens'><button class='continuarButton textoLabels'>Continuar</button></a>";
-                } else {
+                } 
+				else {
                     voltarAtras();
                 }
                 echo "</div>";
             }
-        } else { //Estado inicial:
+        } 
+		else { //Estado inicial:
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/gestao_subitens.js', array('jquery'), 1.1, true);
             }
@@ -175,7 +181,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     echo "</table>";
                     //--------------------------------------------------------------------------------------------------------------
                 }
-            } else { //Se não houverem tuplos na tabela subitem
+            } 
+			else { //Se não houverem tuplos na tabela subitem
                 echo "<span class='information'>Não há subitems especificados.</span>";
             }
 
@@ -218,7 +225,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     echo '<option value= ' . $option . ' >' . $linhaItem["name"] . '</option>';
                 }
                 echo '</select><br>';
-            } else { //Caso não existam itens
+            } 
+			else { //Caso não existam itens
                 echo "Não há nenhum item.<br>";
             }
             echo "<br><strong>Tipo do campo do formulário: </strong><span class='warning textoLabels'> * </span></br>";
@@ -242,7 +250,8 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
                     echo '<option value=' . $option . '>' . $linhaUnid["name"] . '</option>';
                 }
                 echo '</select><br>';
-            } else { //Caso não haja tipos de unidades
+            } 
+			else { //Caso não haja tipos de unidades
                 echo "<span class='information'>Não há nenhum tipo de unidade.</span><br>";
             }
             echo "<br>
@@ -258,6 +267,7 @@ if (verificaCapability("manage_subitems")) { //Verifica se o utilizador está au
 			</form></div>";
         }
     }
-} else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
+} 
+else { //Se o utilizador não está autenticado ou não tem a capability "manage_subitems" não pode aceder à página
     echo "<span class='warning'>Não tem autorização para aceder a esta página</span>";
 }

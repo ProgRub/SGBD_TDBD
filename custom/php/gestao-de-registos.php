@@ -120,19 +120,19 @@ if (verificaCapability("manage_records")) { //Verifica se o utilizador está aut
 			<span class='warning'>* Campos obrigatórios</span><br>";
             $action = get_site_url() . '/' . $current_page;
             echo "<form method='post' action='$action'>
-					<strong class='textoLabels'> Nome completo:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' id='child_name' name='child_name'><br>
-					<strong class='textoLabels'>Data de nascimento:<span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' id='birth_date' name='birth_date' placeholder='AAAA-MM-DD'><br>
-					<strong class='textoLabels'>Nome completo do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' id='tutor_name' name='tutor_name'><br>
-					<strong class='textoLabels'>Telefone do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
-					<input type='text' class='textInput' id='tutor_phone' name='tutor_phone'><br>
-					<strong class='textoLabels'>Endereço de e-mail do tutor: </strong><br>
-					<input type='text' class='textInput' id='tutor_email' name='tutor_email' placeholder='email@example.com'><br><br>
-					<p hidden><input type='hidden' value='validar' name='estado'></p>
-					<input type='submit' value='submeter' class='submitButton textoLabels'>
-					</form></div>";
+				<strong class='textoLabels'> Nome completo:</strong><span class='warning textoLabels'> * </span><br>
+				<input type='text' class='textInput' id='child_name' name='child_name'><br>
+				<strong class='textoLabels'>Data de nascimento:<span class='warning textoLabels'> * </span><br>
+				<input type='text' class='textInput' id='birth_date' name='birth_date' placeholder='AAAA-MM-DD'><br>
+				<strong class='textoLabels'>Nome completo do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
+				<input type='text' class='textInput' id='tutor_name' name='tutor_name'><br>
+				<strong class='textoLabels'>Telefone do encarregado de educação:</strong><span class='warning textoLabels'> * </span><br>
+				<input type='text' class='textInput' id='tutor_phone' name='tutor_phone'><br>
+				<strong class='textoLabels'>Endereço de e-mail do tutor: </strong><br>
+				<input type='text' class='textInput' id='tutor_email' name='tutor_email' placeholder='email@example.com'><br><br>
+				<p hidden><input type='hidden' value='validar' name='estado'></p>
+				<input type='submit' value='submeter' class='submitButton textoLabels'>
+				</form></div>";
         }
     }
 } else { //Se o utilizador não está autenticado ou não tem a capability "manage_records" não pode aceder à página
