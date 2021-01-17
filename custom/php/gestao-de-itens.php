@@ -1,12 +1,12 @@
 <?php
 require_once("custom/php/common.php");
-//VERIFICA SE TEM A CAPABILITY "manage_items":
+//VERIFICA SE TEM A CAPABILITY "manage_items" E FEZ LOGIN:
 if (verificaCapability("manage_items")) {
 
     //ESTABELECE CONEÇÃO COM A BASE DE DADOS:
     $mySQL = ligacaoBD();
 
-    //MUDA A CONEÇÃO MYSQL E CASO SEJA FALSE, OCORREU UM ERRO:
+    //MUDA A CONEÇÃO MYSQL (CASO SEJA FALSE, OCORREU UM ERRO):
     if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         die("Connection failed: " . mysqli_connect_error());
     //SE NÃO DEU ERRO:
@@ -75,6 +75,7 @@ if (verificaCapability("manage_items")) {
             if (mysqli_num_rows(mysqli_query($mySQL, "SELECT * FROM item")) > 0) {
                 //QUERY PARA OBTER TODOS OS TIPOS DE ITEM:
                 $queryTipos = "SELECT * FROM item_type ORDER BY name";
+                //RESULTADO DA QUERY:
                 $tabelaTipos = mysqli_query($mySQL, $queryTipos);
 
                 //SE HÁ TIPOS DE ITEM NA BASE DE DADOS:
@@ -83,17 +84,20 @@ if (verificaCapability("manage_items")) {
                     echo "<table class='tabela'>";
                     echo "<tr class='row'><th class='textoTabela cell'>tipo de item</th><th class='textoTabela cell'>id</th><th class='textoTabela cell'>nome do item</th><th class='textoTabela cell'>estado</th><th class='textoTabela cell'>ação</th></tr>";
 
+                    //PARA CONTAR NUMERO DE TIPOS DE ITEM: (PARA O CSS)
                     $numeroTiposDeItem=0;
+
                     //PERCORRE TABELA RESULTADO DA QUERY DE TODOS OS TIPOS DE ITEM:
                     while ($linhaTipoItem = mysqli_fetch_assoc($tabelaTipos)) {
                         //QUERY PARA OBTER TODOS OS ITENS DAQUELE TIPO:
                         $queryItens = "SELECT * FROM item WHERE item_type_id = " . $linhaTipoItem["id"] . " ORDER BY name";
+                        //RESULTADO DA QUERY:
                         $tabelaItens = mysqli_query($mySQL, $queryItens);
 
                         //SE HOUVEREM ITENS DESSE TIPO:
                         if (mysqli_num_rows($tabelaItens) > 0) {
                             //PARA EVITAR QUE CRIE SEMPRE A CÉLULA COM O NOME DO TIPO DE ITEM:
-                            $newItem = true;
+                            $newItemType = true;
 
                             //NÚMERO DE ITENS DAQUELE TIPO:
                             $numeroItens = mysqli_num_rows($tabelaItens);
@@ -101,12 +105,15 @@ if (verificaCapability("manage_items")) {
                             //PERCORRE TABELA RESULTADO DA QUERY PARA OBTER TODOS OS ITENS DE UM TIPO DE ITEM:
                             while ($linhaItem = mysqli_fetch_assoc($tabelaItens)) {
                                 //SE FOR A PRIMEIRA VEZ QUE CRIA A CÉLULA COM O NOME DO TIPO:
-                                if ($newItem) {
+                                if ($newItemType) {
                                     //CELULA COM NOME DO TIPO DE ITEM E ROWSPAN IGUAL AO NÚMERO DE ITENS DESSE TIPO:
                                     echo "<tr class='row'><td class='textoTabela cell ".($numeroTiposDeItem%2==0?"par":"impar")."' rowspan='$numeroItens'>" . $linhaTipoItem["name"] . "</td>";
                                     //PARA EVITAR QUE CRIE NOVAMENTE A MESMA CÉLULA:
-                                    $newItem = false;
+                                    $newItemType = false;
+                                    //INCREMENTA NUMERO DE TIPOS DE ITEM:
                                     $numeroTiposDeItem++;
+
+                                //SE NÃO É UM TIPO ITEM DIFERENTE:
                                 } else {
                                     echo "<tr class='row'>";
                                 }

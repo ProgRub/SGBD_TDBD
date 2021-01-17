@@ -1,12 +1,14 @@
 <?php
 require_once("custom/php/common.php");
-//echo "mudou4";
+
 //ESTEBELECE LIGAÇÃO COM A BASE DE DADOS:
 $mySQL = ligacaoBD();
 
+//MUDA A CONEÇÃO MYSQL E CASO SEJA FALSE, OCORREU UM ERRO:
 if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
     die("Connection failed: " . mysqli_connect_error());
 
+//SE NÃO OCORREU NENHUM ERRO NA MUDANÇA DE CONEÇÃO:
 } else {
     //SE O ESTADO DE EXECUÇÃO FOR "EDITAR":
     if ($_REQUEST["estado"] == "editar") {
@@ -167,6 +169,7 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
 
+                //VARIAVEL DE SESSÃO COM O "value_type" INICIAL DO SUBITEM: (PARA VERIFICAR SE ERA "ENUM" E FOI ALTERADO OU NÃO NA PARTE DA ATUALIZAÇÃO DO SUBITEM):
                 $_SESSION["value_type_subitem"] = $linhaSubitem["value_type"];
 
 
@@ -250,20 +253,34 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar valores de criança</h3></div>";
             echo "<div class='caixaFormulario'>";
 
+            //QUERY PARA OBTER TODOS OS VALORES DA CRIANÇA:
             $queryValores = "SELECT * FROM value WHERE child_id=" . $_REQUEST["id"];
+            //TABELA RESULTADO DA EXECUÇÃO DO CODIGO SQL:
             $tabelaValores = mysqli_query($mySQL, $queryValores);
 
-            echo"<ul>";
 
+            echo"<ul>";
+            //ARRAY PARA GUARDAR O NOME DOS SUBITENS CUJO TIPO DE CAMPO DO FORMULÁRIO É "checkbox" (À MEDIDA QUE SÃO LISTADOS):
             $subitensListados = array();
+            //PERCORRE A TABELA RESULTADO DA EXECUÇÃO DO CODIGO SQL (VALORES DA CRIANÇA):
             while ($linhaValores = mysqli_fetch_assoc(($tabelaValores))) {
+                //QUERY PARA OBTER O SUBITEM DO VALOR:
                 $querySubitemValor = "SELECT * FROM subitem WHERE id=" . $linhaValores["subitem_id"];
+                //RESULTADO DA EXECUÇÃO DA QUERY:
                 $tabelaSubitemValor= mysqli_query($mySQL, $querySubitemValor);
+
+                //ACEDE AO SUBITEM OBTIDO:
                 while($subitemValor = mysqli_fetch_assoc(($tabelaSubitemValor))){
+                    //SE AINDA NÃO FOI LISTADO (NOME DO SUBITEM NÃO ESTÁ NO ARRAY):
                     if(!in_array($subitemValor["name"], $subitensListados)) {
+                        //É LISTADO O NOME DO SUBITEM COM UM LINK PARA A EDIÇÃO DO VALOR DAQUELE SUBITEM:
                         echo "<li><a href='edicao-de-dados?estado=editar&id=" . $linhaValores["id"] . "&tipo=valor'>[" . $subitemValor["name"] . "]</a></li>";
+
+                        //SE O TIPO DE CAMPO DO FORMULARIO É "checkbox":
                         if($subitemValor["form_field_type"] == "checkbox"){
+                            //INSERE O NOME DO SUBITEM NO ARRAY:
                             array_push($subitensListados, $subitemValor["name"]);
+                            //NOTA: COMO É CHECKBOX, PODE TER VÁRIOS VALORES. DESTA FORMA, EVITA-SE QUE SEJA APRESENTADO O NOME DESSE SUBITEM VÁRIAS VEZES.
                         }
                     }
                 }
@@ -271,88 +288,143 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             echo"</ul>";
             echo "</div>";
 
-        } else if ($_REQUEST["tipo"] == "valor") { //SE FOR ESCOLHIDO EDITAR UMA CRIANÇA:
+        //SE FOR ESCOLHIDO EDITAR UMA CRIANÇA:
+        } else if ($_REQUEST["tipo"] == "valor") {
+            //VALIDAÇÃO CLIENT-SIDE:
             if ($clientsideval) {
                 wp_enqueue_script('script', get_bloginfo('wpurl') . '/custom/js/insercao_valores.js', array('jquery'), 1.1, true);
             }
+
             //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
             $_SESSION["tipo"] = $_REQUEST["tipo"];
             $_SESSION["id"] = $_REQUEST["id"];
 
+            //SUBTITULO DA PAGINA:
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Valor</h3></div>";
+
             $action=get_site_url().'/'.$current_page;
             echo "<div class='caixaFormulario'><span class='warning'>* Campos obrigatórios</span><br><form method='post' action='$action'>";
 
+            //QUERY PARA OBTER O VALOR QUE SE PRETENDE EDITAR:
             $queryValor = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"] ." AND id =".$_REQUEST["id"];
+            //RESULTADO DA EXECUÇÃO DA QUERY:
             $tabelaValor = mysqli_query($mySQL, $queryValor);
+            //VALOR QUE SE PRETENDE EDITAR:
             $valor = mysqli_fetch_assoc($tabelaValor);
 
+            //VARIAVEL DE SESSÃO COM O ID DO SUBITEM:
             $_SESSION["subitemId"] = $valor["subitem_id"];
 
+            //QUERY PARA OBTER O SUBITEM DO VALOR:
             $querySubitem = "SELECT * FROM subitem WHERE id=" .$valor["subitem_id"];
+            //RESULTADO DA EXECUÇÃO DA QUERY:
             $tabelaSubitem = mysqli_query($mySQL, $querySubitem);
+            //SUBITEM DO VALOR:
             $subitem = mysqli_fetch_assoc($tabelaSubitem);
+
             $idInput=0;
             echo "<strong>".$subitem["name"].($subitem["mandatory"] == 1 ? "<span class='warning'>*</span>" : "").":</strong><br>";
+
+            //SE O "value_type" É ENUM E O "form_field_type" NÃO É TEXTO:
             if($subitem["value_type"] == "enum" && $subitem["form_field_type"] != "text"){
+                //QUERY PARA OBTER TODOS OS VALORES PERMITIDOS DO SUBITEM DO VALOR:
                 $queryValoresSubitem = "SELECT * FROM subitem_allowed_value WHERE subitem_id=" . $subitem["id"];
+                //RESULTADO DA EXECUÇÃO DA QUERY:
                 $tabelaValoresSubitem = mysqli_query($mySQL, $queryValoresSubitem);
 
+                //SE O TIPO DE CAMPO DO FORMULARIO É "RADIO":
                 if($subitem["form_field_type"] == "radio"){
+                    //PERCORRE TODOS OS VALORES PERMITIDOS OBTIDOS:
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
+                        //SE O "value" DO VALOR PERMITIDO FOR IGUAL AO "value" DO VALOR A EDITAR:
                         if ($valorPermitido["value"] == $valor["value"]) {
+                            //APRESENTA O "value" DO VALOR COMO OPÇÃO RADIO E FICA "CHECKED":
                             echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." checked value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>".$valorPermitido["value"]. "</span><br>";
-                        } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
+
+                        //SE NÃO FOR IGUAL:
+                        } else {
+                            //APRESENTA OS RESTANTES VALORES COMO OPÇÃO RADIO:
                             echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valorPermitido["value"] . "' name='value'><span class='textoLabels'>" . $valorPermitido["value"] . "</span><br>";
                         }
                     }
+
+                //SE O TIPO DE CAMPO DO FORMULARIO É "CHECKBOX":
                 }else if($subitem["form_field_type"] == "checkbox"){
+                    //QUERY PARA OBTER TODOS OS VALORES DA CRIANÇA:
                     $queryValor = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"];
+                    //RESULTADO DA EXECUÇÃO DA QUERY:
                     $tabelaValor = mysqli_query($mySQL, $queryValor);
+
+                    //ARRAY COM TODOS OS VALORES DA CRIANÇA:
                     $valoresCriança = array();
+
+                    //PERCORRE TABELA RESULTADO DA EXECUÇÃO DA QUERY (TODOS OS VALORES DA CRIANÇA):
                     while($linhaValoresCrianca = mysqli_fetch_assoc($tabelaValor)){
+                        //INSERE O VALOR NO ARRAY:
                         array_push($valoresCriança, $linhaValoresCrianca["value"]);
                     }
 
+                    //PARA DISTINGUIR O NOME DE CADA CHECKBOX (SERÁ INCREMENTADO APÓS MOSTRAR UMA CHECKBOX):
                     $numeroCheckbox = 0;
+
+                    //PERCORRE TODOS OS VALORES PERMITIDOS DO SUBITEM DO VALOR:
                     while ($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
+                        //SE O VALOR PERMITIDO DO SUBITEM ESTÁ NO ARRAY COM TODOS OS VALORES DA CRIANÇA -> É UM VALOR DA CRIANÇA:
                         if (in_array($valorPermitido["value"], $valoresCriança)) {
+                            //APRESENTA CHECKBOX COM VALOR DA CRIANÇA MARCADO COMO CHECKED:
                             echo "<input type='checkbox'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." checked value='" . $valorPermitido["value"] . "' name='value" . $numeroCheckbox . "'><label class='textoLabels'>" . $valorPermitido["value"] . "</label><br>";
-                        } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
+
+                        //SE O VALOR NÃO ESTÁ NO ARRAY -> NÃO É VALOR DA CRIANÇA:
+                        } else {
+                            //APRESENTA CHECKBOX COM O VALOR:
                             echo "<input type='checkbox'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valorPermitido["value"] . "' name='value" . $numeroCheckbox . "'><label class='textoLabels'>" . $valorPermitido["value"] . "</label><br>";
                         }
+                        //INCREMENTA O VALOR DE "$numeroCheckbox" PARA DISTINGUIR A CHECKBOX:
                         $numeroCheckbox++;
                     }
+                    //GUARDA O NÚMERO DA ULTIMA CHECKBOX NUMA VARIAVEL DE SESSÃO:
                     $_SESSION["numeroCheckbox"] = $numeroCheckbox;
+                    //$_REQUEST["checkbox"] = "true", PARA UTILIZAR DISTINGUIR DAS RESTANTES EDIÇÕES:
                     echo "<input type='hidden' value='true' name='checkbox'>";
 
+                //SE O TIPO DE CAMPO DO FORMULARIO FOR "SELECTBOX":
                 }else if($subitem["form_field_type"] == "selectbox"){
                     echo "<select name='value'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." class='textInput textoLabels'>";
+                    //PERCORRE TODOS OS VALORES PERMITIDOS DO SUBITEM DO VALOR:
                     while($valorPermitido = mysqli_fetch_assoc($tabelaValoresSubitem)) {
+                        //SE O "value" DO VALOR PERMITIDO FOR IGUAL AO "value" DO VALOR A EDITAR:
                         if ($valorPermitido["value"] == $valor["value"]) {
+                            //CRIA UMA OPÇÃO DE ESCOLHA COM O VALOR -> FICA SELECTED:
                             echo "<option id='value' selected value='" . $valorPermitido["value"] . "' name='value'> ".$valorPermitido["value"]."</option>";
-                        } else { //COLOCA OS RESTANTES TIPOS COMO OPÇÃO:
+
+                        //SE NÃO FOR IGUAL -> NÃO É O VALOR DA CRIANÇA:
+                        } else {
+                            //CRIA OPÇÃO DE ESCOLHA COM O VALOR:
                             echo "<option id='value' value='" . $valorPermitido["value"] . "' name='value'> ".$valorPermitido["value"]."</option>";
                         }
                     }
                     echo "</select><br>";
                 }
-
+            //SE (O TIPO DE VALOR É "INT","DOUBLE" OU "TEXT") E (O TIPO DE CAMPO DO FORMULARIO É "TEXT" OU "TEXTBOX"):
             }else if (($subitem["value_type"] == "int" || $subitem["value_type"] == "double" || $subitem["value_type"] == "text") && ($subitem["form_field_type"] == "text" || $subitem["form_field_type"] == "textbox")){
-               echo "<input type='text' class='textInput' name='value'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valor["value"] . "' ><br><br>";
+               //APRESENTA TEXTBOX JÁ PREENCHIDO COM O VALOR A EDITAR:
+                echo "<input type='text' class='textInput' name='value'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='" . $valor["value"] . "' ><br><br>";
 
+            //SE O TIPO DE VALOR É "BOOL":
             }else if($subitem["value_type"] == "bool"){
-
+                //SÃO APRESENTADAS DUAS OPÇÕES RADIO (A OPÇÃO CORRESPONDENTE AO VALOR DO "mandatory" FICA CHECKED):
                 echo "<input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='1' name='value' " . ($valor["value"] == 'verdadeiro' ? 'checked' : '') . "><span class='textoLabels'>Verdadeiro</span><br>
                 <input type='radio'".($subitem["mandatory"] == 1 ? " id='$idInput'" : "")." value='0' name='value' " . ($valor["value"] == 'falso' ? 'checked' : '') . "><span class='textoLabels'>Falso</span><br>";
 
             }
-
             echo "<input type='hidden' value='valorEditado' name='estado'>";
             echo "<input class='submitButton textoLabels' type='submit' value='Confirmar' name='submit'>";
             echo "</form>";
             echo "</div>";
+            //AO CONFIRMAR A EDIÇÃO, O ESTADO DE EXECUÇÃO MUDA PARA "valorEditado":
         }
+
+    //SE O ESTADO DE EXECUÇÃO FOR "ativar" OU "desativar":
     } else if ($_REQUEST["estado"] == "ativar" || $_REQUEST["estado"] == "desativar") { //caso tenha escolhido ativar ou desativar um elemento
         //VARIAVEIS DE SESSÃO COM O ID E O TIPO:
         $_SESSION["tipo"] = $_REQUEST["tipo"];
@@ -380,7 +452,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                 </form></div>";
         //APÓS CONFIRMAR, O ESTADO DE EXECUÇÃO MUDA PARA "CONFIRMADO"
 
-    } else if ($_REQUEST["estado"] == "confirmado") { //CASO O UTILIZADOR TENHA CONFIRMADO A ATIVAÇÃO/DESATIVAÇÃO
+
+    //CASO O UTILIZADOR TENHA CONFIRMADO A ATIVAÇÃO/DESATIVAÇÃO
+    } else if ($_REQUEST["estado"] == "confirmado") {
         //PARA EVITAR REPITIÇÃO DE CÓDIGO:
         if ($_SESSION["tipo"] == "item") { ///EDIÇÃO DE UM ITEM
             $elemento = "Item";
@@ -408,7 +482,9 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
         } else {
             echo "<span class='information'>" . ($_REQUEST["acao"] == "ativar" ? 'O ' . $elemento . ' foi ativado com sucesso' : 'O ' . $elemento . ' foi desativado com sucesso') . "
             <br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
-            echo "<a href='" . $href . "'><button class='continuarButton textoLabels'>Continuar</button></a>"; //BOTÃO PARA REGRESSAR À PAGINA INICIAL (ONDE ESTÁ APRESENTADA A TABELA)
+
+            //BOTÃO PARA REGRESSAR À PAGINA INICIAL (ONDE ESTÁ APRESENTADA A TABELA):
+            echo "<a href='" . $href . "'><button class='continuarButton textoLabels'>Continuar</button></a>";
         }
         echo "</div>";
 
@@ -498,14 +574,26 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             //PERCORRE A TABELA RESULTADO DA QUERY:
             $tipoItem = mysqli_fetch_assoc(($tabelaTipos));
 
+            //REGRAS PARA TIRAR ACENTOS A UMA STRING:
             $tirarAcento = Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
+
+            //TRANSFORMA NOME DO ITEM -> APLICA REGRA ANTERIOR:
             $itemSemAcento = $tirarAcento->transliterate($tipoItem["name"]);
+
+            //SUBSTRING (3 LETRAS) DO NOME DO ITEM:
             $tresPrimeirasLetrasItem = substr($itemSemAcento, 0, 3);
+
+            //TRANSFORMA NOME DO SUBITEM NUMA CADEIA DE CARATERES ASCII:
             $subitem_ascii = preg_replace('/[^a-z0-9_ ]/i', '', $nome_subitem);
+
+            //SUBSTITUI OS ESPAÇOS POR "_" NA CADEIA DE CARATERES:
             $subitemSemCaracteresVazios = str_replace(" ", "_", $subitem_ascii);
+
+            //JUNTA AS 3 PRIMEIRAS LETRAS DO NOME DO ITEM COM O ID DO ITEM E O NOME DO SUBITEM:
             $nome_campo_form = $tresPrimeirasLetrasItem . "-" . $_SESSION["id"] . "-" . $subitemSemCaracteresVazios;
-            
-            $houveErros = false; //TRUE SE HOUVEREM ERROS NOS VALORES INSERIDOS
+
+            //TRUE SE HOUVEREM ERROS NOS VALORES INSERIDOS:
+            $houveErros = false;
 
             //SUBTITULO DA PAGINA:
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Subitem</h3></div>";
@@ -518,150 +606,211 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
             if (empty($nome_subitem)) {
                 $campos .= "<li><strong>Nome do subitem</strong></li>";
                 $houveErros = true;
-            } else if (1 === preg_match('~[0-9]~', $nome_subitem) || 1 === preg_match('~[0-9]~', $nome_subitem)) {//Se o nome da criança ou do tutor conter números é apresentada a mensagem de erro e a variável $houveErros é colocada a true
+
+            //SE O NOME DA CRIANÇA OU DO TUTOR CONTÉM NÚMEROS:
+            } else if (1 === preg_match('~[0-9]~', $nome_subitem) || 1 === preg_match('~[0-9]~', $nome_subitem)) {
                 $campos .= "<li><strong>O nome do subitem não pode conter números!</strong></li>";
                 $houveErros = true;
             }
+            //SE O TIPO DE VALOR NÃO FOI PREENCHIDO:
             if (empty($tipo_valor)) {
                 $campos .= "<li><strong>Tipo de valor</strong></li>";
                 $houveErros = true;
             }
+            //SE O TIPO DO CAMPO DO FORMULARIO NÃO FOI PREENCHIDO:
             if (empty($tipo_camp_form)) {
                 $campos .= "<li><strong>Tipo do campo do formulário</strong></li>";
                 $houveErros = true;
             }
+            //SE A ORDEM DO CAMPO DO FORMULARIO NÃO FOI PREENCHIDA:
             if (empty($ordem_campo_form)) {
                 $campos .= "<li><strong>Ordem do campo no formulário</strong></li>";
                 $houveErros = true;
-            } else if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) { //Se a ordem do campo do formulário não for um número ou for um número inferior ou igual a 0, é apresentada a mensagem de erro e a variável $houveErros é colocada a True
+            //SE A ORDEM DO CAMPO DO FORMULARIO NÃO FOR UM NÚMERO OU FOR UM NUMERO MAS INFERIOR OU IGUAL A 0:
+            } else if (!is_numeric($ordem_campo_form) || $ordem_campo_form <= 0) {
                 $campos .= "<li><strong>A ordem do campo no formulário tem que ser um número superior a 0!</strong></li>";
                 $houveErros = True;
             }
-//            echo $obrigatorio."\n";
+            //SE NÃO ESCOLHEU O CAMPO "OBRIGATORIO":
             if ($obrigatorio=="") {
                 $campos .= "<li><strong>Obrigatório</strong></li>";
                 $houveErros = true;
             }
 
-            //CASO NÃO HOUVER DADOS INVÁLIDOS OU EM FALTA:
+            //CASO HOUVER DADOS INVÁLIDOS OU EM FALTA:
             if ($houveErros) {
-                //BOTÃO PARA VOLTAR ATRÁS:
-                //LISTA OS NOMES DOS CAMPOS EM FALTA
+                //LISTA OS NOMES DOS CAMPOS EM FALTA:
                 echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
+                //BOTÃO PARA VOLTAR ATRÁS:
                 voltarAtras();
+
+            //CASO NÃO HOUVER DADOS INVÁLIDOS OU EM FALTA:
             } else {
-                $insertQuery = "UPDATE subitem SET name='" . $nome_subitem . "', value_type='" . $tipo_valor . "', item_id='" . $_REQUEST["item_subitem"] . "', 
+                //INICIO DO CODIGO PARA ATUALIZAÇÃO DO SUBITEM:
+                $updateSQL = "UPDATE subitem SET name='" . $nome_subitem . "', value_type='" . $tipo_valor . "', item_id='" . $_REQUEST["item_subitem"] . "', 
                 form_field_name='" . $nome_campo_form . "', form_field_type='" . $tipo_camp_form . "', unit_type_id=";
 
-                //SE ESCOLHEU OPÇÃO VAZIA PARA O TIPO DE UNIDADE, COLOCA O VALOR NULL (SEM ' ')
+                //SE ESCOLHEU OPÇÃO VAZIA PARA O TIPO DE UNIDADE, COLOCA O VALOR NULL (SEM ' '):
                 if ($tipo_unidade == '') {
-                    //ATUALIZAÇÃO DOS VALORES ESCOLHIDOS:
-                    $insertQuery .= "NULL, form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
+                    //FINAL DO CODIGO PARA ATUALIZAÇÃO DO SUBITEM (SEM TIPO DE UNIDADE):
+                    $updateSQL .= "NULL, form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
                     WHERE id ='" . $_SESSION["id"] . "'";
 
-                    //SE ESCOLHEU UM TIPO DE UNIDADE EXISTENTE, COLOCA O RESPETIVO ID (COM ' ')
+                    //SE ESCOLHEU UM TIPO DE UNIDADE EXISTENTE, COLOCA O RESPETIVO ID (COM ' '):
                 } else {
-                    //ATUALIZAÇÃO DOS VALORES ESCOLHIDOS:
-                    $insertQuery .= "'" . $tipo_unidade . "', form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
+                    //FINAL DO CODIGO PARA ATUALIZAÇÃO DO SUBITEM (COM TIPO DE UNIDADE):
+                    $updateSQL .= "'" . $tipo_unidade . "', form_field_order='" . $ordem_campo_form . "', mandatory='" . $obrigatorio . "', state='" . $_REQUEST["estado_subitem"] . "' 
                  WHERE id ='" . $_SESSION["id"] . "'";
                 }
 
-                if (!mysqli_query($mySQL, $insertQuery)) {
+                //EXECUTA ATUALIZAÇÃO NA BASE DE DADOS (SE OCORREU UM ERRO DEVOLVE FALSE):
+                if (!mysqli_query($mySQL, $updateSQL)) {
                     //MENSAGEM DE ERRO NO CÓDIGO SQL
-                    echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                    echo "<span class='warning'>Erro: " . $updateSQL . "<br>" . mysqli_error($mySQL) . "</span>";
+
+                //SE NÃO OCORREU NENHUM ERRO:
                 } else {
+                    //TRUE SE OCORREU ALGUM ERRO NOS CODIGOS SQL:
+                    $erro = false;
+
                     //SE O VALUE_TYPE ERA "ENUM" E FOI ALTERADO:
                     if($_SESSION["value_type_subitem"] == "enum" && $tipo_valor != "enum") {
-                        //QUERY PARA APAGAR TODOS OS TUPLOS DA TABELA value DESSE SUBITEM:
-                        $deleteQuery = "DELETE FROM value WHERE value IN (SELECT value FROM subitem_allowed_value WHERE subitem_id ='" . $_SESSION["id"] . "')";
-                        if (!mysqli_query($mySQL, $deleteQuery)) {
-                            //MENSAGEM DE ERRO NO CÓDIGO SQL
-                            echo "<span class='warning'>Erro: " . $deleteQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                        //CODIGO SQL PARA APAGAR TODOS OS TUPLOS DA TABELA "value" DESSE SUBITEM:
+                        $deleteSQL = "DELETE FROM value WHERE value IN (SELECT value FROM subitem_allowed_value WHERE subitem_id ='" . $_SESSION["id"] . "')";
+
+                        //EXECUTA ELIMINAÇÃO NA BASE DE DADOS (SE OCORREU UM ERRO DEVOLVE FALSE):
+                        if (!mysqli_query($mySQL, $deleteSQL)) {
+                            //MENSAGEM DE ERRO NO CÓDIGO SQL:
+                            echo "<span class='warning'>Erro: " . $deleteSQL . "<br>" . mysqli_error($mySQL) . "</span>";
+                            $erro = true;
                         }
-                        //QUERY PARA APAGAR TODOS OS TUPLOS DA TABELA subitem_allowed_value DESSE SUBITEM:
-                        $deleteQuery = "DELETE FROM subitem_allowed_value WHERE subitem_id ='" . $_SESSION["id"] . "'";
-                        if (!mysqli_query($mySQL, $deleteQuery)) {
+
+                        //CODIGO SQL PARA APAGAR TODOS OS TUPLOS DA TABELA "subitem_allowed_value" DESSE SUBITEM:
+                        $deleteSQL = "DELETE FROM subitem_allowed_value WHERE subitem_id ='" . $_SESSION["id"] . "'";
+                        if (!mysqli_query($mySQL, $deleteSQL)) {
                             //MENSAGEM DE ERRO NO CÓDIGO SQL
-                            echo "<span class='warning'>Erro: " . $deleteQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                            echo "<span class='warning'>Erro: " . $deleteSQL . "<br>" . mysqli_error($mySQL) . "</span>";
+                            $erro = true;
                         }
                     }
-                    //O UTILIZADOR É INFORMADO SOBRE O SUCESSO DA EDIÇÃO:
-                    echo "<span class='information'>Alterou os dados do subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
+                    //SE NÃO OCORREU NENHUM ERRO:
+                    if(!$erro){
+                        //O UTILIZADOR É INFORMADO SOBRE O SUCESSO DA EDIÇÃO:
+                        echo "<span class='information'>Alterou os dados do subitem com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 
-                    //AO CLICAR NO BOTÃO, O UTILIZADOR VOLTA PARA A PAGINA GESTÃO DE SUBITENS
-                    echo "<a href='gestao-de-subitens'><button class='continuarButton textoLabels'>Continuar</button></a>";
+                        //AO CLICAR NO BOTÃO, O UTILIZADOR VOLTA PARA A PAGINA GESTÃO DE SUBITENS
+                        echo "<a href='gestao-de-subitens'><button class='continuarButton textoLabels'>Continuar</button></a>";
+                    }
+
                 }
             }
             echo "</div>";
 
+        //SE O ESTADO DE EXECUÇÃO É "valorEditado" -> (O VALOR DE UMA CRIANÇA FOI EDITADO):
         }else if ($_REQUEST["estado"] == "valorEditado") {
             //SUB-TITULO DA PAGINA:
             echo "<div class='caixaSubTitulo'><h3>Edição de Dados - Editar Valor</h3></div>";
             echo "<div class='caixaFormulario'>";
-            $faltaDado = false; //TRUE SE FALTAR ALGUM DADO
-            $campos = ""; //VAI JUNTANDO OS CAMPOS OBRIGATORIOS EM FALTA E LISTA-OS AO FINAL
 
+            //TRUE SE FALTAR ALGUM DADO:
+            $faltaDado = false;
+
+            //VAI JUNTANDO OS CAMPOS OBRIGATORIOS EM FALTA OU COM ERROS E LISTA-OS AO FINAL (SE FALTAR ALGUM):
+            $campos = "";
+
+            //SE O "form_field_type" NÃO É "checkbox":
             if(empty($_REQUEST["checkbox"])){
-                //NÃO ESCREVEU O NOME:
+                //SE NÃO PREENCHEU O VALOR:
                 if (empty($_REQUEST["value"])) {
-                    $campos .= "<li><br><strong>Valor</strong></li>"; //JUNTA O NOME DO CAMPO EM FALTA (Valor)
-                    $faltaDado = true; //FALTA UM DADO (Valor)
+                    //JUNTA O NOME DO CAMPO EM FALTA (Valor):
+                    $campos .= "<li><br><strong>Valor</strong></li>";
+                    $faltaDado = true;
                 }
+
                 //SE TODOS OS CAMPOS OBRIGATORIOS FORAM PREENCHIDOS:
                 if (!$faltaDado) {
+                    //CODIGO SQL PARA ATUALIZAÇÃO DO VALOR:
+                    $updateSQL = "UPDATE value SET value='" . testarInput($_REQUEST["value"]) . "', date='".date("Y-m-d")."', time='".date("H:i:s")."', producer='".wp_get_current_user()->user_login."' WHERE id ='" . $_SESSION["id"] . "'";
 
-                    $insertQuery = "UPDATE value SET value='" . testarInput($_REQUEST["value"]) . "', date='".date("Y-m-d")."', time='".date("H:i:s")."', producer='".wp_get_current_user()->user_login."' WHERE id ='" . $_SESSION["id"] . "'";
-                    if (!mysqli_query($mySQL, $insertQuery)) {
+                    //EXECUTA CÓDIGO SQL (SE OCORRER UM ERRO DEVOLVE FALSE):
+                    if (!mysqli_query($mySQL, $updateSQL)) {
                         //MOSTRA ERRO NO CÓDIGO SQL:
-                        echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
+                        echo "<span class='warning'>Erro: " . $updateSQL . "<br>" . mysqli_error($mySQL) . "</span>";
+
+                    //SE NÃO OCORREU NENHUM ERRO:
                     } else {
                         //O UTILIZADOR É INFORMADO SOBRE O SUCESSO DA EDIÇÃO:
                         echo "<span class='information'>Alterou o valor da criança com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
                         //SE CLICAR NO BOTÃO, O UTILIZADOR VOLTA PARA A PAGINA DE GESTÃO DE ITENS:
                         echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Continuar</button></a>";
                     }
-                } else { //SE FALTOU ALGUM CAMPO OBRIGATÓRIO:
+
+                //SE FALTOU ALGUM CAMPO OBRIGATÓRIO:
+                } else {
                     //SÃO LISTADOS OS NOMES DOS CAMPOS EM FALTA:
                     echo "<span class='warning'>Os seguintes campos são <strong>obrigatórios</strong></span>:<ul>" . $campos . "</ul>";
+                    //BOTÃO PARA VOLTAR ATRÁS:
                     voltarAtras();
                 }
                 echo "</div>";
+
+            //SE O "form_field_type" É "checkbox":
             }else{
-                $unchecked = true;
+                //FALSE NÃO OCORRER ALGUM ERRO NO CODIGO SQL:
                 $semErros = true;
-                $query = "START TRANSACTION;";//INÍCIO DE TRANSAÇÃO
+
+                //INÍCIO DE TRANSAÇÃO
+                $query = "START TRANSACTION;";
                 if (!mysqli_query($mySQL, $query)) {
                     echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
                     $semErros = false;
                 }
 
+                //ARRAY COM OS VALORES QUE O UTILIZADOR ESCOLHEU:
                 $valoresEscolhidos = array();
+                //PERCORRE TODOS OS VALORES LISTADOS COMO OPÇÃO:
                 for ($i = $_SESSION["numeroCheckbox"]; $i >= 0; $i--) {
+                    //SE O VALOR NA POSIÇÃO $i DO ARRAY $_REQUEST NÃO É VAZIO, ENTÃO FOI ESCOLHIDO -> (OS VALORES QUE NÃO FORAM ESCOLHIDO FICAM VAZIOS):
                     if(!empty($_REQUEST["value" . $i])) {
-                        array_push($valoresEscolhidos, $_REQUEST["value". $i]); //INSERE O VALOR CHECKED
+                        //INSERE NO ARRAY O VALOR ESCOLHIDO (MARCADO COMO CHECKED):
+                        array_push($valoresEscolhidos, $_REQUEST["value". $i]);
                     }
                 }
 
+                //CODIGO SQL PARA OBTER TODOS OS VALORES DA CRIANÇA:
                 $queryValores = "SELECT * FROM value WHERE child_id=" . $_SESSION["idCrianca"];
+                //RESULTADO DA EXECUÇÃO DO CODIGO SQL:
                 $tabelaValores = mysqli_query($mySQL, $queryValores);
 
+                //PERCORRE A TABELA RESULTADO DA EXECUÇÃO DO CODIGO SQL:
                 while($valoresCriança = mysqli_fetch_assoc($tabelaValores)){
-                    //SE DEU UNCHECK NUM VALOR DA CRIANÇA:
+
+                    //SE O VALOR DA CRIANÇA ESTÁ NA BASE DE DADOS MAS NÃO FOI ESCOLHIDO -> FEZ "UNCHECK" DO VALOR:
                     if(!in_array($valoresCriança["value"], $valoresEscolhidos)){
+                        //CODIGO SQL PARA ELIMINAÇÃO DO TUPLO CORRESPONDENTE AO VALOR UNCHECKED:
                         $deleteQuery = "DELETE FROM value WHERE id ='" . $valoresCriança["id"] . "'";
+                        //EXECUTA CODIGO SQL (SE OCORREU UM ERRO DEVOLVE FALSE):
                         if (!mysqli_query($mySQL, $deleteQuery)) {
-                            //MENSAGEM DE ERRO NO CÓDIGO SQL
+                            //MENSAGEM DE ERRO NO CÓDIGO SQL:
                             echo "<span class='warning'>Erro: " . $deleteQuery . "<br>" . mysqli_error($mySQL) . "</span>";
-                            $semErros = false;
+
+                            //ELIMINA O VALOR DA LISTA DE VALORES ESCOLHIDOS NA POSIÇÃO DEVOLVIDO PELO "array_search":
                             unset($valoresEscolhidos[array_search($valoresCriança["value"],$valoresEscolhidos)]);
+                            $semErros = false;
                         }
+                    //SE NÃO DESMARCOU O VALOR DA CRIANÇA (QUE JÁ ESTAVA PREENCHIDO NO FORMULÁRIO):
                     }else{
+                        //ELIMINA O VALOR DA LISTA DE VALORES ESCOLHIDOS NA POSIÇÃO DEVOLVIDO PELO "array_search":
                         unset($valoresEscolhidos[array_search($valoresCriança["value"],$valoresEscolhidos)]);
                     }
                 }
 
+                //PERCORRE ARRAY COM OS VALORES ESCOLHIDOS (MARCADOS COMO CHECKED) E DIFERENTES DOS VALORES QUE JÁ ESTAVAM MARCADOS:
                 foreach($valoresEscolhidos as $inserir){
+                    //CODIGO SQL PARA INSERÇÃO DOS TUPLOS COM OS NOVOS VALORES MARCADOS COMO "CHECKED":
                     $insertQuery = "INSERT INTO `value` (`id`, `child_id`, `subitem_id`, `value`, `date`, `time`, `producer`) VALUES (NULL,'" . $_SESSION["idCrianca"] . "','" . $_SESSION["subitemId"] . "', '" . $inserir . "', '" . date("Y-m-d") . "', '" . date("H:i:s") . "','" . wp_get_current_user()->user_login . "')";
+
+                    //EXECUTA CODIGO SQL (SE OCORREU UM ERRO, DEVOLVE FALSE):
                     if (!mysqli_query($mySQL, $insertQuery)) {
                         //MENSAGEM DE ERRO NO CÓDIGO SQL
                         echo "<span class='warning'>Erro: " . $insertQuery . "<br>" . mysqli_error($mySQL) . "</span>";
@@ -669,18 +818,24 @@ if (!mysqli_select_db($mySQL, "bitnami_wordpress")) {
                     }
                 }
 
-                if ($semErros) {//SE NÃO HOUVE ERROS ANTERIORMENTE, COMMIT DA TRANSAÇÃO
+                //SE NÃO HOUVE ERROS ANTERIORMENTE:
+                if ($semErros) {
+                    //COMMIT DA TRANSAÇÃO:
                     $query = "COMMIT;";
                     if (!mysqli_query($mySQL, $query)) {
                         echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";
                         $semErros = false;
                     }
+
                     //O UTILIZADOR É INFORMADO SOBRE O SUCESSO DA EDIÇÃO:
                     echo "<span class='information'>Alterou os valores da criança com sucesso.<br>Clique em <strong>Continuar</strong> para avançar.<br></span>";
 
                     //AO CLICAR NO BOTÃO, O UTILIZADOR VOLTA PARA A PAGINA INSERÇÃO DE VALORES
                     echo "<a href='insercao-de-valores'><button class='continuarButton textoLabels'>Continuar</button></a>";
-                } else {//CASO CONTRÁRIO, ROLLBACK DA TRANSAÇÃO
+
+                //CASO CONTRÁRIO:
+                } else {
+                    //ROLLBACK DA TRANSAÇÃO:
                     $query = "ROLLBACK;";
                     if (!mysqli_query($mySQL, $query)) {
                         echo "<span class='warning'>Erro: " . $query . "<br>" . mysqli_error($mySQL) . "</span><br>";

@@ -9,9 +9,9 @@ function verificaCapability($capability)
 
 function testarInput($input)
 {
-    $input = trim($input);
-    $input = stripslashes($input);
-    $input = htmlspecialchars($input);
+    $input = trim($input);//ELIMINA ESPAÇOS NO INICIO E NO FINAL
+    $input = stripslashes($input); //ELIMINA "\"
+    $input = htmlspecialchars($input); //TRANSFORMA CARATERES ESPECIAIS EM ENTIDADES HTML
     return $input;
 }
 
